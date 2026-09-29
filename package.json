@@ -1,0 +1,8 @@
+{
+  "name": "affinity-automation",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "latest"
+  }
+}
