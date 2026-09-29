@@ -1,7 +1,7 @@
 /**
  * name: Batch Export PDF High Quality
- * description: Export all open Affinity documents to PDF using the "PDF (digital - high quality)" preset.
- * version: 0.1.0
+ * description: Export all open Affinity documents to an output folder using the "PDF (digital - high quality)" preset.
+ * version: 0.2.0
  * author: Phong Tran
  */
 
@@ -13,6 +13,7 @@ const {
   FileExportOptions,
   FileExportArea
 } = require("/document");
+const { FileSystemApi } = require("/fs.js");
 
 
 function toArray(collection) {
@@ -32,60 +33,15 @@ function toArray(collection) {
 }
 
 
-function getPickedPath(file) {
-  if (!file) return null;
-
-  if (typeof file === "string") {
-    return file;
-  }
-
-  const candidates = [
-    "path",
-    "filePath",
-    "fullPath",
-    "nativePath",
-    "filename"
-  ];
-
-  for (const key of candidates) {
-    try {
-      if (file[key]) {
-        return String(file[key]);
-      }
-    } catch (_) {}
-  }
-
-  try {
-    return String(file);
-  } catch (_) {}
-
-  return null;
-}
-
-
-function dirname(path) {
-  if (!path) return null;
-
-  path = path.replace(/\//g, "\\");
-
-  const i = path.lastIndexOf("\\");
-
-  if (i < 0) return null;
-
-  return path.substring(0, i);
-}
-
-
 function basenameWithoutExtension(name) {
   if (!name) return "Untitled";
 
   name = String(name);
 
-  const slash =
-    Math.max(
-      name.lastIndexOf("\\"),
-      name.lastIndexOf("/")
-    );
+  const slash = Math.max(
+    name.lastIndexOf("\\"),
+    name.lastIndexOf("/")
+  );
 
   if (slash >= 0) {
     name = name.substring(slash + 1);
@@ -97,8 +53,8 @@ function basenameWithoutExtension(name) {
 
 function getDocumentName(doc, index) {
   const candidates = [
-    "name",
     "title",
+    "name",
     "fileName",
     "filename",
     "path",
@@ -108,16 +64,81 @@ function getDocumentName(doc, index) {
   for (const key of candidates) {
     try {
       const value = doc[key];
-
       if (value) {
-        return basenameWithoutExtension(
-          String(value)
-        );
+        return basenameWithoutExtension(String(value));
       }
     } catch (_) {}
   }
 
   return "Document_" + (index + 1);
+}
+
+
+function normalizeFolderPath(path) {
+  if (!path) return "";
+
+  let value = String(path).trim();
+
+  if (
+    value.length >= 2 &&
+    (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    )
+  ) {
+    value = value.slice(1, -1).trim();
+  }
+
+  while (
+    value.length > 3 &&
+    (value.endsWith("\\") || value.endsWith("/"))
+  ) {
+    value = value.slice(0, -1);
+  }
+
+  return value;
+}
+
+
+function ensureOutputFolder(path) {
+  let exists = false;
+
+  try {
+    exists = !!FileSystemApi.exists(path);
+  } catch (_) {
+    exists = false;
+  }
+
+  if (!exists) {
+    FileSystemApi.createDirectories(path);
+    return;
+  }
+
+  if (!FileSystemApi.isDirectory(path)) {
+    throw new Error(
+      "Đường dẫn output không phải là folder:\n" + path
+    );
+  }
+
+  let isEmpty = true;
+
+  try {
+    isEmpty = !!FileSystemApi.isEmpty(path);
+  } catch (_) {}
+
+  if (!isEmpty) {
+    const continueExport = app.confirm(
+      "Folder này đang có file bên trong.\n\n" +
+      path +
+      "\n\n" +
+      "Vẫn tiếp tục export vào đây?",
+      "Folder không trống"
+    );
+
+    if (!continueExport) {
+      throw new Error("Đã hủy export.");
+    }
+  }
 }
 
 
@@ -140,39 +161,28 @@ function main() {
     }
 
 
-    app.alert(
-      "Đang mở " +
-      docs.length +
-      " document.\n\n" +
+    const defaultFolder = "D:\\PHONG_LAB\\PDF_OUTPUT";
 
-      "Hãy chọn MỘT FILE BẤT KỲ nằm trong folder muốn lưu PDF.\n\n" +
-
-      "Script chỉ dùng file đó để xác định folder đích.\n" +
-      "File được chọn sẽ KHÔNG bị sửa.",
-
-      "Batch PDF Export"
+    const enteredFolder = app.prompt(
+      "Nhập đường dẫn folder muốn xuất PDF.\n\n" +
+      "• Có thể nhập một folder trống đã có sẵn.\n" +
+      "• Hoặc nhập tên folder mới, script sẽ tự tạo.\n" +
+      "• Nếu folder đã có file, script sẽ hỏi lại trước khi export.",
+      "Batch PDF Export",
+      defaultFolder
     );
 
-
-    const picked = app.chooseFile();
-
-    if (!picked) {
-      throw new Error(
-        "Đã hủy chọn folder đích."
-      );
+    if (enteredFolder === null || enteredFolder === undefined) {
+      return;
     }
 
-
-    const pickedPath = getPickedPath(picked);
-    const outputFolder = dirname(pickedPath);
+    const outputFolder = normalizeFolderPath(enteredFolder);
 
     if (!outputFolder) {
-      throw new Error(
-        "Không đọc được đường dẫn folder từ file đã chọn.\n\n" +
-        "Path đọc được:\n" +
-        String(pickedPath)
-      );
+      throw new Error("Chưa nhập folder output.");
     }
+
+    ensureOutputFolder(outputFolder);
 
 
     const pdfOptions =
