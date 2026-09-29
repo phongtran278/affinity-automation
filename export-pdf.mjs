@@ -55,6 +55,26 @@ async function main() {
     throw new Error("Không kết nối được Affinity MCP bridge. Hãy mở Affinity và đảm bảo MCP/Script Manager đang connected.\n" + (err?.message || String(err)));
   }
 
+  // Affinity MCP requires the SDK preamble to be read once per session
+  // before other script/tool calls are accepted.
+  try {
+    await client.request(
+      {
+        method: "tools/call",
+        params: {
+          name: "read_sdk_documentation_topic",
+          arguments: { filename: "preamble" }
+        }
+      },
+      CallToolResultSchema
+    );
+  } catch (err) {
+    throw new Error(
+      "Không đọc được Affinity MCP preamble.\n" +
+      (err?.message || String(err))
+    );
+  }
+
   const stagingName = "Affinity_PDF_Export_" + new Date().toISOString().replace(/[-:TZ.]/g, "").slice(0, 14);
 
   const affinityScript = [
@@ -81,12 +101,16 @@ async function main() {
     "})();"
   ].join("\n");
 
-  let result;
-  try {
-    result = await client.request({ method: "tools/call", params: { name: "execute_script", arguments: { script: affinityScript } } }, CallToolResultSchema);
-  } finally {
-    try { await transport.close(); } catch {}
-  }
+  const result = await client.request(
+    {
+      method: "tools/call",
+      params: {
+        name: "execute_script",
+        arguments: { script: affinityScript }
+      }
+    },
+    CallToolResultSchema
+  );
 
   const output = getTextContent(result);
   const marker = "__PHONG_EXPORT__";
@@ -120,8 +144,12 @@ async function main() {
   if (skipped.length) { console.log("\nBỏ qua vì trùng tên:"); for (const x of skipped) console.log("- " + x); }
 }
 
-main().catch((err) => {
-  console.error("\nLỖI:");
-  console.error(err?.message || String(err));
-  process.exit(1);
-});
+main()
+  .then(() => {
+    process.exit(0);
+  })
+  .catch((err) => {
+    console.error("\nLỖI:");
+    console.error(err?.message || String(err));
+    process.exit(1);
+  });
