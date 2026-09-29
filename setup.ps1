@@ -4,7 +4,9 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$RepoDir = "D:\PHONG_LAB\affinity-automation"
+# Repo folder = the folder that contains this setup.ps1 file.
+# This keeps the installer working even if the repo is moved.
+$RepoDir = $PSScriptRoot
 $SourceScript = Join-Path $RepoDir "batch_export_pdf_high_quality.js"
 $ScriptManagerDir = Join-Path $env:APPDATA "affinity-script-manager"
 $MyScriptsDir = Join-Path $ScriptManagerDir "MyScripts"
@@ -13,9 +15,10 @@ $TargetScript = Join-Path $MyScriptsDir "batch_export_pdf_high_quality.js"
 Write-Host ""
 Write-Host "Affinity Automation Setup" -ForegroundColor Cyan
 Write-Host "------------------------"
+Write-Host "Repo: $RepoDir"
 
 if (-not (Test-Path $RepoDir)) {
-    throw "Khong tim thay repo local: $RepoDir. Hay clone repo truoc."
+    throw "Khong tim thay repo local: $RepoDir"
 }
 
 if (-not $NoPull) {
