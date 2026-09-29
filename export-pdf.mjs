@@ -64,7 +64,7 @@ async function main() {
     "const { FileSystemApi } = require(\"/fs.js\");",
     "function toArray(c){ if(!c)return []; try{if(c.toArray)return c.toArray();}catch(_){} try{return Array.from(c);}catch(_){} return [];}",
     "function baseName(n){ n=String(n||\"Untitled\"); const s=Math.max(n.lastIndexOf(\"\\\\\"),n.lastIndexOf(\"/\")); if(s>=0)n=n.substring(s+1); return n.replace(/\\.[^.]+$/,\"\"); }",
-    "function cleanName(n){ return baseName(n).replace(/[<>:\\"/\\\\|?*\\x00-\\x1F]/g,\"_\").trim()||\"Untitled\"; }",
+    'function cleanName(n){ return baseName(n).replace(/[<>:\"/\\\\|?*\\x00-\\x1F]/g,\"_\").trim()||\"Untitled\"; }',
     "function docName(d,i){ const k=[\"title\",\"name\",\"fileName\",\"filename\",\"path\",\"filePath\"]; for(const x of k){ try{const v=d[x]; if(v)return cleanName(String(v));}catch(_){}} return \"Document_\"+(i+1); }",
     "function joinPath(a,b){ const sep=a.endsWith(\"\\\\\")||a.endsWith(\"/\")?\"\":\"\\\\\"; return a+sep+b; }",
     "(function(){",
