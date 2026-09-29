@@ -1,39 +1,22 @@
 # affinity-automation
 
-Automation scripts for Affinity.
+## One-click PDF export
 
-## Batch Export PDF High Quality
+1. Open the `.af` files in Affinity.
+2. Double-click `export-pdf.bat`.
+3. Windows opens a normal folder picker.
+4. Choose the destination folder and press OK.
+5. The exporter asks Affinity to export every open document with `PDF (digital - high quality)`.
+6. PDFs are placed in the selected folder automatically.
 
-Affinity scripting has restricted filesystem access. The reliable workflow is:
+No manual path entry. No dummy file. No second move step.
 
-1. Affinity exports to a temporary staging folder on the Windows Desktop.
-2. A small PowerShell helper opens the native Windows folder picker.
-3. Choose any destination folder, including an empty folder.
-4. The helper moves the exported PDFs there.
+Internally, Affinity writes to its permitted Desktop area and the launcher immediately moves the PDFs to the selected folder. The temporary folder is deleted when empty.
 
-This avoids typing paths and avoids Affinity permission errors for arbitrary drives/folders.
-
-### Files
-
-- `batch_export_pdf_high_quality.js`
-- `move-exported-pdfs.ps1`
-- `move-exported-pdfs.bat`
-- `update-and-install.bat`
-
-### Export workflow
-
-1. Open all `.af` documents you want to export.
-2. Run `Batch Export PDF High Quality` in Affinity / Script Manager.
-3. Affinity exports them with `PDF (digital - high quality)`.
-4. Double-click `move-exported-pdfs.bat`.
-5. A normal Windows folder picker opens.
-6. Select the destination folder.
-7. PDFs are moved there.
-
-No dummy file and no manual path entry are required.
-
-### Updating
+## Update
 
 Double-click `update-and-install.bat`.
 
-This pulls the latest GitHub version and copies the Affinity JS script into Script Manager `MyScripts`.
+This runs `git pull`, refreshes the Script Manager copy, and installs the MCP client dependency.
+
+Affinity must be open and MCP must be enabled/connected.
