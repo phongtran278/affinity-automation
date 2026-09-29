@@ -4,7 +4,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 
-$RepoDir = Join-Path $env:USERPROFILE "Documents\affinity-automation"
+$RepoDir = "D:\PHONG_LAB\affinity-automation"
 $SourceScript = Join-Path $RepoDir "batch_export_pdf_high_quality.js"
 $ScriptManagerDir = Join-Path $env:APPDATA "affinity-script-manager"
 $MyScriptsDir = Join-Path $ScriptManagerDir "MyScripts"
