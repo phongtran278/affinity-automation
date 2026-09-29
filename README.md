@@ -4,58 +4,36 @@ Automation scripts for Affinity.
 
 ## Batch Export PDF High Quality
 
-File:
+Affinity scripting has restricted filesystem access. The reliable workflow is:
 
-`batch_export_pdf_high_quality.js`
+1. Affinity exports to a temporary staging folder on the Windows Desktop.
+2. A small PowerShell helper opens the native Windows folder picker.
+3. Choose any destination folder, including an empty folder.
+4. The helper moves the exported PDFs there.
 
-Purpose:
+This avoids typing paths and avoids Affinity permission errors for arbitrary drives/folders.
 
-- Export all open Affinity documents
-- Keep the original base filename
-- Convert `.af` → `.pdf`
-- Use Affinity preset: `PDF (digital - high quality)`
-- Export the whole document
-- Export directly into a folder path
-- Create the output folder automatically when it does not exist
-- Warn before exporting into a non-empty folder
+### Files
 
-## Run with Script Manager
+- `batch_export_pdf_high_quality.js`
+- `move-exported-pdfs.ps1`
+- `move-exported-pdfs.bat`
+- `update-and-install.bat`
 
-1. Open the `.af` documents you want to export in Affinity.
-2. Run `Batch Export PDF High Quality`.
-3. Enter the destination folder path.
-4. If the folder does not exist, the script creates it automatically.
-5. The script exports every open document into that folder.
+### Export workflow
 
-Default output path:
+1. Open all `.af` documents you want to export.
+2. Run `Batch Export PDF High Quality` in Affinity / Script Manager.
+3. Affinity exports them with `PDF (digital - high quality)`.
+4. Double-click `move-exported-pdfs.bat`.
+5. A normal Windows folder picker opens.
+6. Select the destination folder.
+7. PDFs are moved there.
 
-```text
-D:\PHONG_LAB\PDF_OUTPUT
-```
+No dummy file and no manual path entry are required.
 
-You can replace it in the prompt with another path, including a new empty folder such as:
+### Updating
 
-```text
-D:\PHONG_LAB\PDF_OUTPUT\Batch_01
-```
+Double-click `update-and-install.bat`.
 
-No dummy file is required.
-
-## Local update workflow
-
-The repository can live anywhere on the machine. `setup.ps1` uses its own folder automatically.
-
-To update and install the latest script into Affinity Script Manager, double-click:
-
-```text
-update-and-install.bat
-```
-
-It will:
-
-1. run `git pull --ff-only`
-2. copy `batch_export_pdf_high_quality.js` into:
-   `%APPDATA%\affinity-script-manager\MyScripts`
-3. leave the script ready for Script Manager to refresh / Watch Mode to re-push
-
-If Script Manager is already open and does not immediately show the new version, refresh it or reopen it.
+This pulls the latest GitHub version and copies the Affinity JS script into Script Manager `MyScripts`.
