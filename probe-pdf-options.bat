@@ -24,6 +24,12 @@ echo.
 echo Log:
 echo %~dp0probe-pdf-options.log
 echo.
+if exist "%~dp0probe-pdf-options.log" (
+  clip < "%~dp0probe-pdf-options.log"
+  echo Da copy noi dung log vao Clipboard.
+  echo Chi can Ctrl+V vao ChatGPT.
+)
+echo.
 echo Nhan phim bat ky de dong...
 pause >nul
 exit /b %EXITCODE%
