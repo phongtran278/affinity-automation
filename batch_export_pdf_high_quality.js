@@ -1,6 +1,6 @@
 /**
  * name: Batch Export PDF High Quality
- * description: Export all open Affinity documents to a Desktop staging folder using the "PDF (digital - high quality)" preset.
+ * description: Export all open Affinity documents to a Desktop staging folder using the "PDF/X-4" preset.
  * version: 0.3.0
  * author: Phong Tran
  */
@@ -84,11 +84,11 @@ function main() {
     FileSystemApi.createDirectories(stagingFolder);
 
     const pdfOptions = FileExportOptions.createWithPresetName(
-      "PDF (digital - high quality)"
+      "PDF/X-4"
     );
 
     if (!pdfOptions) {
-      throw new Error('Không tạo được preset "PDF (digital - high quality)".');
+      throw new Error('Không tạo được preset "PDF/X-4".');
     }
 
     const exportArea = FileExportArea.createForWholeDocument();
@@ -115,7 +115,7 @@ function main() {
 
     let message =
       "ĐÃ EXPORT XONG\n\n" +
-      "Preset: PDF (digital - high quality)\n" +
+      "Preset: PDF/X-4\n" +
       "Thành công: " + success + "/" + docs.length + "\n\n" +
       "File đang nằm tạm trên Desktop:\n" + stagingFolder + "\n\n" +
       "Bước tiếp theo: chạy move-exported-pdfs.bat để chọn folder đích bằng cửa sổ Windows.";
