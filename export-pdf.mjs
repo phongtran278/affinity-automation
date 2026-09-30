@@ -93,7 +93,7 @@ async function main() {
     " const desktop=app.userDesktopPath||app.getUserDesktopPath; if(!desktop) throw new Error(\"Không lấy được Desktop path.\");",
     " const stagingFolder=joinPath(String(desktop),"+JSON.stringify(stagingName)+");",
     " FileSystemApi.createDirectories(stagingFolder);",
-    " const options=FileExportOptions.createWithPresetName(\"PDF/X-4\");",
+    " const options=FileExportOptions.createWithPresetName(\"Phong Digital HQ 100\");",
     " const area=FileExportArea.createForWholeDocument();",
     " let success=0; const failed=[];",
     " for(let i=0;i<docs.length;i++){ const name=docName(docs[i],i); const out=joinPath(stagingFolder,name+\".pdf\"); try{docs[i].export(out,options,area,null); success++;}catch(e){failed.push(name+\": \"+(e.message||String(e)));}}",
@@ -137,7 +137,7 @@ async function main() {
 
   console.log("");
   console.log("XONG");
-  console.log("Preset: PDF/X-4");
+  console.log("Preset: Phong Digital HQ 100");
   console.log("Đã lưu: " + destination);
   console.log("Thành công: " + moved + "/" + payload.total);
   if (payload.failed?.length) { console.log("\nAffinity export lỗi:"); for (const x of payload.failed) console.log("- " + x); }
