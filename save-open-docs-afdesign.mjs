@@ -138,8 +138,7 @@ function joinPath(a,b){
       const target=path.join(destination,r.filename);
       try{
         if(fs.existsSync(target)){
-          moveErrors.push(r.filename+" | file đích đã tồn tại");
-          continue;
+          await fs.promises.unlink(target);
         }
         await moveFileCrossDrive(source,target);
         moved++;
