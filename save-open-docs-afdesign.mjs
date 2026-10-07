@@ -100,7 +100,7 @@ function joinPath(a,b){
     }
   }
 
-  console.log("__PHONG_SAVE_AFDESIGN__"+JSON.stringify({destination,total:docs.length,report}));
+  console.log("__PHONG_SAVE_AFDESIGN__"+JSON.stringify({destination:CONFIG.destination,total:docs.length,report}));
 })();
 `;
 
