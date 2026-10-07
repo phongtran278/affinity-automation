@@ -5,22 +5,17 @@
 Main workflow:
 
 1. Open only the PDF files you want to edit in Affinity Designer.
-   - Affinity can be handled in the existing batches: `1-10`, `11-20`, `21-30`, `31-40`, `41-42`.
-   - It is fine to omit files that do not need editing.
 2. Double-click `run-batch-t7.bat`.
 3. The launcher automatically runs `git pull --ff-only`.
-4. It loads `data/prohomes-t7-2026.json`.
-5. Each open document is matched by the numeric prefix in its title, e.g. `01 - ...pdf` -> STT 01.
-6. The runner validates the planned changes and commits them directly to the open Affinity documents.
+4. It runs a full DRY RUN first and prints all planned changes.
+5. If validation passes, Windows asks whether to commit.
+6. Choose Yes to apply the changes to the currently open Affinity documents, or No to stop without editing anything.
 7. Save As `.afdesign` manually when finished.
 
 The batch does not export PDF and does not overwrite the source PDF files on disk.
 
-### Safety / testing
-
-`run-batch-t7-dry-run.bat` remains available for parser/source testing. It validates and reports but does not change document text.
-
-`run-batch-t7-commit.bat` is kept as a compatibility alias and now calls `run-batch-t7.bat`.
+`run-batch-t7-dry-run.bat` remains available as a dry-run-only compatibility launcher.
+`run-batch-t7-commit.bat` calls the combined `run-batch-t7.bat`.
 
 ## One-click PDF export
 
