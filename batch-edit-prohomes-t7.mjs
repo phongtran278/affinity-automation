@@ -26,7 +26,8 @@ function loadData(){
     if(!Number.isInteger(x.stt)||x.stt<1||x.stt>42) fail("STT không hợp lệ: "+x.stt);
     if(seen.has(x.stt)) fail("Duplicate STT: "+x.stt);
     seen.add(x.stt);
-    if(!x.transactionId||!x.timestamp) fail("Thiếu ID/timestamp tại STT "+x.stt);
+    if(!x.transactionId||!x.timestamp||!x.invoiceNumber) fail("Thiếu ID/timestamp/invoiceNumber tại STT "+x.stt);
+    if(!/^FBADS-179-\d{9}$/.test(x.invoiceNumber)) fail("invoiceNumber không hợp lệ tại STT "+x.stt+": "+x.invoiceNumber);
     for(const k of ["subtotal","vat","total"]){
       if(!Number.isInteger(x[k])||x[k]<0) fail("Money không hợp lệ "+k+" tại STT "+x.stt);
     }
@@ -275,10 +276,19 @@ function buildPlan(doc,row,stt){
   const plan=[];
 
   let invoiceNumber=null;
+  let invoiceNodeIndex=-1;
+  let invoiceMatch=null;
   for(let i=0;i<texts.length;i++){
     const m=texts[i].match(/FBADS-179-\d+/i);
-    if(m){ invoiceNumber=m[0]; break; }
+    if(m){
+      if(invoiceNumber) throw new Error("Có nhiều hơn 1 invoice FBADS trong document.");
+      invoiceNumber=m[0];
+      invoiceNodeIndex=i;
+      invoiceMatch={begin:m.index,end:m.index+m[0].length,text:m[0]};
+    }
   }
+  if(!invoiceNumber||invoiceNodeIndex<0||!invoiceMatch) throw new Error("Không tìm thấy Invoice # FBADS-179-xxxxxxxxx.");
+  addPlan(plan,nodes[invoiceNodeIndex],invoiceMatch.begin,invoiceMatch.end,invoiceMatch.text,row.invoiceNumber,"invoiceNumber");
 
   const idLabel=findExactLabel(texts,"ID giao dịch");
   const idIdx=idLabel+1;
@@ -509,11 +519,7 @@ function postValidate(plan){
         printOne("VAT","vat");
         printOne("Tổng thanh toán","total");
 
-        if(r.invoiceNumber){
-          console.log("  Invoice # : "+r.invoiceNumber+"  ->  "+r.invoiceNumber+"  [UNCHANGED: chưa có mapping target]");
-        }else{
-          console.log("  Invoice # : (không tìm thấy FBADS trong document)");
-        }
+        printOne("Invoice #","invoiceNumber");
 
         printOne("Campaign name","campaignName");
         printOne("Campaign date","campaignDate");
