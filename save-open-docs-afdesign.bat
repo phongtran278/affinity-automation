@@ -2,26 +2,20 @@
 setlocal
 cd /d "%~dp0"
 
-echo [1/3] Updating source from GitHub...
-git pull --ff-only
+git pull --ff-only >nul 2>&1
+node get-open-docs-manifest.mjs >nul
 if errorlevel 1 (
-  echo GIT PULL FAILED.
+  echo Khong doc duoc danh sach file dang mo trong Affinity.
   pause
   exit /b 1
 )
 
-echo.
-echo [2/3] Reading currently open Affinity documents...
-node get-open-docs-manifest.mjs
-if errorlevel 1 (
-  echo FAILED TO READ OPEN DOCUMENTS.
-  pause
-  exit /b 1
-)
+for /f "usebackq delims=" %%I in (`powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -Command "$d=New-Object System.Windows.Forms.FolderBrowserDialog; Add-Type -AssemblyName System.Windows.Forms; $d.Description='Chon folder luu cac file .afdesign'; if($d.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK){$d.SelectedPath}"`) do set "DEST=%%I"
+
+if not defined DEST exit /b 0
+
+powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File "%~dp0save-open-docs-ui.ps1" -Destination "%DEST%"
 
 echo.
-echo [3/3] Saving through Affinity Save As dialogs...
-powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File "%~dp0save-open-docs-ui.ps1"
-
-echo.
+echo XONG.
 pause
