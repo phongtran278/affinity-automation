@@ -397,10 +397,31 @@ function validatePlan(plan){
 }
 function commitPlan(doc,plan){
   const groups=new Map();
-  for(const r of plan){const arr=groups.get(r.node)||[];arr.push(r);groups.set(r.node,arr);}
+  for(const r of plan){
+    const arr=groups.get(r.node)||[];
+    arr.push(r);
+    groups.set(r.node,arr);
+  }
+
+  let step=0;
   for(const [node,arr] of groups){
     arr.sort((a,b)=>b.begin-a.begin);
-    for(const r of arr) replaceRange(doc,node,r.begin,r.end,r.newText);
+    for(const r of arr){
+      step++;
+      try{
+        replaceRange(doc,node,r.begin,r.end,r.newText);
+      }catch(e){
+        const meta=r.meta
+          ? " "+(r.meta.campaign?"C"+r.meta.campaign:"")+(r.meta.adGroup?"/G"+r.meta.adGroup:"")
+          : "";
+        throw new Error(
+          "COMMAND_FAILED at step "+step+
+          " | "+r.type+meta+
+          " | ["+r.oldText+"] -> ["+r.newText+"]"+
+          " | Affinity: "+(e&&e.message?e.message:String(e))
+        );
+      }
+    }
   }
 }
 function postValidate(plan){
@@ -551,6 +572,10 @@ function postValidate(plan){
   if(DRY_RUN){
     console.log("\nDRY_RUN=true: không có text nào được thay.");
     console.log("Để commit các field đã validate: set AFFINITY_COMMIT=1 rồi chạy lại.");
+  }
+
+  if(report.error>0){
+    throw new Error("Batch có "+report.error+" document lỗi. Xem chi tiết COMMAND_FAILED phía trên.");
   }
 }
 main().catch(err=>{
