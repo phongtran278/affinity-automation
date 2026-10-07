@@ -414,15 +414,24 @@ function commitPlan(doc,plan){
         const meta=r.meta
           ? " "+(r.meta.campaign?"C"+r.meta.campaign:"")+(r.meta.adGroup?"/G"+r.meta.adGroup:"")
           : "";
-        throw new Error(
-          "COMMAND_FAILED at step "+step+
-          " | "+r.type+meta+
-          " | ["+r.oldText+"] -> ["+r.newText+"]"+
-          " | Affinity: "+(e&&e.message?e.message:String(e))
-        );
+        return {
+          ok:false,
+          step:step,
+          type:r.type,
+          meta:meta,
+          oldText:r.oldText,
+          newText:r.newText,
+          affinityMessage:(e&&e.message?e.message:String(e)),
+          reason:
+            "COMMAND_FAILED at step "+step+
+            " | "+r.type+meta+
+            " | ["+r.oldText+"] -> ["+r.newText+"]"+
+            " | Affinity: "+(e&&e.message?e.message:String(e))
+        };
       }
     }
   }
+  return {ok:true};
 }
 function postValidate(plan){
   for(const r of plan){
@@ -469,7 +478,16 @@ function postValidate(plan){
       validatePlan(built.plan);
 
       if(!CONFIG.dryRun){
-        commitPlan(doc,built.plan);
+        const commitResult=commitPlan(doc,built.plan);
+        if(!commitResult.ok){
+          error++;
+          report.push({
+            stt,document:name,status:"ERROR",
+            reason:commitResult.reason,
+            commitFailure:commitResult
+          });
+          continue;
+        }
         postValidate(built.plan);
       }
 
