@@ -20,8 +20,10 @@ async function main(){
 
     const script=String.raw`
 "use strict";
-const { Document }=require("/document");
-const { FileSystemApi }=require("/fs.js");
+const documentModule=require("/document");
+const fsModule=require("/fs.js");
+const { Document }=documentModule;
+const { FileSystemApi }=fsModule;
 
 function props(obj){
   const out=[];
@@ -45,10 +47,25 @@ function props(obj){
 (function(){
   let doc=null;
   try{doc=Document.current;}catch(_){}
+  function fnInfo(fn){
+    if(typeof fn!=="function") return null;
+    let src="";
+    try{src=String(fn);}catch(_){}
+    return {length:fn.length,source:src.slice(0,500)};
+  }
   console.log("__PHONG_SAVE_API__"+JSON.stringify({
+    fsModuleExports:Object.keys(fsModule||{}).sort(),
+    documentModuleExports:Object.keys(documentModule||{}).sort(),
     fileSystemApi:props(FileSystemApi),
     document:doc?props(doc):[],
-    documentTitle:doc?String(doc.title||doc.name||""):""
+    documentTitle:doc?String(doc.title||doc.name||""):"",
+    documentPath:doc?String(doc.path||""):"",
+    mustSaveAs:doc?doc.mustSaveAs:null,
+    isReadOnly:doc?doc.isReadOnly:null,
+    saveAs:doc?fnInfo(doc.saveAs):null,
+    saveAsAsync:doc?fnInfo(doc.saveAsAsync):null,
+    save:doc?fnInfo(doc.save):null,
+    saveAsync:doc?fnInfo(doc.saveAsync):null
   }));
 })();
 `;
@@ -63,6 +80,17 @@ function props(obj){
     if(!line)throw new Error("Affinity không trả diagnostic.\n"+output);
     const p=JSON.parse(line.slice(line.indexOf(marker)+marker.length));
 
+    console.log("\n=== FS MODULE EXPORTS ===");
+    for(const x of p.fsModuleExports)console.log(x);
+    console.log("\n=== DOCUMENT MODULE EXPORTS ===");
+    for(const x of p.documentModuleExports)console.log(x);
+    console.log("\n=== SAVE SIGNATURES ===");
+    console.log("saveAs:",JSON.stringify(p.saveAs));
+    console.log("saveAsAsync:",JSON.stringify(p.saveAsAsync));
+    console.log("save:",JSON.stringify(p.save));
+    console.log("saveAsync:",JSON.stringify(p.saveAsync));
+    console.log("path:",p.documentPath);
+    console.log("mustSaveAs:",p.mustSaveAs,"isReadOnly:",p.isReadOnly);
     console.log("\n=== FILESYSTEM API ===");
     for(const x of p.fileSystemApi)console.log(x);
     console.log("\n=== DOCUMENT API ===");
