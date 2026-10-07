@@ -1,0 +1,390 @@
+{
+  "schemaVersion": 1,
+  "batch": "ProHomes TKQC 1 - 07/2026",
+  "source": {
+    "driveFileId": "1PCjXFQNY11EQpBuXPgon7mlDdSs8vPZJ",
+    "gid": 220811210,
+    "driveFolderId": "1idIiwSS5DyxYkKjd52mxN02_7ymB6Brv",
+    "note": "Generated from the current Drive workbook. STT is the authoritative key."
+  },
+  "items": [
+    {
+      "stt": 1,
+      "transactionId": "27550587294121927-27712933945890324",
+      "timestamp": "2026-07-01 08:42:00",
+      "subtotal": 19059451,
+      "vat": 1905945,
+      "total": 20965396,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 2,
+      "transactionId": "27698964238799716-27737435033155722",
+      "timestamp": "2026-07-02 01:59:00",
+      "subtotal": 16272727,
+      "vat": 1627273,
+      "total": 17900000,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 3,
+      "transactionId": "27304346745917077-27262106440141110",
+      "timestamp": "2026-07-02 09:59:00",
+      "subtotal": 15000000,
+      "vat": 1500000,
+      "total": 16500000,
+      "dataType": "Thật"
+    },
+    {
+      "stt": 4,
+      "transactionId": "27494454638076997-27496080672495703",
+      "timestamp": "2026-07-05 03:54:00",
+      "subtotal": 18727273,
+      "vat": 1872727,
+      "total": 20600000,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 5,
+      "transactionId": "27686409166740957-27725396559930991",
+      "timestamp": "2026-07-06 03:58:00",
+      "subtotal": 14090909,
+      "vat": 1409091,
+      "total": 15500000,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 6,
+      "transactionId": "27544127445272341-27439408572410889",
+      "timestamp": "2026-07-06 11:58:00",
+      "subtotal": 15000000,
+      "vat": 1500000,
+      "total": 16500000,
+      "dataType": "Thật"
+    },
+    {
+      "stt": 7,
+      "transactionId": "27308077141302532-27270853420124741",
+      "timestamp": "2026-07-07 07:22:00",
+      "subtotal": 19545455,
+      "vat": 1954545,
+      "total": 21500000,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 8,
+      "transactionId": "27538342578030237-27698687126826360",
+      "timestamp": "2026-07-07 17:22:00",
+      "subtotal": 19070857,
+      "vat": 1907086,
+      "total": 20977943,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 9,
+      "transactionId": "27311804591529500-27268785124723035",
+      "timestamp": "2026-07-08 03:23:00",
+      "subtotal": 14545455,
+      "vat": 1454545,
+      "total": 16000000,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 10,
+      "transactionId": "27458989247521508-27375159466616055",
+      "timestamp": "2026-07-08 11:23:00",
+      "subtotal": 20545455,
+      "vat": 2054545,
+      "total": 22600000,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 11,
+      "transactionId": "27567518410069202-27417816292561010",
+      "timestamp": "2026-07-08 19:23:00",
+      "subtotal": 16181818,
+      "vat": 1618182,
+      "total": 17800000,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 12,
+      "transactionId": "27464939875306454-27373709902388027",
+      "timestamp": "2026-07-09 07:03:00",
+      "subtotal": 21818182,
+      "vat": 2181818,
+      "total": 24000000,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 13,
+      "transactionId": "27580284841303100-27429652419146528",
+      "timestamp": "2026-07-09 15:03:00",
+      "subtotal": 18385583,
+      "vat": 1838558,
+      "total": 20224141,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 14,
+      "transactionId": "27582315734322863-27421264491472886",
+      "timestamp": "2026-07-09 23:03:00",
+      "subtotal": 17573839,
+      "vat": 1757384,
+      "total": 19331223,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 15,
+      "transactionId": "27403918039293278-27505440589141021",
+      "timestamp": "2026-07-10 07:50:00",
+      "subtotal": 15000000,
+      "vat": 1500000,
+      "total": 16500000,
+      "dataType": "Thật"
+    },
+    {
+      "stt": 16,
+      "transactionId": "27549705587360353-27701251881580933",
+      "timestamp": "2026-07-11 15:59:00",
+      "subtotal": 22545455,
+      "vat": 2254545,
+      "total": 24800000,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 17,
+      "transactionId": "27502112067223059-27506729136268544",
+      "timestamp": "2026-07-11 23:59:00",
+      "subtotal": 21454545,
+      "vat": 2145455,
+      "total": 23600000,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 18,
+      "transactionId": "27497762559908822-27497762663242145",
+      "timestamp": "2026-07-13 10:33:00",
+      "subtotal": 15000000,
+      "vat": 1500000,
+      "total": 16500000,
+      "dataType": "Thật"
+    },
+    {
+      "stt": 19,
+      "transactionId": "27551730033172389-27708628654506810",
+      "timestamp": "2026-07-14 02:36:00",
+      "subtotal": 18909091,
+      "vat": 1890909,
+      "total": 20800000,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 20,
+      "transactionId": "27697104664125872-27729467759267421",
+      "timestamp": "2026-07-14 10:36:00",
+      "subtotal": 20565732,
+      "vat": 2056573,
+      "total": 22622305,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 21,
+      "transactionId": "27541770460609319-27431909363619375",
+      "timestamp": "2026-07-14 20:22:00",
+      "subtotal": 23181818,
+      "vat": 2318182,
+      "total": 25500000,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 22,
+      "transactionId": "27575114418840304-27424185687266517",
+      "timestamp": "2026-07-16 11:07:00",
+      "subtotal": 15000000,
+      "vat": 1500000,
+      "total": 16500000,
+      "dataType": "Thật"
+    },
+    {
+      "stt": 23,
+      "transactionId": "27305963889225858-27267545375377013",
+      "timestamp": "2026-07-17 05:23:00",
+      "subtotal": 18667197,
+      "vat": 1866720,
+      "total": 20533917,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 24,
+      "transactionId": "27693495332387201-27737472456558156",
+      "timestamp": "2026-07-17 14:23:00",
+      "subtotal": 17181818,
+      "vat": 1718182,
+      "total": 18900000,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 25,
+      "transactionId": "27311933683180332-27267440481101467",
+      "timestamp": "2026-07-17 22:23:00",
+      "subtotal": 17090909,
+      "vat": 1709091,
+      "total": 18800000,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 26,
+      "transactionId": "27540059259797140-27433562357052147",
+      "timestamp": "2026-07-18 07:08:00",
+      "subtotal": 24090909,
+      "vat": 2409091,
+      "total": 26500000,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 27,
+      "transactionId": "27579541066682213-27417153459484616",
+      "timestamp": "2026-07-18 15:08:00",
+      "subtotal": 16636364,
+      "vat": 1663636,
+      "total": 18300000,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 28,
+      "transactionId": "27459740693711016-27367807819570970",
+      "timestamp": "2026-07-19 09:50:00",
+      "subtotal": 15000000,
+      "vat": 1500000,
+      "total": 16500000,
+      "dataType": "Thật"
+    },
+    {
+      "stt": 29,
+      "transactionId": "27543194977474704-27434778055441112",
+      "timestamp": "2026-07-21 12:48:00",
+      "subtotal": 22000000,
+      "vat": 2200000,
+      "total": 24200000,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 30,
+      "transactionId": "27546318015053279-27706955805656166",
+      "timestamp": "2026-07-22 11:52:00",
+      "subtotal": 15000000,
+      "vat": 1500000,
+      "total": 16500000,
+      "dataType": "Thật"
+    },
+    {
+      "stt": 31,
+      "transactionId": "27759560960400393-27649259457398906",
+      "timestamp": "2026-07-23 13:19:00",
+      "subtotal": 19413414,
+      "vat": 1941341,
+      "total": 21354755,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 32,
+      "transactionId": "27490090667772272-27489816499275171",
+      "timestamp": "2026-07-23 21:19:00",
+      "subtotal": 17363636,
+      "vat": 1736364,
+      "total": 19100000,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 33,
+      "transactionId": "27682383130046294-27737011346094936",
+      "timestamp": "2026-07-25 18:48:00",
+      "subtotal": 23363636,
+      "vat": 2336364,
+      "total": 25700000,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 34,
+      "transactionId": "27757761833908896-27656517777366632",
+      "timestamp": "2026-07-26 12:13:00",
+      "subtotal": 15000000,
+      "vat": 1500000,
+      "total": 16500000,
+      "dataType": "Thật"
+    },
+    {
+      "stt": 35,
+      "transactionId": "27306129403928276-27253977574398101",
+      "timestamp": "2026-07-27 04:19:00",
+      "subtotal": 17909091,
+      "vat": 1790909,
+      "total": 19700000,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 36,
+      "transactionId": "27409242376943793-27503130212723051",
+      "timestamp": "2026-07-27 12:19:00",
+      "subtotal": 18148414,
+      "vat": 1814841,
+      "total": 19963255,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 37,
+      "transactionId": "27303151815972570-27255019778129618",
+      "timestamp": "2026-07-28 04:48:00",
+      "subtotal": 19452095,
+      "vat": 1945210,
+      "total": 21397305,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 38,
+      "transactionId": "27402113194200611-27499273865675202",
+      "timestamp": "2026-07-28 14:48:00",
+      "subtotal": 17636364,
+      "vat": 1763636,
+      "total": 19400000,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 39,
+      "transactionId": "27537566636713703-27435755209951671",
+      "timestamp": "2026-07-28 23:48:00",
+      "subtotal": 19181818,
+      "vat": 1918182,
+      "total": 21100000,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 40,
+      "transactionId": "27690595733958836-27733061123045632",
+      "timestamp": "2026-07-29 06:47:00",
+      "subtotal": 11197723,
+      "vat": 1119772,
+      "total": 12317495,
+      "dataType": "Thật"
+    },
+    {
+      "stt": 41,
+      "transactionId": "27458439869587924-27359061658663195",
+      "timestamp": "2026-07-29 15:18:00",
+      "subtotal": 18888423,
+      "vat": 1888842,
+      "total": 20777265,
+      "dataType": "Giả định"
+    },
+    {
+      "stt": 42,
+      "transactionId": "27749927542538825-27652760531887048",
+      "timestamp": "2026-07-30 04:51:00",
+      "subtotal": 20636364,
+      "vat": 2063636,
+      "total": 22700000,
+      "dataType": "Giả định"
+    }
+  ]
+}
