@@ -274,6 +274,12 @@ function buildPlan(doc,row,stt){
   const texts=nodes.map(getRawText);
   const plan=[];
 
+  let invoiceNumber=null;
+  for(let i=0;i<texts.length;i++){
+    const m=texts[i].match(/FBADS-179-\d+/i);
+    if(m){ invoiceNumber=m[0]; break; }
+  }
+
   const idLabel=findExactLabel(texts,"ID giao dịch");
   const idIdx=idLabel+1;
   if(idIdx>=texts.length || !/^\d{10,}-\d{10,}$/.test(texts[idIdx].trim())) throw new Error("Không tìm thấy ID giao dịch sau label.");
@@ -347,7 +353,8 @@ function buildPlan(doc,row,stt){
     adGroups:adGroupCount,
     impressionsUpdated,
     oldCampaignSum:campaigns.reduce((a,b)=>a+b.oldSpend,0),
-    newCampaignSum
+    newCampaignSum,
+    invoiceNumber
   };
 }
 function validatePlan(plan){
@@ -430,6 +437,7 @@ function postValidate(plan){
         adGroups:built.adGroups,
         impressionsUpdated:built.impressionsUpdated,
         validation:"PASS",
+        invoiceNumber:built.invoiceNumber,
         replacements:built.plan.map(function(r){
           return {type:r.type,old:r.oldText,new:r.newText,meta:r.meta||null};
         })
@@ -473,19 +481,49 @@ function postValidate(plan){
     if(r.status==="OK"&&r.matchedBy){
       console.log("  matched by: "+r.matchedBy+" -> "+r.matchedValue);
       if(Array.isArray(r.replacements)){
-        const priority=["transactionId","invoiceDate","paid","subtotal","vat","total","campaignName","campaignDate","campaignSpend","adGroupSpend","impressions"];
-        const ordered=r.replacements.slice().sort(function(a,b){
-          return priority.indexOf(a.type)-priority.indexOf(b.type);
-        });
-        for(const x of ordered){
-          const meta=x.meta
-            ? " ["+(x.meta.campaign?"C"+x.meta.campaign:"")+(x.meta.adGroup?"/G"+x.meta.adGroup:"")+"]"
-            : "";
-          console.log("  "+x.type+meta+": "+x.old+" -> "+x.new);
+        const byType={};
+        for(const x of r.replacements){
+          if(!byType[x.type]) byType[x.type]=[];
+          byType[x.type].push(x);
         }
+
+        const printOne=function(label,type){
+          const arr=byType[type]||[];
+          if(!arr.length){
+            console.log("  "+label+": (không đổi / không có target)");
+            return;
+          }
+          for(const x of arr){
+            const meta=x.meta
+              ? " ["+(x.meta.campaign?"C"+x.meta.campaign:"")+(x.meta.adGroup?"/G"+x.meta.adGroup:"")+"]"
+              : "";
+            console.log("  "+label+meta+": "+x.old+"  ->  "+x.new);
+          }
+        };
+
+        console.log("  --- SO SÁNH GỐC -> SAU SỬA ---");
+        printOne("ID giao dịch","transactionId");
+        printOne("Ngày lập/thanh toán","invoiceDate");
+        printOne("Đã thanh toán","paid");
+        printOne("Tổng phụ","subtotal");
+        printOne("VAT","vat");
+        printOne("Tổng thanh toán","total");
+
+        if(r.invoiceNumber){
+          console.log("  Invoice # : "+r.invoiceNumber+"  ->  "+r.invoiceNumber+"  [UNCHANGED: chưa có mapping target]");
+        }else{
+          console.log("  Invoice # : (không tìm thấy FBADS trong document)");
+        }
+
+        printOne("Campaign name","campaignName");
+        printOne("Campaign date","campaignDate");
+        printOne("Campaign spend","campaignSpend");
+        printOne("Ad group spend","adGroupSpend");
+        printOne("Impressions","impressions");
+
         console.log("  campaigns: "+r.campaigns+" | ad groups: "+r.adGroups+" | impressions updated: "+r.impressionsUpdated);
         console.log("  validation: "+r.validation);
-      }
+      }      }
     }
   }
   console.log("\nSUCCESS: "+report.success+" ERROR: "+report.error+" SKIPPED: "+report.skipped);
