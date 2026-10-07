@@ -302,17 +302,55 @@ function buildPlan(doc,row,stt){
   if(!idHit) throw new Error("Không tìm thấy ID giao dịch.");
   addPlan(plan,nodes[idHit.idx],idHit.begin,idHit.end,idHit.text,row.transactionId,"transactionId");
 
-  // Invoice date: find the standalone invoice timestamp pattern anywhere in text nodes.
-  // Campaign ranges start with "Từ 00:00" so they do not match this exact timestamp form.
+  // Invoice date: anchor to the invoice-date label so campaign date ranges are ignored.
   let dateHit=null;
-  const invoiceDateRe=/\b\d{1,2}:\d{2}\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}\b/;
+  const invoiceDateRe=/\d{1,2}:\d{2}\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}/i;
+  const dateLabelRe=/ngày lập hóa đơn\/thanh toán/i;
+  const dateLabelHits=[];
+
   for(let i=0;i<texts.length;i++){
-    const m=texts[i].match(invoiceDateRe);
+    if(dateLabelRe.test(texts[i])) dateLabelHits.push(i);
+  }
+
+  if(dateLabelHits.length===1){
+    const li=dateLabelHits[0];
+
+    // Case 1: label + value merged into the same text node.
+    let m=texts[li].match(invoiceDateRe);
     if(m){
-      if(dateHit) throw new Error("Có nhiều hơn 1 invoice date trong document.");
-      dateHit={idx:i,begin:m.index,end:m.index+m[0].length,text:m[0]};
+      dateHit={idx:li,begin:m.index,end:m.index+m[0].length,text:m[0]};
+    }else{
+      // Case 2: label and value are separate adjacent nodes.
+      const ni=li+1;
+      if(ni<texts.length){
+        m=texts[ni].match(invoiceDateRe);
+        if(m){
+          dateHit={idx:ni,begin:m.index,end:m.index+m[0].length,text:m[0]};
+        }
+      }
+    }
+  }else if(dateLabelHits.length>1){
+    throw new Error("Có nhiều hơn 1 label Ngày lập hóa đơn/thanh toán.");
+  }
+
+  // Fallback for machines where the label itself is lost during PDF import:
+  // only accept a node whose ENTIRE trimmed text is the invoice timestamp.
+  if(!dateHit){
+    const exactDateRe=/^\d{1,2}:\d{2}\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}$/i;
+    const exactHits=[];
+    for(let i=0;i<texts.length;i++){
+      const t=texts[i].trim();
+      if(exactDateRe.test(t)) exactHits.push({idx:i,text:t});
+    }
+    if(exactHits.length===1){
+      const h=exactHits[0];
+      const begin=texts[h.idx].indexOf(h.text);
+      dateHit={idx:h.idx,begin:begin,end:begin+h.text.length,text:h.text};
+    }else if(exactHits.length>1){
+      throw new Error("Có nhiều hơn 1 standalone invoice date trong document.");
     }
   }
+
   if(!dateHit) throw new Error("Không tìm thấy invoice date.");
   addPlan(plan,nodes[dateHit.idx],dateHit.begin,dateHit.end,dateHit.text,formatInvoiceDate(row.timestamp),"invoiceDate");
 
