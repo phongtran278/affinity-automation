@@ -99,23 +99,16 @@ function joinPath(a,b){
     used[filename]=true;
 
     try{
-      if(typeof doc.saveAsAsync!=="function" && typeof doc.saveAs!=="function"){
-        report.push({title,status:"ERROR",reason:"Không có saveAs/saveAsAsync"});
+      if(typeof doc.saveAs!=="function" || typeof doc.save!=="function"){
+        report.push({title,status:"ERROR",reason:"Không có saveAs/save"});
         continue;
       }
-      if(typeof doc.saveAsAsync==="function"){
-        await new Promise(function(resolve,reject){
-          try{
-            doc.saveAsAsync(out,function(result){
-              resolve(result);
-            });
-          }catch(e){
-            reject(e);
-          }
-        });
-      }else{
-        doc.saveAs(out);
-      }
+
+      // Affinity runtime này dùng saveAs(path) để gán native document path,
+      // sau đó cần save() để thực sự ghi bytes xuống đĩa.
+      doc.saveAs(out);
+      doc.save();
+
       let exists=false;
       try{
         exists=typeof FileSystemApi.existsAsync==="function"
@@ -123,7 +116,13 @@ function joinPath(a,b){
           : FileSystemApi.exists(out);
       }catch(_){}
       if(!exists){
-        report.push({title,status:"ERROR",reason:"SAVE_RETURNED_BUT_FILE_NOT_CREATED",filename,path:out});
+        let currentPath="";
+        try{currentPath=String(doc.path||"");}catch(_){}
+        report.push({
+          title,status:"ERROR",
+          reason:"SAVE_RETURNED_BUT_FILE_NOT_CREATED",
+          filename,path:out,currentPath
+        });
         continue;
       }
       report.push({title,status:"OK",filename,path:out});
@@ -178,7 +177,7 @@ function joinPath(a,b){
     console.log("Folder: "+destination);
     for(const r of payload.report){
       if(r.status==="OK")console.log("[OK] "+r.filename);
-      else console.log("[ERROR] "+r.title+" | "+r.reason);
+      else console.log("[ERROR] "+r.title+" | "+r.reason+(r.currentPath?" | doc.path="+r.currentPath:""));
     }
     if(moveErrors.length){
       console.log("\nMOVE ERRORS:");
