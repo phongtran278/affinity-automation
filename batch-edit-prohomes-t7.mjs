@@ -42,6 +42,18 @@ async function main(){
   const transport=new SSEClientTransport(new URL(SERVER_URL));
   await client.connect(transport);
 
+  // Affinity Script Manager requires the SDK preamble to be read before execute_script.
+  await client.request(
+    {
+      method:"tools/call",
+      params:{
+        name:"read_sdk_documentation_topic",
+        arguments:{filename:"preamble"}
+      }
+    },
+    CallToolResultSchema
+  );
+
   const payload=JSON.stringify({
     dryRun:DRY_RUN,
     batch:source.batch,
@@ -267,10 +279,15 @@ function commitPlan(doc,plan){
 })();
 `;
 
-  const result=await client.request({
-    method:"tools/call",
-    params:{name:"execute_script",arguments:{script}}
-  },CallToolResultSchema);
+  let result;
+  try{
+    result=await client.request({
+      method:"tools/call",
+      params:{name:"execute_script",arguments:{script}}
+    },CallToolResultSchema);
+  }finally{
+    try{ await client.close(); }catch(_){}
+  }
 
   const output=getTextContent(result);
   const marker="__PHONG_BATCH_T7__";
@@ -290,8 +307,8 @@ function commitPlan(doc,plan){
     console.log("Để commit các field đã validate: set AFFINITY_COMMIT=1 rồi chạy lại.");
   }
 }
-main().then(()=>process.exit(0)).catch(err=>{
+main().catch(err=>{
   console.error("\nLỖI:");
   console.error(err?.stack||err?.message||String(err));
-  process.exit(1);
+  process.exitCode=1;
 });
