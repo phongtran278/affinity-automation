@@ -42,3 +42,15 @@ Double-click `update-and-install.bat`.
 This runs `git pull`, refreshes the Script Manager copy, and installs the MCP client dependency.
 
 Affinity must be open and MCP must be enabled/connected.
+
+
+## Diagnostic: dump PDF text structure
+
+Use this only when refining the parser.
+
+1. Open one representative PDF in Affinity Designer.
+2. Double-click `dump-affinity-structure.bat`.
+3. A JSON file is written under `diagnostics/`.
+4. Send that JSON file back for parser development.
+
+This diagnostic does not edit the document.
