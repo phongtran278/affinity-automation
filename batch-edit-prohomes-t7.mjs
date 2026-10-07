@@ -323,6 +323,19 @@ function buildPlan(doc,row,stt){
   replaceOnlyMoney(plan,nodes[vatIdx],texts[vatIdx],row.vat,"vat");
   if(totalIdx>=0) replaceOnlyMoney(plan,nodes[totalIdx],texts[totalIdx],row.total,"total");
 
+  let thresholdHits=0;
+  for(let i=0;i<texts.length;i++){
+    const text=texts[i];
+    if(/ngưỡng thanh toán/i.test(text)){
+      const toks=moneyTokens(text);
+      if(toks.length!==1) throw new Error("Ngưỡng thanh toán: expected exactly 1 money token, got "+toks.length);
+      const t=toks[0];
+      addPlan(plan,nodes[i],t.begin,t.end,t.text,formatMoneyLike(t.text,row.subtotal),"paymentThreshold");
+      thresholdHits++;
+    }
+  }
+  if(thresholdHits>1) throw new Error("Có nhiều hơn 1 field ngưỡng thanh toán.");
+
   const campaigns=parseCampaigns(nodes,texts,existingSubtotal);
   const newCampaignSpends=allocation(row.subtotal,campaigns.map(x=>x.oldSpend));
   const rangeText=campaignRange(row.timestamp,stt);
@@ -518,6 +531,7 @@ function postValidate(plan){
         printOne("Tổng phụ","subtotal");
         printOne("VAT","vat");
         printOne("Tổng thanh toán","total");
+        printOne("Ngưỡng thanh toán","paymentThreshold");
 
         printOne("Invoice #","invoiceNumber");
 
