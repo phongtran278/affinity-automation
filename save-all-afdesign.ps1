@@ -5,6 +5,72 @@ param(
 
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName Microsoft.VisualBasic
+Add-Type -AssemblyName UIAutomationClient
+Add-Type -AssemblyName UIAutomationTypes
+
+function Get-SaveAsDialog([int]$timeoutMs=5000) {
+  $sw=[Diagnostics.Stopwatch]::StartNew()
+  while($sw.ElapsedMilliseconds -lt $timeoutMs) {
+    $root=[System.Windows.Automation.AutomationElement]::RootElement
+    $wins=$root.FindAll(
+      [System.Windows.Automation.TreeScope]::Children,
+      [System.Windows.Automation.Condition]::TrueCondition
+    )
+    foreach($w in $wins) {
+      try {
+        if($w.Current.Name -eq "Save As") { return $w }
+      } catch {}
+    }
+    Start-Sleep -Milliseconds 100
+  }
+  return $null
+}
+
+function Set-SaveAsTarget([string]$target) {
+  $dlg=Get-SaveAsDialog 5000
+  if(-not $dlg) { throw "Save As dialog not found" }
+
+  # Standard Windows file dialog: File name edit uses AutomationId 1001.
+  $edit=$dlg.FindFirst(
+    [System.Windows.Automation.TreeScope]::Descendants,
+    New-Object System.Windows.Automation.PropertyCondition(
+      [System.Windows.Automation.AutomationElement]::AutomationIdProperty,
+      "1001"
+    )
+  )
+  if(-not $edit) { throw "File name control not found" }
+
+  $vp=$edit.GetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern)
+  $vp.SetValue($target)
+
+  $saveBtn=$dlg.FindFirst(
+    [System.Windows.Automation.TreeScope]::Descendants,
+    New-Object System.Windows.Automation.AndCondition(
+      (New-Object System.Windows.Automation.PropertyCondition(
+        [System.Windows.Automation.AutomationElement]::ControlTypeProperty,
+        [System.Windows.Automation.ControlType]::Button
+      )),
+      (New-Object System.Windows.Automation.PropertyCondition(
+        [System.Windows.Automation.AutomationElement]::NameProperty,
+        "Save"
+      ))
+    )
+  )
+  if(-not $saveBtn) {
+    # Standard common-dialog Save button often has AutomationId 1.
+    $saveBtn=$dlg.FindFirst(
+      [System.Windows.Automation.TreeScope]::Descendants,
+      New-Object System.Windows.Automation.PropertyCondition(
+        [System.Windows.Automation.AutomationElement]::AutomationIdProperty,
+        "1"
+      )
+    )
+  }
+  if(-not $saveBtn) { throw "Save button not found" }
+
+  $ip=$saveBtn.GetCurrentPattern([System.Windows.Automation.InvokePattern]::Pattern)
+  $ip.Invoke()
+}
 
 $manifestPath = Join-Path $PSScriptRoot "open-docs-save-manifest.json"
 if (-not (Test-Path -LiteralPath $manifestPath)) {
@@ -73,24 +139,15 @@ for ($i=0; $i -lt $docs.Count; $i++) {
 
   # Open Affinity Save As.
   [System.Windows.Forms.SendKeys]::SendWait("^+s")
-  Start-Sleep -Milliseconds 900
-
-  # Navigate the dialog to destination folder first.
-  [System.Windows.Forms.SendKeys]::SendWait("^l")
-  Start-Sleep -Milliseconds 150
-  [System.Windows.Forms.Clipboard]::SetText($Destination)
-  [System.Windows.Forms.SendKeys]::SendWait("^v")
-  [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
   Start-Sleep -Milliseconds 500
 
-  # Then type ONLY the file name, never the full path.
-  [System.Windows.Forms.SendKeys]::SendWait("%n")
-  Start-Sleep -Milliseconds 150
-  [System.Windows.Forms.SendKeys]::SendWait("^a")
-  [System.Windows.Forms.Clipboard]::SetText($filename)
-  [System.Windows.Forms.SendKeys]::SendWait("^v")
-  Start-Sleep -Milliseconds 120
-  [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
+  # Set the exact target through Windows UI Automation instead of keyboard focus.
+  try {
+    Set-SaveAsTarget $target
+  } catch {
+    Write-Host ("[ERROR] Save As UI: " + $_.Exception.Message)
+    exit 15
+  }
 
   if (-not (Wait-ForFile $target 6500)) {
     Write-Host ("[ERROR] Save failed: " + $filename)
