@@ -18,16 +18,26 @@ function chooseFolder(){
     ],{encoding:"utf8",windowsHide:true})||"").trim();
   }catch{return "";}
 }
-
 function getTextContent(result){
   return (result?.content||[]).filter(x=>x&&x.type==="text").map(x=>x.text).join("\n");
+}
+async function moveFileCrossDrive(source,target){
+  try{await fs.promises.rename(source,target);}
+  catch(err){
+    if(err&&err.code==="EXDEV"){
+      await fs.promises.copyFile(source,target,fs.constants.COPYFILE_EXCL);
+      await fs.promises.unlink(source);
+      return;
+    }
+    throw err;
+  }
 }
 
 async function main(){
   const destination=chooseFolder();
-  if(!destination) process.exit(0);
+  if(!destination)process.exit(0);
 
-  const client=new Client({name:"phong-affinity-save-afdesign",version:"1.0.0"});
+  const client=new Client({name:"phong-affinity-save-afdesign",version:"1.1.0"});
   const transport=new SSEClientTransport(new URL(SERVER_URL));
   await client.connect(transport);
 
@@ -37,11 +47,13 @@ async function main(){
       params:{name:"read_sdk_documentation_topic",arguments:{filename:"preamble"}}
     },CallToolResultSchema);
 
-    const payload=JSON.stringify({destination});
+    const stagingName="Affinity_AFDesign_Save_"+new Date().toISOString().replace(/[-:TZ.]/g,"").slice(0,14);
+
     const script=String.raw`
 "use strict";
+const { app }=require("/application");
 const { Document }=require("/document");
-const CONFIG=${payload};
+const { FileSystemApi }=require("/fs.js");
 
 function toArray(c){
   if(!c)return [];
@@ -64,6 +76,12 @@ function joinPath(a,b){
   if(!docs.length&&Document.current)docs=[Document.current];
   if(!docs.length)throw new Error("Không có document nào đang mở.");
 
+  const desktop=app.userDesktopPath||app.getUserDesktopPath;
+  if(!desktop)throw new Error("Không lấy được Desktop path.");
+
+  const stagingFolder=joinPath(String(desktop),${JSON.stringify(stagingName)});
+  FileSystemApi.createDirectories(stagingFolder);
+
   const report=[];
   const used={};
 
@@ -72,27 +90,19 @@ function joinPath(a,b){
     let title="";
     try{title=String(doc.title||doc.name||("Document "+(i+1)));}catch(_){title="Document "+(i+1);}
     const filename=cleanName(title);
-    const out=joinPath(CONFIG.destination,filename);
+    const out=joinPath(stagingFolder,filename);
 
-    if(used[out]){
+    if(used[filename]){
       report.push({title,status:"ERROR",reason:"Trùng tên output: "+filename});
       continue;
     }
-    used[out]=true;
+    used[filename]=true;
 
     try{
       if(typeof doc.saveAs!=="function"){
-        const candidates=[];
-        for(const k of ["saveAs","save","saveTo","saveCopyAs","saveCopy"]){
-          try{if(typeof doc[k]==="function")candidates.push(k);}catch(_){}
-        }
-        report.push({
-          title,status:"ERROR",
-          reason:"Affinity scripting hiện không expose doc.saveAs(path). Save candidates: "+(candidates.join(", ")||"(none)")
-        });
+        report.push({title,status:"ERROR",reason:"doc.saveAs không khả dụng"});
         continue;
       }
-
       doc.saveAs(out);
       report.push({title,status:"OK",filename,path:out});
     }catch(e){
@@ -100,7 +110,9 @@ function joinPath(a,b){
     }
   }
 
-  console.log("__PHONG_SAVE_AFDESIGN__"+JSON.stringify({destination:CONFIG.destination,total:docs.length,report}));
+  console.log("__PHONG_SAVE_AFDESIGN__"+JSON.stringify({
+    stagingFolder,total:docs.length,report
+  }));
 })();
 `;
 
@@ -114,22 +126,45 @@ function joinPath(a,b){
     const line=output.split(/\r?\n/).find(x=>x.includes(marker));
     if(!line)throw new Error("Affinity không trả save report.\n"+output);
 
-    const report=JSON.parse(line.slice(line.indexOf(marker)+marker.length));
-    console.log("\nSAVE ALL OPEN DOCS -> AFDESIGN");
-    console.log("Folder: "+report.destination);
+    const payload=JSON.parse(line.slice(line.indexOf(marker)+marker.length));
+    if(!payload.stagingFolder)throw new Error("Không nhận được staging folder.");
 
-    let ok=0,err=0;
-    for(const r of report.report){
-      if(r.status==="OK"){
-        ok++;
-        console.log("[OK] "+r.filename);
-      }else{
-        err++;
-        console.log("[ERROR] "+r.title+" | "+r.reason);
+    let moved=0;
+    const moveErrors=[];
+
+    for(const r of payload.report){
+      if(r.status!=="OK")continue;
+      const source=path.join(payload.stagingFolder,r.filename);
+      const target=path.join(destination,r.filename);
+      try{
+        if(fs.existsSync(target)){
+          moveErrors.push(r.filename+" | file đích đã tồn tại");
+          continue;
+        }
+        await moveFileCrossDrive(source,target);
+        moved++;
+      }catch(e){
+        moveErrors.push(r.filename+" | "+(e?.message||String(e)));
       }
     }
-    console.log("\nSUCCESS: "+ok+" ERROR: "+err+" TOTAL: "+report.total);
-    if(err)process.exitCode=1;
+
+    const remaining=await fs.promises.readdir(payload.stagingFolder).catch(()=>[]);
+    if(!remaining.length)await fs.promises.rmdir(payload.stagingFolder).catch(()=>{});
+
+    console.log("\nSAVE ALL OPEN DOCS -> AFDESIGN");
+    console.log("Folder: "+destination);
+    for(const r of payload.report){
+      if(r.status==="OK")console.log("[OK] "+r.filename);
+      else console.log("[ERROR] "+r.title+" | "+r.reason);
+    }
+    if(moveErrors.length){
+      console.log("\nMOVE ERRORS:");
+      for(const x of moveErrors)console.log("- "+x);
+    }
+
+    const affinityErrors=payload.report.filter(r=>r.status!=="OK").length;
+    console.log("\nSAVED: "+moved+" / "+payload.total);
+    if(affinityErrors||moveErrors.length)process.exitCode=1;
   }finally{
     try{await client.close();}catch(_){}
   }
