@@ -104,7 +104,15 @@ function joinPath(a,b){
         continue;
       }
       if(typeof doc.saveAsAsync==="function"){
-        await doc.saveAsAsync(out);
+        await new Promise(function(resolve,reject){
+          try{
+            doc.saveAsAsync(out,function(result){
+              resolve(result);
+            });
+          }catch(e){
+            reject(e);
+          }
+        });
       }else{
         doc.saveAs(out);
       }
