@@ -60,14 +60,14 @@ async function main(){
     items:source.items
   });
 
-  const script=\`
+  const script=String.raw`
 "use strict";
 const { Document } = require("/document");
 const { Selection, TextSelection } = require("/selections");
 const { StoryRange, StoryIoFormat } = require("affinity:story");
 const { DocumentCommand } = require("/commands");
 
-const CONFIG=\${payload};
+const CONFIG=${payload};
 
 function toArray(c){
   if(!c) return [];
@@ -435,7 +435,7 @@ function postValidate(plan){
     totalOpen:docs.length,success,error,skipped,report
   }));
 })();
-\`;
+`;
 
   let result;
   try{
