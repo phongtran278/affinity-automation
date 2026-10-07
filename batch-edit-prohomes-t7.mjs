@@ -381,13 +381,35 @@ function buildPlan(doc,row,stt){
       paidHandled=true;
     }
   }
+
+  // Structural fallback for PDF imports that lose the "Đã thanh toán" label:
+  // the paid amount sits immediately before the Tổng phụ/VAT summary block.
+  if(!paidHandled){
+    let summaryIdx=-1;
+    for(let i=0;i<texts.length;i++){
+      if(/tổng phụ/i.test(texts[i])){
+        summaryIdx=i;
+        break;
+      }
+    }
+    if(summaryIdx>0){
+      for(let i=summaryIdx-1;i>=Math.max(0,summaryIdx-3);i--){
+        if(moneyOnly(texts[i])){
+          replaceOnlyMoney(plan,nodes[i],texts[i],row.total,"paid");
+          paidHandled=true;
+          break;
+        }
+      }
+    }
+  }
+
   if(!paidHandled) throw new Error("Không tìm thấy tiền Đã thanh toán.");
 
   let subtotalIdx=-1,vatIdx=-1,totalIdx=-1;
   for(let i=0;i<texts.length;i++){
-    if(/^Tổng phụ\s*:/i.test(texts[i])) subtotalIdx=i;
-    if(/^VAT\s*:/i.test(texts[i])) vatIdx=i;
-    if(/^Tổng thanh toán\s*:/i.test(texts[i])) totalIdx=i;
+    if(/Tổng phụ\s*:/i.test(texts[i])) subtotalIdx=i;
+    if(/\bVAT\s*:/i.test(texts[i])) vatIdx=i;
+    if(/Tổng thanh toán\s*:/i.test(texts[i])) totalIdx=i;
   }
   if(subtotalIdx<0) throw new Error("Không tìm thấy Tổng phụ.");
   if(vatIdx<0) throw new Error("Không tìm thấy VAT.");
