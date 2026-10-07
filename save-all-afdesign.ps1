@@ -73,13 +73,21 @@ for ($i=0; $i -lt $docs.Count; $i++) {
 
   # Open Affinity Save As.
   [System.Windows.Forms.SendKeys]::SendWait("^+s")
-  Start-Sleep -Milliseconds 850
+  Start-Sleep -Milliseconds 900
 
-  # Focus File name field, paste full path through clipboard (Unicode-safe), save.
+  # Navigate the dialog to destination folder first.
+  [System.Windows.Forms.SendKeys]::SendWait("^l")
+  Start-Sleep -Milliseconds 150
+  [System.Windows.Forms.Clipboard]::SetText($Destination)
+  [System.Windows.Forms.SendKeys]::SendWait("^v")
+  [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
+  Start-Sleep -Milliseconds 500
+
+  # Then type ONLY the file name, never the full path.
   [System.Windows.Forms.SendKeys]::SendWait("%n")
-  Start-Sleep -Milliseconds 120
-  [System.Windows.Forms.Clipboard]::SetText($target)
+  Start-Sleep -Milliseconds 150
   [System.Windows.Forms.SendKeys]::SendWait("^a")
+  [System.Windows.Forms.Clipboard]::SetText($filename)
   [System.Windows.Forms.SendKeys]::SendWait("^v")
   Start-Sleep -Milliseconds 120
   [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
