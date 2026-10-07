@@ -66,6 +66,15 @@ function cleanName(s){
   s=s.replace(/\.(pdf|afdesign)$/i,"");
   return s+".afdesign";
 }
+function makeAsciiOutputName(title,index){
+  const s=String(title||"");
+  const tx=(s.match(/\b(\d{10,}-\d{10,})\b/)||[])[1]||("doc-"+String(index+1).padStart(2,"0"));
+  const dt=(s.match(/\b(20\d{2}-\d{2}-\d{2}T\d{2}-\d{2})\b/)||[])[1];
+  const stt=(s.match(/^\s*(\d{1,2})\s*[-_]/)||[])[1];
+  if(stt) return String(stt).padStart(2,"0")+"_"+tx+".afdesign";
+  if(dt) return dt+"_"+tx+".afdesign";
+  return tx+".afdesign";
+}
 function joinPath(a,b){
   return a+(a.endsWith("\\")||a.endsWith("/")?"":"\\")+b;
 }
@@ -89,8 +98,9 @@ function joinPath(a,b){
     const doc=docs[i];
     let title="";
     try{title=String(doc.title||doc.name||("Document "+(i+1)));}catch(_){title="Document "+(i+1);}
-    const filename=cleanName(title);
-    const out=joinPath(stagingFolder,filename);
+    const filename=makeAsciiOutputName(title,i);
+    const stagingFilename="doc_"+String(i+1).padStart(2,"0")+".afdesign";
+    const out=joinPath(stagingFolder,stagingFilename);
 
     if(used[filename]){
       report.push({title,status:"ERROR",reason:"Trùng tên output: "+filename});
@@ -121,11 +131,11 @@ function joinPath(a,b){
         report.push({
           title,status:"ERROR",
           reason:"SAVE_RETURNED_BUT_FILE_NOT_CREATED",
-          filename,path:out,currentPath
+          filename,stagingFilename,path:out,currentPath
         });
         continue;
       }
-      report.push({title,status:"OK",filename,path:out});
+      report.push({title,status:"OK",filename,stagingFilename,path:out});
     }catch(e){
       report.push({title,status:"ERROR",reason:e&&e.message?e.message:String(e),filename,path:out});
     }
@@ -157,7 +167,7 @@ function joinPath(a,b){
 
     for(const r of payload.report){
       if(r.status!=="OK")continue;
-      const source=path.join(payload.stagingFolder,r.filename);
+      const source=path.join(payload.stagingFolder,r.stagingFilename||r.filename);
       const target=path.join(destination,r.filename);
       try{
         if(fs.existsSync(target)){
