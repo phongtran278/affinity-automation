@@ -91,18 +91,50 @@ function replaceRange(doc,node,begin,end,newText){
   sel.addSubSelectionForNode(node,textSel);
   doc.executeCommand(DocumentCommand.createSetText(sel,newText));
 }
+function docIdentityCandidates(doc){
+  const vals=[];
+  const push=function(label,v){
+    try{
+      if(v===undefined||v===null) return;
+      const s=String(v);
+      if(s&&s!=="undefined"&&s!=="null") vals.push({label,value:s});
+    }catch(_){}
+  };
+  try{push("name",doc.name);}catch(_){}
+  try{push("title",doc.title);}catch(_){}
+  try{push("path",doc.path);}catch(_){}
+  try{push("filePath",doc.filePath);}catch(_){}
+  try{push("sourcePath",doc.sourcePath);}catch(_){}
+  try{push("sourceFilePath",doc.sourceFilePath);}catch(_){}
+  try{push("uri",doc.uri);}catch(_){}
+  try{push("iri",doc.iri);}catch(_){}
+  try{
+    if(doc.file){
+      push("file",doc.file);
+      push("file.path",doc.file.path);
+      push("file.name",doc.file.name);
+    }
+  }catch(_){}
+  return vals;
+}
 function getDocName(doc){
-  try{return String(doc.name||"");}catch(_){}
-  try{return String(doc.title||"");}catch(_){}
-  return "";
+  const vals=docIdentityCandidates(doc);
+  return vals.length?vals[0].value:"";
 }
 function parseStt(doc){
-  const name=getDocName(doc);
-  let m=name.match(/^(\\d{1,2})\\s*-\\s*/);
-  if(m) return Number(m[1]);
+  const vals=docIdentityCandidates(doc);
+  for(const x of vals){
+    const normalized=String(x.value).replace(/\\\\/g,"/");
+    const base=normalized.split("/").pop()||normalized;
+    let m=base.match(/^(\\d{1,2})\\s*-\\s*/);
+    if(m) return {stt:Number(m[1]),source:x.label,value:x.value};
+    m=normalized.match(/(?:^|[\\\\/])(\\d{1,2})\\s*-\\s*/);
+    if(m) return {stt:Number(m[1]),source:x.label,value:x.value};
+  }
   const text=allTextNodes(doc).map(getRawText).join("\\n");
-  m=text.match(/(?:^|\\n)\\s*(\\d{1,2})\\s*-\\s*/);
-  return m?Number(m[1]):null;
+  const m=text.match(/(?:^|\\n)\\s*(\\d{1,2})\\s*-\\s*/);
+  if(m) return {stt:Number(m[1]),source:"documentText",value:m[0]};
+  return {stt:null,source:null,value:null,identity:vals};
 }
 function formatInvoiceDate(ts){
   const m=String(ts).match(/^(\\d{4})-(\\d{2})-(\\d{2})[ T](\\d{2}):(\\d{2})/);
@@ -239,9 +271,19 @@ function commitPlan(doc,plan){
   for(let i=0;i<docs.length;i++){
     const doc=docs[i];
     const name=getDocName(doc);
-    let stt=null;
-    try{stt=parseStt(doc);}catch(_){}
-    if(!(stt>=1&&stt<=42)){skipped++;report.push({document:name,status:"SKIPPED",reason:"outside batch / no STT"});continue;}
+    let parsed={stt:null,identity:[]};
+    try{parsed=parseStt(doc);}catch(_){}
+    const stt=parsed.stt;
+    if(!(stt>=1&&stt<=42)){
+      skipped++;
+      report.push({
+        document:name,
+        status:"SKIPPED",
+        reason:"outside batch / no STT",
+        identity:parsed.identity||[]
+      });
+      continue;
+    }
     if(seen[stt]){error++;report.push({stt,status:"ERROR",reason:"duplicate STT",document:name});continue;}
     seen[stt]=true;
 
@@ -259,6 +301,8 @@ function commitPlan(doc,plan){
       report.push({
         stt,
         document:name,
+        matchedBy:parsed.source,
+        matchedValue:parsed.value,
         status:"OK",
         mode:CONFIG.dryRun?"DRY RUN":"COMMIT",
         replacements:built.plan.map(function(r){return {type:r.type,old:r.oldText,new:r.newText};}),
@@ -297,8 +341,14 @@ function commitPlan(doc,plan){
   const report=JSON.parse(line.slice(line.indexOf(marker)+marker.length));
   console.log("\nBATCH 01-42 | "+report.mode);
   for(const r of report.report){
-    const label=r.stt?("STT "+pad2(r.stt)):r.document;
+    const label=r.stt?("STT "+pad2(r.stt)):(r.document||"(unnamed document)");
     console.log(label+" ["+r.status+(r.reason?": "+r.reason:"")+"]");
+    if(r.status==="SKIPPED"&&Array.isArray(r.identity)&&r.identity.length){
+      console.log("  identity: "+r.identity.map(x=>x.label+"="+x.value).join(" | "));
+    }
+    if(r.status==="OK"&&r.matchedBy){
+      console.log("  matched by: "+r.matchedBy+" -> "+r.matchedValue);
+    }
   }
   console.log("\nSUCCESS: "+report.success+" ERROR: "+report.error+" SKIPPED: "+report.skipped);
 
