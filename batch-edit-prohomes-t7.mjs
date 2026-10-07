@@ -529,7 +529,7 @@ function postValidate(plan){
 
         console.log("  campaigns: "+r.campaigns+" | ad groups: "+r.adGroups+" | impressions updated: "+r.impressionsUpdated);
         console.log("  validation: "+r.validation);
-      }      }
+      }
     }
   }
   console.log("\nSUCCESS: "+report.success+" ERROR: "+report.error+" SKIPPED: "+report.skipped);
