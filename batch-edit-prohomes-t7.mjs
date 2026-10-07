@@ -188,6 +188,22 @@ function replaceOnlyMoney(plan,node,text,value,type,meta){
   const t=toks[0];
   addPlan(plan,node,t.begin,t.end,t.text,formatMoneyLike(t.text,value),type,meta);
 }
+function firstMoneyAfterLabel(text,labelRe){
+  const lm=String(text).match(labelRe);
+  if(!lm) return null;
+  const start=lm.index+lm[0].length;
+  const toks=moneyTokens(String(text).slice(start));
+  if(!toks.length) return null;
+  const t=toks[0];
+  return {begin:start+t.begin,end:start+t.end,text:t.text};
+}
+function paragraphNameRangeBefore(text,end){
+  let e=end;
+  while(e>0 && /[\s\u2028\u2029]/.test(text[e-1])) e--;
+  let s=e;
+  while(s>0 && !/[\r\n\u2028\u2029]/.test(text[s-1])) s--;
+  return {begin:s,end:e,text:text.slice(s,e)};
+}
 function findExactLabel(texts,label){
   const hits=[];
   for(let i=0;i<texts.length;i++) if(texts[i].trim().toLowerCase()===label.toLowerCase()) hits.push(i);
@@ -220,38 +236,58 @@ function campaignName(stt,idx){
   return base+sep+aud+sep+month;
 }
 function parseCampaigns(nodes,texts,existingSubtotal){
-  const dateRe=/^Từ\s+00:00\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}\s+đến\s+\d{1,2}:\d{2}\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}$/i;
-  const dates=[];
-  for(let i=0;i<texts.length;i++) if(dateRe.test(texts[i].trim())) dates.push(i);
-  if(!dates.length) throw new Error("Không tìm thấy campaign date range.");
+  const dateRe=/Từ\s+00:00\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}\s+đến\s+\d{1,2}:\d{2}\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}/i;
+  const hits=[];
+  for(let i=0;i<texts.length;i++){
+    const m=texts[i].match(dateRe);
+    if(m) hits.push({idx:i,begin:m.index,end:m.index+m[0].length,text:m[0]});
+  }
+  if(!hits.length) throw new Error("Không tìm thấy campaign date range.");
 
   const campaigns=[];
-  for(let ci=0;ci<dates.length;ci++){
-    const d=dates[ci];
-    const nameIdx=d-1;
+  for(let ci=0;ci<hits.length;ci++){
+    const h=hits[ci];
+    const d=h.idx;
+    const mergedNameDate=texts[d].trim()!==h.text.trim();
+
+    let nameIdx,nameBegin,nameEnd,nameText,startIdx;
+    if(mergedNameDate){
+      const nr=paragraphNameRangeBefore(texts[d],h.begin);
+      if(!nr.text.trim()) throw new Error("Không tìm thấy campaign name trước date range tại node "+d);
+      nameIdx=d;
+      nameBegin=nr.begin;
+      nameEnd=nr.end;
+      nameText=nr.text;
+      startIdx=d;
+    }else{
+      nameIdx=d-1;
+      if(nameIdx<0) throw new Error("Campaign name out of bounds.");
+      nameBegin=0;
+      nameEnd=texts[nameIdx].length;
+      nameText=texts[nameIdx];
+      startIdx=nameIdx;
+    }
+
     const amountIdx=d+1;
-    if(nameIdx<0||amountIdx>=texts.length) throw new Error("Campaign structure out of bounds.");
-    if(!moneyOnly(texts[amountIdx])) throw new Error("Campaign amount không nằm ngay sau date range tại node "+amountIdx);
+    if(amountIdx>=texts.length || !moneyOnly(texts[amountIdx])) throw new Error("Campaign amount không nằm ngay sau date range tại node "+amountIdx);
     const oldSpend=normalizeMoney(texts[amountIdx]);
     if(!(oldSpend>0)) throw new Error("Campaign old spend <= 0 tại node "+amountIdx);
 
-    const nextNameIdx=ci+1<dates.length ? dates[ci+1]-1 : texts.length;
+    const nextStart=ci+1<hits.length
+      ? (texts[hits[ci+1].idx].trim()!==hits[ci+1].text.trim() ? hits[ci+1].idx : hits[ci+1].idx-1)
+      : texts.length;
+
     const groups=[];
     let k=amountIdx+1;
-    while(k<nextNameIdx){
+    while(k<nextStart){
       const impIdx=k+1, spendIdx=k+2;
-
-      // End of campaign section: footer/company text begins after the last ad group.
-      if(spendIdx>=nextNameIdx) break;
+      if(spendIdx>=nextStart) break;
 
       const imp=parseImpression(texts[impIdx]);
       const spendOk=moneyOnly(texts[spendIdx]);
 
       if(!imp || !spendOk){
-        // For the final campaign, stop cleanly when we reach footer/legal text.
-        if(ci===dates.length-1) break;
-
-        // Before another campaign, structure must remain exact.
+        if(ci===hits.length-1) break;
         throw new Error("Ad group structure không đúng tại nodes "+k+"/"+impIdx+"/"+spendIdx);
       }
 
@@ -260,11 +296,19 @@ function parseCampaigns(nodes,texts,existingSubtotal){
       groups.push({nameIdx:k,impIdx,spendIdx,oldImpressions:imp.value,oldGroupSpend,imp});
       k+=3;
     }
+
     if(!groups.length) throw new Error("Campaign "+(ci+1)+" không có ad group.");
     const groupSum=groups.reduce((s,g)=>s+g.oldGroupSpend,0);
     if(groupSum!==oldSpend) throw new Error("Ad group sum mismatch campaign "+(ci+1)+": "+groupSum+" != "+oldSpend);
-    campaigns.push({index:ci,nameIdx,dateIdx:d,amountIdx,oldSpend,groups});
+
+    campaigns.push({
+      index:ci,
+      nameIdx,nameBegin,nameEnd,nameText,
+      dateIdx:d,dateBegin:h.begin,dateEnd:h.end,dateText:h.text,
+      amountIdx,oldSpend,groups,startIdx
+    });
   }
+
   const campaignSum=campaigns.reduce((s,x)=>s+x.oldSpend,0);
   if(campaignSum!==existingSubtotal) throw new Error("Campaign sum mismatch subtotal: "+campaignSum+" != "+existingSubtotal);
   return campaigns;
@@ -354,82 +398,73 @@ function buildPlan(doc,row,stt){
   if(!dateHit) throw new Error("Không tìm thấy invoice date.");
   addPlan(plan,nodes[dateHit.idx],dateHit.begin,dateHit.end,dateHit.text,formatInvoiceDate(row.timestamp),"invoiceDate");
 
-  // Paid amount: first prefer the label relationship, then merged label+amount text.
+  // Summary block supports both separate nodes and one merged PDF text node.
   let paidHandled=false;
-  const paidLabelHits=[];
   for(let i=0;i<texts.length;i++){
-    if(texts[i].trim().toLowerCase()==="đã thanh toán") paidLabelHits.push(i);
-  }
-  if(paidLabelHits.length===1){
-    const paidIdx=paidLabelHits[0]+1;
-    if(paidIdx<texts.length && moneyOnly(texts[paidIdx])){
-      replaceOnlyMoney(plan,nodes[paidIdx],texts[paidIdx],row.total,"paid");
+    const t=firstMoneyAfterLabel(texts[i],/đã thanh toán/i);
+    if(t){
+      addPlan(plan,nodes[i],t.begin,t.end,t.text,formatMoneyLike(t.text,row.total),"paid");
       paidHandled=true;
+      break;
     }
   }
   if(!paidHandled){
-    const mergedPaid=[];
-    for(let i=0;i<texts.length;i++){
-      if(/đã thanh toán/i.test(texts[i])){
-        const toks=moneyTokens(texts[i]);
-        if(toks.length===1) mergedPaid.push({idx:i,tok:toks[0]});
-      }
-    }
-    if(mergedPaid.length===1){
-      const h=mergedPaid[0];
-      addPlan(plan,nodes[h.idx],h.tok.begin,h.tok.end,h.tok.text,formatMoneyLike(h.tok.text,row.total),"paid");
-      paidHandled=true;
-    }
-  }
-
-  // Structural fallback for PDF imports that lose the "Đã thanh toán" label:
-  // the paid amount sits immediately before the Tổng phụ/VAT summary block.
-  if(!paidHandled){
-    let summaryIdx=-1;
-    for(let i=0;i<texts.length;i++){
-      if(/tổng phụ/i.test(texts[i])){
-        summaryIdx=i;
+    for(let i=0;i<texts.length-1;i++){
+      if(texts[i].trim().toLowerCase()==="đã thanh toán" && moneyOnly(texts[i+1])){
+        replaceOnlyMoney(plan,nodes[i+1],texts[i+1],row.total,"paid");
+        paidHandled=true;
         break;
       }
     }
-    if(summaryIdx>0){
-      for(let i=summaryIdx-1;i>=Math.max(0,summaryIdx-3);i--){
-        if(moneyOnly(texts[i])){
-          replaceOnlyMoney(plan,nodes[i],texts[i],row.total,"paid");
-          paidHandled=true;
-          break;
-        }
+  }
+  if(!paidHandled) throw new Error("Không tìm thấy tiền Đã thanh toán.");
+
+  let subtotalHit=null,vatHit=null,totalHit=null;
+  for(let i=0;i<texts.length;i++){
+    if(!subtotalHit){
+      const t=firstMoneyAfterLabel(texts[i],/tổng phụ\s*:/i);
+      if(t) subtotalHit={idx:i,tok:t};
+    }
+    if(!vatHit){
+      const t=firstMoneyAfterLabel(texts[i],/\bVAT\s*:/i);
+      if(t) vatHit={idx:i,tok:t};
+    }
+    if(!totalHit){
+      const t=firstMoneyAfterLabel(texts[i],/tổng thanh toán\s*:/i);
+      if(t) totalHit={idx:i,tok:t};
+    }
+  }
+
+  // Legacy separate-node fallback.
+  if(!subtotalHit || !vatHit){
+    for(let i=0;i<texts.length;i++){
+      if(!subtotalHit && /^Tổng phụ\s*:/i.test(texts[i])){
+        const toks=moneyTokens(texts[i]);
+        if(toks.length===1) subtotalHit={idx:i,tok:toks[0]};
+      }
+      if(!vatHit && /^VAT\s*:/i.test(texts[i])){
+        const toks=moneyTokens(texts[i]);
+        if(toks.length===1) vatHit={idx:i,tok:toks[0]};
       }
     }
   }
 
-  if(!paidHandled) throw new Error("Không tìm thấy tiền Đã thanh toán.");
+  if(!subtotalHit) throw new Error("Không tìm thấy Tổng phụ.");
+  if(!vatHit) throw new Error("Không tìm thấy VAT.");
 
-  let subtotalIdx=-1,vatIdx=-1,totalIdx=-1;
-  for(let i=0;i<texts.length;i++){
-    if(/Tổng phụ\s*:/i.test(texts[i])) subtotalIdx=i;
-    if(/\bVAT\s*:/i.test(texts[i])) vatIdx=i;
-    if(/Tổng thanh toán\s*:/i.test(texts[i])) totalIdx=i;
-  }
-  if(subtotalIdx<0) throw new Error("Không tìm thấy Tổng phụ.");
-  if(vatIdx<0) throw new Error("Không tìm thấy VAT.");
-
-  const oldSubtotalToken=moneyTokens(texts[subtotalIdx]);
-  if(oldSubtotalToken.length!==1) throw new Error("Tổng phụ không có đúng 1 money token.");
-  const existingSubtotal=normalizeMoney(oldSubtotalToken[0].text);
+  const existingSubtotal=normalizeMoney(subtotalHit.tok.text);
   if(!(existingSubtotal>0)) throw new Error("Existing subtotal <= 0.");
 
-  replaceOnlyMoney(plan,nodes[subtotalIdx],texts[subtotalIdx],row.subtotal,"subtotal");
-  replaceOnlyMoney(plan,nodes[vatIdx],texts[vatIdx],row.vat,"vat");
-  if(totalIdx>=0) replaceOnlyMoney(plan,nodes[totalIdx],texts[totalIdx],row.total,"total");
+  addPlan(plan,nodes[subtotalHit.idx],subtotalHit.tok.begin,subtotalHit.tok.end,subtotalHit.tok.text,formatMoneyLike(subtotalHit.tok.text,row.subtotal),"subtotal");
+  addPlan(plan,nodes[vatHit.idx],vatHit.tok.begin,vatHit.tok.end,vatHit.tok.text,formatMoneyLike(vatHit.tok.text,row.vat),"vat");
+  if(totalHit){
+    addPlan(plan,nodes[totalHit.idx],totalHit.tok.begin,totalHit.tok.end,totalHit.tok.text,formatMoneyLike(totalHit.tok.text,row.total),"total");
+  }
 
   let thresholdHits=0;
   for(let i=0;i<texts.length;i++){
-    const text=texts[i];
-    if(/ngưỡng thanh toán/i.test(text)){
-      const toks=moneyTokens(text);
-      if(toks.length!==1) throw new Error("Ngưỡng thanh toán: expected exactly 1 money token, got "+toks.length);
-      const t=toks[0];
+    const t=firstMoneyAfterLabel(texts[i],/ngưỡng thanh toán/i);
+    if(t){
       addPlan(plan,nodes[i],t.begin,t.end,t.text,formatMoneyLike(t.text,row.subtotal),"paymentThreshold");
       thresholdHits++;
     }
@@ -445,8 +480,8 @@ function buildPlan(doc,row,stt){
     const camp=campaigns[ci];
     const newCampSpend=newCampaignSpends[ci];
 
-    addPlan(plan,nodes[camp.nameIdx],0,texts[camp.nameIdx].length,texts[camp.nameIdx],campaignName(stt,ci),"campaignName",{campaign:ci+1});
-    addPlan(plan,nodes[camp.dateIdx],0,texts[camp.dateIdx].length,texts[camp.dateIdx],rangeText,"campaignDate",{campaign:ci+1});
+    addPlan(plan,nodes[camp.nameIdx],camp.nameBegin,camp.nameEnd,camp.nameText,campaignName(stt,ci),"campaignName",{campaign:ci+1});
+    addPlan(plan,nodes[camp.dateIdx],camp.dateBegin,camp.dateEnd,camp.dateText,rangeText,"campaignDate",{campaign:ci+1});
     replaceOnlyMoney(plan,nodes[camp.amountIdx],texts[camp.amountIdx],newCampSpend,"campaignSpend",{campaign:ci+1});
 
     const newGroupSpends=allocation(newCampSpend,camp.groups.map(g=>g.oldGroupSpend));
