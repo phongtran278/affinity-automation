@@ -239,11 +239,21 @@ function parseCampaigns(nodes,texts,existingSubtotal){
     let k=amountIdx+1;
     while(k<nextNameIdx){
       const impIdx=k+1, spendIdx=k+2;
-      if(spendIdx>=nextNameIdx) throw new Error("Ad group structure thiếu node tại campaign "+(ci+1));
+
+      // End of campaign section: footer/company text begins after the last ad group.
+      if(spendIdx>=nextNameIdx) break;
+
       const imp=parseImpression(texts[impIdx]);
-      if(!imp || !moneyOnly(texts[spendIdx])){
+      const spendOk=moneyOnly(texts[spendIdx]);
+
+      if(!imp || !spendOk){
+        // For the final campaign, stop cleanly when we reach footer/legal text.
+        if(ci===dates.length-1) break;
+
+        // Before another campaign, structure must remain exact.
         throw new Error("Ad group structure không đúng tại nodes "+k+"/"+impIdx+"/"+spendIdx);
       }
+
       const oldGroupSpend=normalizeMoney(texts[spendIdx]);
       if(!(oldGroupSpend>0)) throw new Error("oldGroupSpend <= 0 tại node "+spendIdx);
       groups.push({nameIdx:k,impIdx,spendIdx,oldImpressions:imp.value,oldGroupSpend,imp});
