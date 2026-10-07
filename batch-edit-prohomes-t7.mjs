@@ -472,6 +472,20 @@ function postValidate(plan){
     }
     if(r.status==="OK"&&r.matchedBy){
       console.log("  matched by: "+r.matchedBy+" -> "+r.matchedValue);
+      if(Array.isArray(r.replacements)){
+        const priority=["transactionId","invoiceDate","paid","subtotal","vat","total","campaignName","campaignDate","campaignSpend","adGroupSpend","impressions"];
+        const ordered=r.replacements.slice().sort(function(a,b){
+          return priority.indexOf(a.type)-priority.indexOf(b.type);
+        });
+        for(const x of ordered){
+          const meta=x.meta
+            ? " ["+(x.meta.campaign?"C"+x.meta.campaign:"")+(x.meta.adGroup?"/G"+x.meta.adGroup:"")+"]"
+            : "";
+          console.log("  "+x.type+meta+": "+x.old+" -> "+x.new);
+        }
+        console.log("  campaigns: "+r.campaigns+" | ad groups: "+r.adGroups+" | impressions updated: "+r.impressionsUpdated);
+        console.log("  validation: "+r.validation);
+      }
     }
   }
   console.log("\nSUCCESS: "+report.success+" ERROR: "+report.error+" SKIPPED: "+report.skipped);
