@@ -76,6 +76,65 @@ run-batch-t7-commit.bat
 
 ---
 
+## T7 stable baseline
+
+T7/2026 is the current stable reference implementation for future monthly batches.
+
+### Stable components
+
+- Data source: `data/prohomes-t7-2026.json`
+- Main editor: `batch-edit-prohomes-t7.mjs`
+- Main launcher: `run-batch-t7.bat`
+- Dry-run compatibility launcher: `run-batch-t7-dry-run.bat`
+- Commit alias: `run-batch-t7-commit.bat`
+
+### What is already validated
+
+- transaction ID replacement;
+- invoice date replacement;
+- paid amount, subtotal, VAT, total and payment-threshold handling;
+- campaign spend redistribution;
+- ad-group spend redistribution;
+- impression scaling;
+- campaign date generation;
+- deterministic T7 campaign naming;
+- invoice-number replacement;
+- support for both separated PDF text nodes and merged PDF text nodes across different Affinity environments;
+- fail-safe DRY RUN before commit.
+
+### Invoice number rule
+
+T7 keeps real invoice anchors unchanged and uses the agreed simulation/interpolation rule for synthetic rows under the `FBADS-179-` prefix.
+
+The authoritative per-row invoice number is stored in `data/prohomes-t7-2026.json`.
+
+### Safety rule
+
+Treat T7 as a frozen baseline once it is working for production.
+
+For T8/T9:
+
+- clone the T7 logic into new month-specific files;
+- create new month-specific JSON data;
+- create new month-specific launchers;
+- avoid changing T7 unless a regression or cross-machine compatibility issue is confirmed.
+
+Recommended naming:
+
+```text
+data/prohomes-t8-2026.json
+batch-edit-prohomes-t8.mjs
+run-batch-t8.bat
+
+data/prohomes-t9-2026.json
+batch-edit-prohomes-t9.mjs
+run-batch-t9.bat
+```
+
+This keeps each month isolated and prevents a T8/T9 parser change from breaking the working T7 workflow.
+
+---
+
 ## 2. Faster batch Save As to .afdesign
 
 ### Recommended launcher
