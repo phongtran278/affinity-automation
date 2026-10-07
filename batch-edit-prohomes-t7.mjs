@@ -60,15 +60,14 @@ async function main(){
     items:source.items
   });
 
-  const script=`
+  const script=\`
 "use strict";
-const { app } = require("/application");
 const { Document } = require("/document");
 const { Selection, TextSelection } = require("/selections");
 const { StoryRange, StoryIoFormat } = require("affinity:story");
 const { DocumentCommand } = require("/commands");
 
-const CONFIG=${payload};
+const CONFIG=\${payload};
 
 function toArray(c){
   if(!c) return [];
@@ -107,7 +106,6 @@ function docIdentityCandidates(doc){
   try{push("sourcePath",doc.sourcePath);}catch(_){}
   try{push("sourceFilePath",doc.sourceFilePath);}catch(_){}
   try{push("uri",doc.uri);}catch(_){}
-  try{push("iri",doc.iri);}catch(_){}
   try{
     if(doc.file){
       push("file",doc.file);
@@ -119,6 +117,7 @@ function docIdentityCandidates(doc){
 }
 function getDocName(doc){
   const vals=docIdentityCandidates(doc);
+  for(const x of vals) if(x.label==="title") return x.value;
   return vals.length?vals[0].value:"";
 }
 function parseStt(doc){
@@ -126,26 +125,36 @@ function parseStt(doc){
   for(const x of vals){
     const normalized=String(x.value).replace(/\\\\/g,"/");
     const base=normalized.split("/").pop()||normalized;
-    let m=base.match(/^(\\d{1,2})\\s*-\\s*/);
-    if(m) return {stt:Number(m[1]),source:x.label,value:x.value};
-    m=normalized.match(/(?:^|[\\\\/])(\\d{1,2})\\s*-\\s*/);
+    let m=base.match(/^(\d{1,2})\s*-\s*/);
     if(m) return {stt:Number(m[1]),source:x.label,value:x.value};
   }
-  const text=allTextNodes(doc).map(getRawText).join("\\n");
-  const m=text.match(/(?:^|\\n)\\s*(\\d{1,2})\\s*-\\s*/);
-  if(m) return {stt:Number(m[1]),source:"documentText",value:m[0]};
   return {stt:null,source:null,value:null,identity:vals};
 }
-function formatInvoiceDate(ts){
-  const m=String(ts).match(/^(\\d{4})-(\\d{2})-(\\d{2})[ T](\\d{2}):(\\d{2})/);
+function timestampParts(ts){
+  const m=String(ts).match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/);
   if(!m) throw new Error("Timestamp invalid: "+ts);
-  return m[4]+":"+m[5]+" "+Number(m[3])+" tháng "+Number(m[2])+", "+m[1];
+  return {y:Number(m[1]),mo:Number(m[2]),d:Number(m[3]),hh:Number(m[4]),mm:Number(m[5])};
+}
+function formatInvoiceDate(ts){
+  const p=timestampParts(ts);
+  return pad2(p.hh)+":"+pad2(p.mm)+" "+p.d+" tháng "+p.mo+", "+p.y;
+}
+function campaignRange(ts,stt){
+  const p=timestampParts(ts);
+  const offset=3+((stt-1)%4);
+  const ms=Date.UTC(p.y,p.mo-1,p.d)-offset*86400000;
+  const s=new Date(ms);
+  return "Từ 00:00 "+s.getUTCDate()+" tháng "+(s.getUTCMonth()+1)+", "+s.getUTCFullYear()+
+    " đến "+pad2(p.hh)+":"+pad2(p.mm)+" "+p.d+" tháng "+p.mo+", "+p.y;
 }
 function moneyTokens(text){
-  const re=/\\b\\d{1,3}(?:(?:[., \\u00A0]\\d{3})+|\\d*)\\s*(?:₫|VND)\\b/gi;
+  const re=/\d[\d., \u00A0]*\s*(?:₫|VND)/gi;
   const out=[]; let m;
   while((m=re.exec(text))) out.push({begin:m.index,end:m.index+m[0].length,text:m[0]});
   return out;
+}
+function moneyOnly(text){
+  return /^\s*\d[\d., \u00A0]*\s*(?:₫|VND)\s*$/i.test(text);
 }
 function normalizeMoney(s){
   const digits=String(s).replace(/[^0-9]/g,"");
@@ -153,85 +162,185 @@ function normalizeMoney(s){
 }
 function formatMoneyLike(oldText,value){
   const suffix=/VND/i.test(oldText)?" VND":(/₫/.test(oldText)?" ₫":"");
-  const nbsp=oldText.includes("\\u00A0");
-  const sep=oldText.includes(".")?".":(oldText.includes(",")?",":(nbsp?"\\u00A0":" "));
-  const parts=String(value).replace(/\\B(?=(\\d{3})+(?!\\d))/g,sep);
-  return parts+suffix;
+  const nbsp=oldText.indexOf("\u00A0")>=0;
+  const sep=oldText.indexOf(".")>=0?".":(oldText.indexOf(",")>=0?",":(nbsp?"\u00A0":" "));
+  return String(value).replace(/\B(?=(\d{3})+(?!\d))/g,sep)+suffix;
 }
-function addExact(plan,node,text,oldText,newText,type,required){
-  const indexes=[]; let from=0;
-  while(true){
-    const i=text.indexOf(oldText,from);
-    if(i<0) break;
-    indexes.push(i); from=i+oldText.length;
-  }
-  if(required&&indexes.length!==1) throw new Error(type+": expected 1 match, got "+indexes.length);
-  if(indexes.length===1){
-    plan.push({node,begin:indexes[0],end:indexes[0]+oldText.length,oldText,newText,type});
-    return true;
-  }
-  return false;
+function parseImpression(text){
+  const m=String(text).match(/^\s*([\d., \u00A0]+)\s+(Số lần hiển thị|Lượt hiển thị)\s*$/i);
+  if(!m) return null;
+  const n=Number(m[1].replace(/[^0-9]/g,""));
+  return Number.isFinite(n)?{value:n,numText:m[1],label:m[2],begin:text.indexOf(m[1]),end:text.indexOf(m[1])+m[1].length}:null;
 }
-function buildPlan(doc,row){
+function formatIntegerLike(oldText,value){
+  const nbsp=oldText.indexOf("\u00A0")>=0;
+  const sep=oldText.indexOf(".")>=0?".":(oldText.indexOf(",")>=0?",":(oldText.indexOf(" ")>=0?" ":(nbsp?"\u00A0":".")));
+  return String(value).replace(/\B(?=(\d{3})+(?!\d))/g,sep);
+}
+function addPlan(plan,node,begin,end,oldText,newText,type,meta){
+  if(oldText===newText) return;
+  plan.push({node,begin,end,oldText,newText,type,meta:meta||null});
+}
+function replaceOnlyMoney(plan,node,text,value,type,meta){
+  const toks=moneyTokens(text);
+  if(toks.length!==1) throw new Error(type+": expected exactly 1 money token, got "+toks.length+" in ["+text+"]");
+  const t=toks[0];
+  addPlan(plan,node,t.begin,t.end,t.text,formatMoneyLike(t.text,value),type,meta);
+}
+function findExactLabel(texts,label){
+  const hits=[];
+  for(let i=0;i<texts.length;i++) if(texts[i].trim().toLowerCase()===label.toLowerCase()) hits.push(i);
+  if(hits.length!==1) throw new Error('Label "'+label+'" expected 1, got '+hits.length);
+  return hits[0];
+}
+function allocation(total,weights){
+  const sum=weights.reduce((a,b)=>a+b,0);
+  if(!(sum>0)) throw new Error("Allocation base <= 0");
+  const out=[]; let used=0;
+  for(let i=0;i<weights.length;i++){
+    const v=i===weights.length-1 ? total-used : Math.round(total*weights[i]/sum);
+    out.push(v); used+=v;
+  }
+  return out;
+}
+const NAME_BASE=["Vinhomes Cần Giờ","Vin Cần Giờ","VinCG","Vinhomes CG","Green Paradise","Vinhomes Green Paradise","Green Paradise Cần Giờ"];
+const NAME_MONTH=["T7","T7 26","T7 2026","Tháng 7 2026","07.2026","T7/2026"];
+const NAME_AUD=["Đầu tư","KH đầu tư","Nhà đầu tư","KH HCM","KH miền Nam","KH miền Bắc","Lead mới","Remarketing","Retarget","KH 35+","KH 40+","Mua ở","Mua ở + đầu tư","Quan tâm BĐS","Update"];
+const NAME_SEP=[" - "," | "," / ","_"," ","  "];
+function campaignName(stt,idx){
+  const base=NAME_BASE[(stt*7+idx*3)%NAME_BASE.length];
+  const month=NAME_MONTH[(stt*5+idx*2)%NAME_MONTH.length];
+  const aud=NAME_AUD[(stt*11+idx*5)%NAME_AUD.length];
+  const sep=NAME_SEP[(stt+idx)%NAME_SEP.length];
+  const mode=(stt+idx)%4;
+  if(mode===0) return base+sep+month;
+  if(mode===1) return base+sep+month+sep+aud;
+  if(mode===2) return base+" "+month+" "+aud;
+  return base+sep+aud+sep+month;
+}
+function parseCampaigns(nodes,texts,existingSubtotal){
+  const dateRe=/^Từ\s+00:00\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}\s+đến\s+\d{1,2}:\d{2}\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}$/i;
+  const dates=[];
+  for(let i=0;i<texts.length;i++) if(dateRe.test(texts[i].trim())) dates.push(i);
+  if(!dates.length) throw new Error("Không tìm thấy campaign date range.");
+
+  const campaigns=[];
+  for(let ci=0;ci<dates.length;ci++){
+    const d=dates[ci];
+    const nameIdx=d-1;
+    const amountIdx=d+1;
+    if(nameIdx<0||amountIdx>=texts.length) throw new Error("Campaign structure out of bounds.");
+    if(!moneyOnly(texts[amountIdx])) throw new Error("Campaign amount không nằm ngay sau date range tại node "+amountIdx);
+    const oldSpend=normalizeMoney(texts[amountIdx]);
+    if(!(oldSpend>0)) throw new Error("Campaign old spend <= 0 tại node "+amountIdx);
+
+    const nextNameIdx=ci+1<dates.length ? dates[ci+1]-1 : texts.length;
+    const groups=[];
+    let k=amountIdx+1;
+    while(k<nextNameIdx){
+      const impIdx=k+1, spendIdx=k+2;
+      if(spendIdx>=nextNameIdx) throw new Error("Ad group structure thiếu node tại campaign "+(ci+1));
+      const imp=parseImpression(texts[impIdx]);
+      if(!imp || !moneyOnly(texts[spendIdx])){
+        throw new Error("Ad group structure không đúng tại nodes "+k+"/"+impIdx+"/"+spendIdx);
+      }
+      const oldGroupSpend=normalizeMoney(texts[spendIdx]);
+      if(!(oldGroupSpend>0)) throw new Error("oldGroupSpend <= 0 tại node "+spendIdx);
+      groups.push({nameIdx:k,impIdx,spendIdx,oldImpressions:imp.value,oldGroupSpend,imp});
+      k+=3;
+    }
+    if(!groups.length) throw new Error("Campaign "+(ci+1)+" không có ad group.");
+    const groupSum=groups.reduce((s,g)=>s+g.oldGroupSpend,0);
+    if(groupSum!==oldSpend) throw new Error("Ad group sum mismatch campaign "+(ci+1)+": "+groupSum+" != "+oldSpend);
+    campaigns.push({index:ci,nameIdx,dateIdx:d,amountIdx,oldSpend,groups});
+  }
+  const campaignSum=campaigns.reduce((s,x)=>s+x.oldSpend,0);
+  if(campaignSum!==existingSubtotal) throw new Error("Campaign sum mismatch subtotal: "+campaignSum+" != "+existingSubtotal);
+  return campaigns;
+}
+function buildPlan(doc,row,stt){
   const nodes=allTextNodes(doc);
   if(!nodes.length) throw new Error("Không có text node.");
+  const texts=nodes.map(getRawText);
   const plan=[];
 
-  let idFound=false,dateFound=false;
-  for(const node of nodes){
-    const text=getRawText(node);
-    if(!idFound){
-      const m=text.match(/\\b\\d{10,}-\\d{10,}\\b/);
-      if(m){
-        plan.push({node,begin:m.index,end:m.index+m[0].length,oldText:m[0],newText:row.transactionId,type:"transactionId"});
-        idFound=true;
-      }
-    }
-    if(!dateFound){
-      const m=text.match(/\\b\\d{1,2}:\\d{2}\\s+\\d{1,2}\\s+tháng\\s+\\d{1,2},\\s+\\d{4}\\b/);
-      if(m){
-        plan.push({node,begin:m.index,end:m.index+m[0].length,oldText:m[0],newText:formatInvoiceDate(row.timestamp),type:"invoiceDate"});
-        dateFound=true;
-      }
+  const idLabel=findExactLabel(texts,"ID giao dịch");
+  const idIdx=idLabel+1;
+  if(idIdx>=texts.length || !/^\d{10,}-\d{10,}$/.test(texts[idIdx].trim())) throw new Error("Không tìm thấy ID giao dịch sau label.");
+  addPlan(plan,nodes[idIdx],0,texts[idIdx].length,texts[idIdx],row.transactionId,"transactionId");
+
+  const dateLabel=findExactLabel(texts,"Ngày lập hóa đơn/thanh toán");
+  const dateIdx=dateLabel+1;
+  if(dateIdx>=texts.length || !/^\d{1,2}:\d{2}\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}$/.test(texts[dateIdx].trim())) throw new Error("Không tìm thấy invoice date sau label.");
+  addPlan(plan,nodes[dateIdx],0,texts[dateIdx].length,texts[dateIdx],formatInvoiceDate(row.timestamp),"invoiceDate");
+
+  const paidLabel=findExactLabel(texts,"Đã thanh toán");
+  const paidIdx=paidLabel+1;
+  if(paidIdx>=texts.length || !moneyOnly(texts[paidIdx])) throw new Error("Không tìm thấy tiền Đã thanh toán sau label.");
+  replaceOnlyMoney(plan,nodes[paidIdx],texts[paidIdx],row.total,"paid");
+
+  let subtotalIdx=-1,vatIdx=-1,totalIdx=-1;
+  for(let i=0;i<texts.length;i++){
+    if(/^Tổng phụ\s*:/i.test(texts[i])) subtotalIdx=i;
+    if(/^VAT\s*:/i.test(texts[i])) vatIdx=i;
+    if(/^Tổng thanh toán\s*:/i.test(texts[i])) totalIdx=i;
+  }
+  if(subtotalIdx<0) throw new Error("Không tìm thấy Tổng phụ.");
+  if(vatIdx<0) throw new Error("Không tìm thấy VAT.");
+
+  const oldSubtotalToken=moneyTokens(texts[subtotalIdx]);
+  if(oldSubtotalToken.length!==1) throw new Error("Tổng phụ không có đúng 1 money token.");
+  const existingSubtotal=normalizeMoney(oldSubtotalToken[0].text);
+  if(!(existingSubtotal>0)) throw new Error("Existing subtotal <= 0.");
+
+  replaceOnlyMoney(plan,nodes[subtotalIdx],texts[subtotalIdx],row.subtotal,"subtotal");
+  replaceOnlyMoney(plan,nodes[vatIdx],texts[vatIdx],row.vat,"vat");
+  if(totalIdx>=0) replaceOnlyMoney(plan,nodes[totalIdx],texts[totalIdx],row.total,"total");
+
+  const campaigns=parseCampaigns(nodes,texts,existingSubtotal);
+  const newCampaignSpends=allocation(row.subtotal,campaigns.map(x=>x.oldSpend));
+  const rangeText=campaignRange(row.timestamp,stt);
+  let adGroupCount=0,impressionsUpdated=0;
+
+  for(let ci=0;ci<campaigns.length;ci++){
+    const camp=campaigns[ci];
+    const newCampSpend=newCampaignSpends[ci];
+
+    addPlan(plan,nodes[camp.nameIdx],0,texts[camp.nameIdx].length,texts[camp.nameIdx],campaignName(stt,ci),"campaignName",{campaign:ci+1});
+    addPlan(plan,nodes[camp.dateIdx],0,texts[camp.dateIdx].length,texts[camp.dateIdx],rangeText,"campaignDate",{campaign:ci+1});
+    replaceOnlyMoney(plan,nodes[camp.amountIdx],texts[camp.amountIdx],newCampSpend,"campaignSpend",{campaign:ci+1});
+
+    const newGroupSpends=allocation(newCampSpend,camp.groups.map(g=>g.oldGroupSpend));
+    for(let gi=0;gi<camp.groups.length;gi++){
+      const g=camp.groups[gi];
+      const ng=newGroupSpends[gi];
+      const newImp=Math.max(1,Math.round(g.oldImpressions*ng/g.oldGroupSpend));
+      const newImpText=formatIntegerLike(g.imp.numText,newImp);
+      addPlan(plan,nodes[g.impIdx],g.imp.begin,g.imp.end,g.imp.numText,newImpText,"impressions",{campaign:ci+1,adGroup:gi+1});
+      replaceOnlyMoney(plan,nodes[g.spendIdx],texts[g.spendIdx],ng,"adGroupSpend",{campaign:ci+1,adGroup:gi+1});
+      adGroupCount++;
+      if(newImp!==g.oldImpressions) impressionsUpdated++;
     }
   }
-  if(!idFound) throw new Error("Không tìm thấy ID giao dịch.");
-  if(!dateFound) throw new Error("Không tìm thấy ngày lập hóa đơn/thanh toán.");
 
-  // Money: only touch values when a label and exactly one money token coexist in the same node.
-  const moneyRules=[
-    {labels:["Tổng phụ"],value:row.subtotal,type:"subtotal"},
-    {labels:["VAT"],value:row.vat,type:"vat"},
-    {labels:["Tổng thanh toán"],value:row.total,type:"total"},
-    {labels:["Đã thanh toán"],value:row.total,type:"paid"}
-  ];
-  for(const rule of moneyRules){
-    let hit=0;
-    for(const node of nodes){
-      const text=getRawText(node);
-      if(!rule.labels.some(l=>text.includes(l))) continue;
-      const toks=moneyTokens(text);
-      if(toks.length===1){
-        const t=toks[0];
-        plan.push({node,begin:t.begin,end:t.end,oldText:t.text,newText:formatMoneyLike(t.text,rule.value),type:rule.type});
-        hit++;
-      }
-    }
-    if(hit>1) throw new Error(rule.type+": ambiguous money nodes ("+hit+")");
+  const newCampaignSum=newCampaignSpends.reduce((a,b)=>a+b,0);
+  if(newCampaignSum!==row.subtotal) throw new Error("New campaign sum mismatch subtotal.");
+  for(let ci=0;ci<campaigns.length;ci++){
+    const groupNew=allocation(newCampaignSpends[ci],campaigns[ci].groups.map(g=>g.oldGroupSpend));
+    if(groupNew.reduce((a,b)=>a+b,0)!==newCampaignSpends[ci]) throw new Error("New ad group sum mismatch campaign "+(ci+1));
   }
+  if(row.subtotal+row.vat!==row.total) throw new Error("subtotal + VAT != total");
 
-  // Generic campaign/date/ad-group/impression mutation remains fail-safe: do not guess structure.
-  // We still report discovery counts in dry-run/commit output.
-  let campaignDateCandidates=0, impressionCandidates=0;
-  for(const node of nodes){
-    const text=getRawText(node);
-    if(/Từ\\s+00:00[\\s\\S]*?đến\\s+\\d{1,2}:\\d{2}/i.test(text)) campaignDateCandidates++;
-    if(/(?:Số lần hiển thị|Lượt hiển thị)/i.test(text)) impressionCandidates++;
-  }
-
-  return {plan,nodes,campaignDateCandidates,impressionCandidates};
+  return {
+    plan,nodes,
+    campaigns:campaigns.length,
+    adGroups:adGroupCount,
+    impressionsUpdated,
+    oldCampaignSum:campaigns.reduce((a,b)=>a+b.oldSpend,0),
+    newCampaignSum
+  };
 }
-function validatePlan(doc,plan){
+function validatePlan(plan){
   const byNode=new Map();
   for(const r of plan){
     const arr=byNode.get(r.node)||[]; arr.push(r); byNode.set(r.node,arr);
@@ -254,6 +363,12 @@ function commitPlan(doc,plan){
     for(const r of arr) replaceRange(doc,node,r.begin,r.end,r.newText);
   }
 }
+function postValidate(plan){
+  for(const r of plan){
+    const text=getRawText(r.node);
+    if(text.indexOf(r.newText)<0) throw new Error("Post-commit validation failed: "+r.type);
+  }
+}
 
 (function(){
   let docs=[];
@@ -263,7 +378,6 @@ function commitPlan(doc,plan){
 
   const rows={};
   CONFIG.items.forEach(function(x){rows[x.stt]=x;});
-
   const seen={};
   const report=[];
   let success=0,error=0,skipped=0;
@@ -274,40 +388,41 @@ function commitPlan(doc,plan){
     let parsed={stt:null,identity:[]};
     try{parsed=parseStt(doc);}catch(_){}
     const stt=parsed.stt;
+
     if(!(stt>=1&&stt<=42)){
       skipped++;
-      report.push({
-        document:name,
-        status:"SKIPPED",
-        reason:"outside batch / no STT",
-        identity:parsed.identity||[]
-      });
+      report.push({document:name,status:"SKIPPED",reason:"outside batch / no STT",identity:parsed.identity||[]});
       continue;
     }
-    if(seen[stt]){error++;report.push({stt,status:"ERROR",reason:"duplicate STT",document:name});continue;}
+    if(seen[stt]){
+      error++;
+      report.push({stt,status:"ERROR",reason:"duplicate STT",document:name});
+      continue;
+    }
     seen[stt]=true;
 
     try{
       const row=rows[stt];
       if(!row) throw new Error("Không có mapping source.");
-      if(row.subtotal+row.vat!==row.total) throw new Error("subtotal + VAT != total");
+      const built=buildPlan(doc,row,stt);
+      validatePlan(built.plan);
 
-      const built=buildPlan(doc,row);
-      validatePlan(doc,built.plan);
-
-      if(!CONFIG.dryRun) commitPlan(doc,built.plan);
+      if(!CONFIG.dryRun){
+        commitPlan(doc,built.plan);
+        postValidate(built.plan);
+      }
 
       success++;
       report.push({
-        stt,
-        document:name,
-        matchedBy:parsed.source,
-        matchedValue:parsed.value,
-        status:"OK",
-        mode:CONFIG.dryRun?"DRY RUN":"COMMIT",
-        replacements:built.plan.map(function(r){return {type:r.type,old:r.oldText,new:r.newText};}),
-        campaignDateCandidates:built.campaignDateCandidates,
-        impressionCandidates:built.impressionCandidates
+        stt,document:name,matchedBy:parsed.source,matchedValue:parsed.value,
+        status:"OK",mode:CONFIG.dryRun?"DRY RUN":"COMMIT",
+        campaigns:built.campaigns,
+        adGroups:built.adGroups,
+        impressionsUpdated:built.impressionsUpdated,
+        validation:"PASS",
+        replacements:built.plan.map(function(r){
+          return {type:r.type,old:r.oldText,new:r.newText,meta:r.meta||null};
+        })
       });
     }catch(e){
       error++;
@@ -317,11 +432,10 @@ function commitPlan(doc,plan){
 
   console.log("__PHONG_BATCH_T7__"+JSON.stringify({
     mode:CONFIG.dryRun?"DRY RUN":"COMMIT",
-    totalOpen:docs.length,
-    success,error,skipped,report
+    totalOpen:docs.length,success,error,skipped,report
   }));
 })();
-`;
+\`;
 
   let result;
   try{
