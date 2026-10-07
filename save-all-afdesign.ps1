@@ -31,39 +31,44 @@ function Set-SaveAsTarget([string]$target) {
   if(-not $dlg) { throw "Save As dialog not found" }
 
   # Standard Windows file dialog: File name edit uses AutomationId 1001.
+  $editCondition=[System.Windows.Automation.PropertyCondition]::new(
+    [System.Windows.Automation.AutomationElement]::AutomationIdProperty,
+    "1001"
+  )
   $edit=$dlg.FindFirst(
     [System.Windows.Automation.TreeScope]::Descendants,
-    New-Object System.Windows.Automation.PropertyCondition(
-      [System.Windows.Automation.AutomationElement]::AutomationIdProperty,
-      "1001"
-    )
+    $editCondition
   )
   if(-not $edit) { throw "File name control not found" }
 
   $vp=$edit.GetCurrentPattern([System.Windows.Automation.ValuePattern]::Pattern)
   $vp.SetValue($target)
 
+  $buttonTypeCondition=[System.Windows.Automation.PropertyCondition]::new(
+    [System.Windows.Automation.AutomationElement]::ControlTypeProperty,
+    [System.Windows.Automation.ControlType]::Button
+  )
+  $buttonNameCondition=[System.Windows.Automation.PropertyCondition]::new(
+    [System.Windows.Automation.AutomationElement]::NameProperty,
+    "Save"
+  )
+  $saveCondition=[System.Windows.Automation.AndCondition]::new(
+    $buttonTypeCondition,
+    $buttonNameCondition
+  )
   $saveBtn=$dlg.FindFirst(
     [System.Windows.Automation.TreeScope]::Descendants,
-    New-Object System.Windows.Automation.AndCondition(
-      (New-Object System.Windows.Automation.PropertyCondition(
-        [System.Windows.Automation.AutomationElement]::ControlTypeProperty,
-        [System.Windows.Automation.ControlType]::Button
-      )),
-      (New-Object System.Windows.Automation.PropertyCondition(
-        [System.Windows.Automation.AutomationElement]::NameProperty,
-        "Save"
-      ))
-    )
+    $saveCondition
   )
   if(-not $saveBtn) {
     # Standard common-dialog Save button often has AutomationId 1.
+    $saveButtonIdCondition=[System.Windows.Automation.PropertyCondition]::new(
+      [System.Windows.Automation.AutomationElement]::AutomationIdProperty,
+      "1"
+    )
     $saveBtn=$dlg.FindFirst(
       [System.Windows.Automation.TreeScope]::Descendants,
-      New-Object System.Windows.Automation.PropertyCondition(
-        [System.Windows.Automation.AutomationElement]::AutomationIdProperty,
-        "1"
-      )
+      $saveButtonIdCondition
     )
   }
   if(-not $saveBtn) { throw "Save button not found" }
