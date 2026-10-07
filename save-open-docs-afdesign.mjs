@@ -70,7 +70,7 @@ function joinPath(a,b){
   return a+(a.endsWith("\\")||a.endsWith("/")?"":"\\")+b;
 }
 
-(function(){
+(async function(){
   let docs=[];
   try{docs=toArray(Document.all);}catch(_){}
   if(!docs.length&&Document.current)docs=[Document.current];
@@ -99,11 +99,25 @@ function joinPath(a,b){
     used[filename]=true;
 
     try{
-      if(typeof doc.saveAs!=="function"){
-        report.push({title,status:"ERROR",reason:"doc.saveAs không khả dụng"});
+      if(typeof doc.saveAsAsync!=="function" && typeof doc.saveAs!=="function"){
+        report.push({title,status:"ERROR",reason:"Không có saveAs/saveAsAsync"});
         continue;
       }
-      doc.saveAs(out);
+      if(typeof doc.saveAsAsync==="function"){
+        await doc.saveAsAsync(out);
+      }else{
+        doc.saveAs(out);
+      }
+      let exists=false;
+      try{
+        exists=typeof FileSystemApi.existsAsync==="function"
+          ? await FileSystemApi.existsAsync(out)
+          : FileSystemApi.exists(out);
+      }catch(_){}
+      if(!exists){
+        report.push({title,status:"ERROR",reason:"SAVE_RETURNED_BUT_FILE_NOT_CREATED",filename,path:out});
+        continue;
+      }
       report.push({title,status:"OK",filename,path:out});
     }catch(e){
       report.push({title,status:"ERROR",reason:e&&e.message?e.message:String(e),filename,path:out});
@@ -113,7 +127,9 @@ function joinPath(a,b){
   console.log("__PHONG_SAVE_AFDESIGN__"+JSON.stringify({
     stagingFolder,total:docs.length,report
   }));
-})();
+})().catch(function(e){
+  console.log("__PHONG_SAVE_AFDESIGN_FATAL__"+String(e&&e.message?e.message:e));
+});
 `;
 
     const result=await client.request({
