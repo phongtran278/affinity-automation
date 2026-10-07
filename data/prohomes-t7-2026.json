@@ -5,7 +5,8 @@
     "driveFileId": "1PCjXFQNY11EQpBuXPgon7mlDdSs8vPZJ",
     "gid": 220811210,
     "driveFolderId": "1idIiwSS5DyxYkKjd52mxN02_7ymB6Brv",
-    "note": "Generated from the current Drive workbook. STT is the authoritative key."
+    "note": "Generated from the current Drive workbook. STT is the authoritative key.",
+    "invoiceNumberRule": "9 real anchors preserved; simulated rows linearly interpolated by timestamp between nearest real anchors, extrapolated at edges; chronology forced strictly increasing."
   },
   "items": [
     {
@@ -15,7 +16,8 @@
       "subtotal": 19059451,
       "vat": 1905945,
       "total": 20965396,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106159633"
     },
     {
       "stt": 2,
@@ -24,7 +26,8 @@
       "subtotal": 16272727,
       "vat": 1627273,
       "total": 17900000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106162939"
     },
     {
       "stt": 3,
@@ -33,7 +36,8 @@
       "subtotal": 15000000,
       "vat": 1500000,
       "total": 16500000,
-      "dataType": "Thật"
+      "dataType": "Thật",
+      "invoiceNumber": "FBADS-179-106164469"
     },
     {
       "stt": 4,
@@ -42,7 +46,8 @@
       "subtotal": 18727273,
       "vat": 1872727,
       "total": 20600000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106177078"
     },
     {
       "stt": 5,
@@ -51,7 +56,8 @@
       "subtotal": 14090909,
       "vat": 1409091,
       "total": 15500000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106181682"
     },
     {
       "stt": 6,
@@ -60,7 +66,8 @@
       "subtotal": 15000000,
       "vat": 1500000,
       "total": 16500000,
-      "dataType": "Thật"
+      "dataType": "Thật",
+      "invoiceNumber": "FBADS-179-106183212"
     },
     {
       "stt": 7,
@@ -69,7 +76,8 @@
       "subtotal": 19545455,
       "vat": 1954545,
       "total": 21500000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106187080"
     },
     {
       "stt": 8,
@@ -78,7 +86,8 @@
       "subtotal": 19070857,
       "vat": 1907086,
       "total": 20977943,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106189074"
     },
     {
       "stt": 9,
@@ -87,7 +96,8 @@
       "subtotal": 14545455,
       "vat": 1454545,
       "total": 16000000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106191071"
     },
     {
       "stt": 10,
@@ -96,7 +106,8 @@
       "subtotal": 20545455,
       "vat": 2054545,
       "total": 22600000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106192666"
     },
     {
       "stt": 11,
@@ -105,7 +116,8 @@
       "subtotal": 16181818,
       "vat": 1618182,
       "total": 17800000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106194261"
     },
     {
       "stt": 12,
@@ -114,7 +126,8 @@
       "subtotal": 21818182,
       "vat": 2181818,
       "total": 24000000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106196588"
     },
     {
       "stt": 13,
@@ -123,7 +136,8 @@
       "subtotal": 18385583,
       "vat": 1838558,
       "total": 20224141,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106198183"
     },
     {
       "stt": 14,
@@ -132,7 +146,8 @@
       "subtotal": 17573839,
       "vat": 1757384,
       "total": 19331223,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106199778"
     },
     {
       "stt": 15,
@@ -141,7 +156,8 @@
       "subtotal": 15000000,
       "vat": 1500000,
       "total": 16500000,
-      "dataType": "Thật"
+      "dataType": "Thật",
+      "invoiceNumber": "FBADS-179-106201529"
     },
     {
       "stt": 16,
@@ -150,7 +166,8 @@
       "subtotal": 22545455,
       "vat": 2254545,
       "total": 24800000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106207781"
     },
     {
       "stt": 17,
@@ -159,7 +176,8 @@
       "subtotal": 21454545,
       "vat": 2145455,
       "total": 23600000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106209336"
     },
     {
       "stt": 18,
@@ -168,7 +186,8 @@
       "subtotal": 15000000,
       "vat": 1500000,
       "total": 16500000,
-      "dataType": "Thật"
+      "dataType": "Thật",
+      "invoiceNumber": "FBADS-179-106216058"
     },
     {
       "stt": 19,
@@ -177,7 +196,8 @@
       "subtotal": 18909091,
       "vat": 1890909,
       "total": 20800000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106219504"
     },
     {
       "stt": 20,
@@ -186,7 +206,8 @@
       "subtotal": 20565732,
       "vat": 2056573,
       "total": 22622305,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106221222"
     },
     {
       "stt": 21,
@@ -195,7 +216,8 @@
       "subtotal": 23181818,
       "vat": 2318182,
       "total": 25500000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106223319"
     },
     {
       "stt": 22,
@@ -204,7 +226,8 @@
       "subtotal": 15000000,
       "vat": 1500000,
       "total": 16500000,
-      "dataType": "Thật"
+      "dataType": "Thật",
+      "invoiceNumber": "FBADS-179-106231639"
     },
     {
       "stt": 23,
@@ -213,7 +236,8 @@
       "subtotal": 18667197,
       "vat": 1866720,
       "total": 20533917,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106235228"
     },
     {
       "stt": 24,
@@ -222,7 +246,8 @@
       "subtotal": 17181818,
       "vat": 1718182,
       "total": 18900000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106236996"
     },
     {
       "stt": 25,
@@ -231,7 +256,8 @@
       "subtotal": 17090909,
       "vat": 1709091,
       "total": 18800000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106238568"
     },
     {
       "stt": 26,
@@ -240,7 +266,8 @@
       "subtotal": 24090909,
       "vat": 2409091,
       "total": 26500000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106240287"
     },
     {
       "stt": 27,
@@ -249,7 +276,8 @@
       "subtotal": 16636364,
       "vat": 1663636,
       "total": 18300000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106241859"
     },
     {
       "stt": 28,
@@ -258,7 +286,8 @@
       "subtotal": 15000000,
       "vat": 1500000,
       "total": 16500000,
-      "dataType": "Thật"
+      "dataType": "Thật",
+      "invoiceNumber": "FBADS-179-106245533"
     },
     {
       "stt": 29,
@@ -267,7 +296,8 @@
       "subtotal": 22000000,
       "vat": 2200000,
       "total": 24200000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106255326"
     },
     {
       "stt": 30,
@@ -276,7 +306,8 @@
       "subtotal": 15000000,
       "vat": 1500000,
       "total": 16500000,
-      "dataType": "Thật"
+      "dataType": "Thật",
+      "invoiceNumber": "FBADS-179-106259758"
     },
     {
       "stt": 31,
@@ -285,7 +316,8 @@
       "subtotal": 19413414,
       "vat": 1941341,
       "total": 21354755,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106265075"
     },
     {
       "stt": 32,
@@ -294,7 +326,8 @@
       "subtotal": 17363636,
       "vat": 1736364,
       "total": 19100000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106266746"
     },
     {
       "stt": 33,
@@ -303,7 +336,8 @@
       "subtotal": 23363636,
       "vat": 2336364,
       "total": 25700000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106276248"
     },
     {
       "stt": 34,
@@ -312,7 +346,8 @@
       "subtotal": 15000000,
       "vat": 1500000,
       "total": 16500000,
-      "dataType": "Thật"
+      "dataType": "Thật",
+      "invoiceNumber": "FBADS-179-106279886"
     },
     {
       "stt": 35,
@@ -321,7 +356,8 @@
       "subtotal": 17909091,
       "vat": 1790909,
       "total": 19700000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106282942"
     },
     {
       "stt": 36,
@@ -330,7 +366,8 @@
       "subtotal": 18148414,
       "vat": 1814841,
       "total": 19963255,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106284461"
     },
     {
       "stt": 37,
@@ -339,7 +376,8 @@
       "subtotal": 19452095,
       "vat": 1945210,
       "total": 21397305,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106287590"
     },
     {
       "stt": 38,
@@ -348,7 +386,8 @@
       "subtotal": 17636364,
       "vat": 1763636,
       "total": 19400000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106289489"
     },
     {
       "stt": 39,
@@ -357,7 +396,8 @@
       "subtotal": 19181818,
       "vat": 1918182,
       "total": 21100000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106291197"
     },
     {
       "stt": 40,
@@ -366,7 +406,8 @@
       "subtotal": 11197723,
       "vat": 1119772,
       "total": 12317495,
-      "dataType": "Thật"
+      "dataType": "Thật",
+      "invoiceNumber": "FBADS-179-106292523"
     },
     {
       "stt": 41,
@@ -375,7 +416,8 @@
       "subtotal": 18888423,
       "vat": 1888842,
       "total": 20777265,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106294140"
     },
     {
       "stt": 42,
@@ -384,7 +426,8 @@
       "subtotal": 20636364,
       "vat": 2063636,
       "total": 22700000,
-      "dataType": "Giả định"
+      "dataType": "Giả định",
+      "invoiceNumber": "FBADS-179-106296712"
     }
   ]
 }
