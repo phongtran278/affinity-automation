@@ -396,14 +396,21 @@ function validatePlan(plan){
   }
 }
 function commitPlan(doc,plan){
+  const orderedPlan=plan.slice().sort(function(a,b){
+    if(a.type==="invoiceNumber"&&b.type!=="invoiceNumber") return 1;
+    if(a.type!=="invoiceNumber"&&b.type==="invoiceNumber") return -1;
+    return 0;
+  });
+
   const groups=new Map();
-  for(const r of plan){
+  for(const r of orderedPlan){
     const arr=groups.get(r.node)||[];
     arr.push(r);
     groups.set(r.node,arr);
   }
 
   let step=0;
+  const warnings=[];
   for(const [node,arr] of groups){
     arr.sort((a,b)=>b.begin-a.begin);
     for(const r of arr){
@@ -414,8 +421,7 @@ function commitPlan(doc,plan){
         const meta=r.meta
           ? " "+(r.meta.campaign?"C"+r.meta.campaign:"")+(r.meta.adGroup?"/G"+r.meta.adGroup:"")
           : "";
-        return {
-          ok:false,
+        const detail={
           step:step,
           type:r.type,
           meta:meta,
@@ -428,10 +434,17 @@ function commitPlan(doc,plan){
             " | ["+r.oldText+"] -> ["+r.newText+"]"+
             " | Affinity: "+(e&&e.message?e.message:String(e))
         };
+
+        if(r.type==="invoiceNumber"){
+          warnings.push(detail);
+          continue;
+        }
+
+        return {ok:false,warnings:warnings,failure:detail,reason:detail.reason};
       }
     }
   }
-  return {ok:true};
+  return {ok:true,warnings:warnings};
 }
 function postValidate(plan){
   for(const r of plan){
@@ -477,8 +490,10 @@ function postValidate(plan){
       const built=buildPlan(doc,row,stt);
       validatePlan(built.plan);
 
+      let commitWarnings=[];
       if(!CONFIG.dryRun){
         const commitResult=commitPlan(doc,built.plan);
+        commitWarnings=commitResult.warnings||[];
         if(!commitResult.ok){
           error++;
           report.push({
@@ -488,7 +503,8 @@ function postValidate(plan){
           });
           continue;
         }
-        postValidate(built.plan);
+        const warningTypes=new Set(commitWarnings.map(function(w){return w.type;}));
+        postValidate(built.plan.filter(function(r){return !warningTypes.has(r.type);}));
       }
 
       success++;
@@ -498,7 +514,8 @@ function postValidate(plan){
         campaigns:built.campaigns,
         adGroups:built.adGroups,
         impressionsUpdated:built.impressionsUpdated,
-        validation:"PASS",
+        validation:commitWarnings.length?"PASS_WITH_WARNING":"PASS",
+        warnings:commitWarnings,
         invoiceNumber:built.invoiceNumber,
         replacements:built.plan.map(function(r){
           return {type:r.type,old:r.oldText,new:r.newText,meta:r.meta||null};
@@ -582,6 +599,12 @@ function postValidate(plan){
 
         console.log("  campaigns: "+r.campaigns+" | ad groups: "+r.adGroups+" | impressions updated: "+r.impressionsUpdated);
         console.log("  validation: "+r.validation);
+        if(Array.isArray(r.warnings)&&r.warnings.length){
+          for(const w of r.warnings){
+            console.log("  INVOICE WARNING: "+w.reason);
+            console.log("  MANUAL FALLBACK: đổi Invoice # thành "+w.newText);
+          }
+        }
       }
     }
   }
