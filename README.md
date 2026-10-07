@@ -1,51 +1,236 @@
 # affinity-automation
 
-## ProHomes T7/2026 batch edit
+Automation toolkit for Affinity Designer workflows used in the ProHomes invoice project.
 
-Main workflow:
+The repo currently focuses on three practical jobs:
 
-1. Open only the PDF files you want to edit in Affinity Designer.
-2. Double-click `run-batch-t7.bat`.
-3. The launcher automatically runs `git pull --ff-only`.
-4. It runs a full DRY RUN first and prints all planned changes.
-5. If validation passes, Windows asks whether to commit.
-6. Choose Yes to apply the changes to the currently open Affinity documents, or No to stop without editing anything.
-7. Save As `.afdesign` manually when finished.
+- batch-edit ProHomes T7/2026 invoice PDFs;
+- save multiple open documents as `.afdesign` faster;
+- export multiple open Affinity documents to PDF.
 
-The batch does not export PDF and does not overwrite the source PDF files on disk.
+---
 
-`run-batch-t7-dry-run.bat` remains available as a dry-run-only compatibility launcher.
-`run-batch-t7-commit.bat` calls the combined `run-batch-t7.bat`.
+## Requirements
 
-## One-click PDF export
+Before running any launcher:
 
-1. Open the `.af` files in Affinity.
+- Affinity Designer must be open;
+- Affinity MCP / Script Manager bridge must be connected;
+- Node.js must be installed;
+- this repo must already be cloned locally;
+- internet access is required when the launcher runs `git pull`.
+
+The repo can live anywhere on the computer. The `.bat` files automatically run from their own folder.
+
+---
+
+## 1. Batch edit ProHomes T7/2026
+
+### Main launcher
+
+```text
+run-batch-t7.bat
+```
+
+### Recommended workflow
+
+1. Open the original T7 PDF files in Affinity Designer.
+2. Open only the files you want to process in the current batch.
+3. Double-click `run-batch-t7.bat`.
+4. The launcher automatically runs `git pull --ff-only`.
+5. A DRY RUN is executed first.
+6. Review the result.
+7. Only when every required document is `[OK]`, press `Y` to commit.
+8. Affinity documents are updated in memory.
+9. Save the edited documents as `.afdesign` when finished.
+
+### Important safety rule
+
+Do not commit when DRY RUN reports an error.
+
+Expected summary before commit:
+
+```text
+SUCCESS: N ERROR: 0
+```
+
+If `ERROR` is greater than zero, stop and inspect the error first.
+
+### Related launchers
+
+```text
+run-batch-t7-dry-run.bat
+run-batch-t7-commit.bat
+```
+
+`run-batch-t7-dry-run.bat` is dry-run only.
+
+`run-batch-t7-commit.bat` forwards to the combined workflow.
+
+### Notes
+
+- The batch edits only documents currently open in Affinity.
+- Files outside the configured T7 batch are skipped.
+- The script does not overwrite the original source PDFs on disk.
+- The parser supports both separated and merged PDF text nodes because Affinity can import the same PDF differently on different computers.
+
+---
+
+## 2. Faster batch Save As to .afdesign
+
+### Recommended launcher
+
+```text
+save-rest-afdesign.bat
+```
+
+This is the currently recommended practical workflow for saving many open PDF documents as Affinity files.
+
+### Workflow
+
+1. Open all PDFs you want to save in Affinity.
+2. Save the first document manually:
+   - press `Ctrl + Shift + S`;
+   - choose the destination folder;
+   - save it as `.afdesign`.
+3. Return to Affinity.
+4. Double-click `save-rest-afdesign.bat`.
+5. The launcher automatically detects how many documents are open.
+6. It processes the remaining documents using Affinity's Save As workflow.
+
+Example:
+
+```text
+10 open PDFs
+1 saved manually
+save-rest-afdesign.bat
+=> processes the remaining 9
+```
+
+### Important
+
+This helper uses UI keyboard automation because the current Affinity scripting bridge exposes `saveAs()` but does not reliably write imported PDF documents to native `.afdesign` files headlessly.
+
+While it is running:
+
+- do not type;
+- do not click inside another application;
+- keep Affinity available in the foreground.
+
+If the first manual Save As remembers the correct folder, the remaining saves are much faster.
+
+---
+
+## 3. Batch PDF export
+
+### Launcher
+
+```text
+export-pdf.bat
+```
+
+### Workflow
+
+1. Open the Affinity documents you want to export.
 2. Double-click `export-pdf.bat`.
-3. Windows opens a normal folder picker.
-4. Choose the destination folder and press OK.
-5. The exporter asks Affinity to export every open document with `PDF (digital - high quality)`.
-6. PDFs are placed in the selected folder automatically.
+3. Choose the destination folder.
+4. The exporter processes all currently open documents.
+5. PDFs are moved into the selected folder automatically.
 
-No manual path entry. No dummy file. No second move step.
+The PDF export workflow is more reliable than native `.afdesign` batch saving because Affinity exposes a working export API.
 
-Internally, Affinity writes to its permitted Desktop area and the launcher immediately moves the PDFs to the selected folder. The temporary folder is deleted when empty.
+---
 
-## Update
+## 4. Update / install
 
-Double-click `update-and-install.bat`.
+### Launcher
 
-This runs `git pull`, refreshes the Script Manager copy, and installs the MCP client dependency.
+```text
+update-and-install.bat
+```
 
-Affinity must be open and MCP must be enabled/connected.
+Use this when setting up the repo on another computer or refreshing dependencies.
 
+It performs the repo update and MCP client dependency setup.
 
-## Diagnostic: dump PDF text structure
+---
 
-Use this only when refining the parser.
+## 5. Diagnostics
 
-1. Open one representative PDF in Affinity Designer.
-2. Double-click `dump-affinity-structure.bat`.
-3. A JSON file is written under `diagnostics/`.
-4. Send that JSON file back for parser development.
+Diagnostics are for parser development only. They do not intentionally edit the active document.
 
-This diagnostic does not edit the document.
+### Full PDF text structure
+
+```text
+dump-affinity-structure.bat
+```
+
+Use when Affinity imports the same PDF differently on another machine.
+
+### T7 paid/summary diagnostic
+
+```text
+diagnose-t7-paid.bat
+```
+
+Use when errors mention fields such as:
+
+```text
+Không tìm thấy tiền Đã thanh toán
+Không tìm thấy Tổng phụ
+Không tìm thấy VAT
+```
+
+The diagnostic prints the imported text-node structure so the parser can be adapted safely.
+
+---
+
+## Common troubleshooting
+
+### `SKIPPED: outside batch / no STT`
+
+The currently open file does not match the configured T7 batch naming / STT mapping.
+
+Open the correct T7 source PDFs.
+
+### `Không tìm thấy ...`
+
+Affinity may have imported text nodes differently on that computer.
+
+Run the relevant diagnostic on one representative original PDF and inspect the text-node dump.
+
+### DRY RUN fails
+
+Do not commit.
+
+Fix the parser or source mismatch first, then run `run-batch-t7.bat` again.
+
+### Script works on one computer but not another
+
+This can happen because Affinity may split or merge imported PDF text differently depending on build, font environment, or PDF import behavior.
+
+The current parser is designed to tolerate both separated and merged text-node layouts where known.
+
+---
+
+## Recommended daily workflow
+
+For T7 invoice editing:
+
+```text
+Open original PDFs
+        ↓
+run-batch-t7.bat
+        ↓
+DRY RUN PASS
+        ↓
+Y = COMMIT
+        ↓
+Save first file manually as .afdesign
+        ↓
+save-rest-afdesign.bat
+        ↓
+export-pdf.bat when PDF output is needed
+```
+
+Keep the original PDFs unchanged as the source of truth.
