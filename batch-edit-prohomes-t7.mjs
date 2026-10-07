@@ -290,20 +290,60 @@ function buildPlan(doc,row,stt){
   if(!invoiceNumber||invoiceNodeIndex<0||!invoiceMatch) throw new Error("Không tìm thấy Invoice # FBADS-179-xxxxxxxxx.");
   addPlan(plan,nodes[invoiceNodeIndex],invoiceMatch.begin,invoiceMatch.end,invoiceMatch.text,row.invoiceNumber,"invoiceNumber");
 
-  const idLabel=findExactLabel(texts,"ID giao dịch");
-  const idIdx=idLabel+1;
-  if(idIdx>=texts.length || !/^\d{10,}-\d{10,}$/.test(texts[idIdx].trim())) throw new Error("Không tìm thấy ID giao dịch sau label.");
-  addPlan(plan,nodes[idIdx],0,texts[idIdx].length,texts[idIdx],row.transactionId,"transactionId");
+  // Transaction ID: support both separate label/value nodes and merged text nodes.
+  let idHit=null;
+  for(let i=0;i<texts.length;i++){
+    const m=texts[i].match(/\b\d{10,}-\d{10,}\b/);
+    if(m){
+      if(idHit) throw new Error("Có nhiều hơn 1 transaction ID trong document.");
+      idHit={idx:i,begin:m.index,end:m.index+m[0].length,text:m[0]};
+    }
+  }
+  if(!idHit) throw new Error("Không tìm thấy ID giao dịch.");
+  addPlan(plan,nodes[idHit.idx],idHit.begin,idHit.end,idHit.text,row.transactionId,"transactionId");
 
-  const dateLabel=findExactLabel(texts,"Ngày lập hóa đơn/thanh toán");
-  const dateIdx=dateLabel+1;
-  if(dateIdx>=texts.length || !/^\d{1,2}:\d{2}\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}$/.test(texts[dateIdx].trim())) throw new Error("Không tìm thấy invoice date sau label.");
-  addPlan(plan,nodes[dateIdx],0,texts[dateIdx].length,texts[dateIdx],formatInvoiceDate(row.timestamp),"invoiceDate");
+  // Invoice date: find the standalone invoice timestamp pattern anywhere in text nodes.
+  // Campaign ranges start with "Từ 00:00" so they do not match this exact timestamp form.
+  let dateHit=null;
+  const invoiceDateRe=/\b\d{1,2}:\d{2}\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}\b/;
+  for(let i=0;i<texts.length;i++){
+    const m=texts[i].match(invoiceDateRe);
+    if(m){
+      if(dateHit) throw new Error("Có nhiều hơn 1 invoice date trong document.");
+      dateHit={idx:i,begin:m.index,end:m.index+m[0].length,text:m[0]};
+    }
+  }
+  if(!dateHit) throw new Error("Không tìm thấy invoice date.");
+  addPlan(plan,nodes[dateHit.idx],dateHit.begin,dateHit.end,dateHit.text,formatInvoiceDate(row.timestamp),"invoiceDate");
 
-  const paidLabel=findExactLabel(texts,"Đã thanh toán");
-  const paidIdx=paidLabel+1;
-  if(paidIdx>=texts.length || !moneyOnly(texts[paidIdx])) throw new Error("Không tìm thấy tiền Đã thanh toán sau label.");
-  replaceOnlyMoney(plan,nodes[paidIdx],texts[paidIdx],row.total,"paid");
+  // Paid amount: first prefer the label relationship, then merged label+amount text.
+  let paidHandled=false;
+  const paidLabelHits=[];
+  for(let i=0;i<texts.length;i++){
+    if(texts[i].trim().toLowerCase()==="đã thanh toán") paidLabelHits.push(i);
+  }
+  if(paidLabelHits.length===1){
+    const paidIdx=paidLabelHits[0]+1;
+    if(paidIdx<texts.length && moneyOnly(texts[paidIdx])){
+      replaceOnlyMoney(plan,nodes[paidIdx],texts[paidIdx],row.total,"paid");
+      paidHandled=true;
+    }
+  }
+  if(!paidHandled){
+    const mergedPaid=[];
+    for(let i=0;i<texts.length;i++){
+      if(/đã thanh toán/i.test(texts[i])){
+        const toks=moneyTokens(texts[i]);
+        if(toks.length===1) mergedPaid.push({idx:i,tok:toks[0]});
+      }
+    }
+    if(mergedPaid.length===1){
+      const h=mergedPaid[0];
+      addPlan(plan,nodes[h.idx],h.tok.begin,h.tok.end,h.tok.text,formatMoneyLike(h.tok.text,row.total),"paid");
+      paidHandled=true;
+    }
+  }
+  if(!paidHandled) throw new Error("Không tìm thấy tiền Đã thanh toán.");
 
   let subtotalIdx=-1,vatIdx=-1,totalIdx=-1;
   for(let i=0;i<texts.length;i++){
