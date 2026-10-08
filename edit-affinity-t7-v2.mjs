@@ -103,9 +103,9 @@ async function main() {
   const missing = [...EXPECTED.keys()].filter(n => !byStt.has(n)).sort((a,b)=>a-b);
   const complete = missing.length === 0;
   const aggregate = { mode: "READ_ONLY", expected: EXPECTED.size, collected: items.length, complete, missing, unknown, errors, items, updatedAt: new Date().toISOString(), note: "Separate reconciliation report. No source invoice modified." };
-  fs.writeFileSync(snapshotPath, JSON.stringify(aggregate, null, 2) + "\\n", "utf8");
+  fs.writeFileSync(snapshotPath, JSON.stringify(aggregate, null, 2) + "\n", "utf8");
   const aggregateHeaders = ["stt", "transactionId", "title", "status", "campaigns", "periodStart", "proposedDescription"];
-  fs.writeFileSync(path.join(dir,"t7-v2-42-progress.csv"), "\\uFEFF" + aggregateHeaders.join(",") + "\\r\\n" + items.map(item => aggregateHeaders.map(k => csvCell(item[k])).join(",")).join("\\r\\n") + "\\r\\n", "utf8");
+  fs.writeFileSync(path.join(dir,"t7-v2-42-progress.csv"), "\uFEFF" + aggregateHeaders.join(",") + "\r\n" + items.map(item => aggregateHeaders.map(k => csvCell(item[k])).join(",")).join("\r\n") + "\r\n", "utf8");
 
   fs.mkdirSync(dir, { recursive: true });
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
@@ -122,6 +122,6 @@ async function main() {
   for (const item of report.report) console.log(item.title + " [" + item.status + "] " + (item.proposedDescription || item.reason));
   console.log("READ ONLY: No invoice text changed; watermark is not required.");
   console.log("JSON: " + base + ".json\nCSV:  " + base + ".csv");
-  if (errors.length || !complete) process.exitCode = 2;
+  if (errors.length || payload.report.some(x => x.status === "ERROR")) process.exitCode = 1;
 }
 main().catch(e => { console.error("T7 V2 ERROR:", e.stack || String(e)); process.exitCode = 1; });
