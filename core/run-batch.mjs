@@ -315,7 +315,7 @@ function buildPlan(doc,row,stt){
     // original imported ranges or the invoice date.
     const proposedRanges=starts.map(function(){return campaignRange(row.timestamp,stt);});
     const finalStarts=proposedRanges.map(function(range){
-      const m=range.match(/^Từ\\s+00:00\\s+(\\d{1,2})\\s+tháng\\s+(\\d{1,2}),\\s+(\\d{4})/i);
+      const m=range.match(/^Từ\s+00:00\s+(\d{1,2})\s+tháng\s+(\d{1,2}),\s+(\d{4})/i);
       if(!m) throw new Error("Không đọc được ngày bắt đầu chiến dịch sau sửa.");
       const day=Number(m[1]),month=Number(m[2]),year=Number(m[3]);
       const ms=Date.UTC(year,month-1,day),d=new Date(ms);
