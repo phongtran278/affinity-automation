@@ -43,10 +43,17 @@ for (const doc of docs) {
     const existing = [];
     const oldSentence = /Chi\s+tiêu\s+cho\s+Quảng\s+cáo\s+kể\s+từ\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}\./gi;
     const threshold = /Hệ thống đang tiến hành lập hóa đơn vì bạn đã đạt đến ngưỡng thanh toán[^\r\n\u2028\u2029]*/gi;
-    for (const t of texts) {
+    for (let i = 0; i < texts.length; i++) {
+      const t = texts[i];
       oldSentence.lastIndex = 0; threshold.lastIndex = 0;
       existing.push(...(t.match(oldSentence) || []));
-      existing.push(...(t.match(threshold) || []));
+      const matches = t.match(threshold) || [];
+      for (const hit of matches) {
+        const suffix = String(texts[i + 1] || "").trim();
+        const complete = /\\bcủa\\s*$/i.test(hit.trim()) && /^mình\\.$/i.test(suffix)
+          ? hit.trim() + " " + suffix : hit.trim();
+        existing.push(complete);
+      }
     }
     for (const t of texts) {
       dateRe.lastIndex = 0;
@@ -122,18 +129,31 @@ async function main() {
   fs.writeFileSync(base + ".json", JSON.stringify(report, null, 2) + "\n", "utf8");
   const headers = ["title", "status", "campaigns", "periodStart", "proposedDescription", "originalText", "comparison", "reason"];
   fs.writeFileSync(base + ".csv", "\uFEFF" + headers.join(",") + "\r\n" + report.report.map(item => headers.map(k => csvCell(item[k])).join(",")).join("\r\n") + "\r\n", "utf8");
+  const active = payload.report;
+  const tally = { READY: 0, UNCHANGED: 0, REVIEW_REQUIRED: 0, ERROR: 0 };
+  for (const item of active) {
+    if (item.status === "ERROR") tally.ERROR++;
+    else if (item.comparison === "UNCHANGED") tally.UNCHANGED++;
+    else if (item.comparison === "REVIEW_REQUIRED") tally.REVIEW_REQUIRED++;
+    else tally.READY++;
+  }
+  console.log("\\nT7 V2 | CURRENT BATCH (READ-ONLY)");
+  console.log("OPEN DOCUMENTS: " + active.filter(x => x.title !== "(none)").length);
+  console.log("READY: " + tally.READY + " | UNCHANGED: " + tally.UNCHANGED + " | REVIEW REQUIRED: " + tally.REVIEW_REQUIRED + " | ERROR: " + tally.ERROR);
+  console.log("\\nCUMULATIVE REPORT ONLY:");
   console.log("42-DOCUMENT PROGRESS: " + items.length + "/" + EXPECTED.size + " | " + (complete ? "COMPLETE" : "INCOMPLETE"));
   if (missing.length) console.log("Missing STT: " + missing.join(", "));
   if (unknown.length) console.log("Unmatched open documents: " + unknown.join(" | "));
   console.log("Aggregate JSON: " + snapshotPath);
   console.log("Aggregate CSV:  " + path.join(dir, "t7-v2-42-progress.csv"));
   for (const item of report.report) {
-    console.log("\n" + item.title + " [" + item.status + "] " + (item.comparison || ""));
+    console.log("\n" + item.title + " [" + (item.status === "ERROR" ? "ERROR" : item.comparison === "PROPOSED" ? "READY" : item.comparison) + "]");
     if (item.status === "OK") {
       console.log("  BEFORE: " + (item.originalText ?? ("[Ambiguous or missing original; matches=" + item.originalMatches + "]")));
       console.log("  AFTER (PROPOSED): " + item.proposedDescription);
     } else console.log("  ERROR: " + item.reason);
   }
+  console.log("\nCURRENT BATCH TOTAL: " + active.filter(x => x.title !== "(none)").length + " | READY: " + tally.READY + " | UNCHANGED: " + tally.UNCHANGED + " | REVIEW REQUIRED: " + tally.REVIEW_REQUIRED + " | ERROR: " + tally.ERROR);
   console.log("READ ONLY: No invoice text changed; watermark is not required.");
   console.log("JSON: " + base + ".json\nCSV:  " + base + ".csv");
   if (errors.length || payload.report.some(x => x.status === "ERROR")) process.exitCode = 1;
