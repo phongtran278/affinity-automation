@@ -35,6 +35,18 @@ for (const doc of docs) {
   try {
     const nodes = arrayOf(doc.layers.all).filter(n => n && (n.isFrameTextNode || n.isArtTextNode));
     const texts = nodes.map(textOf);
+    // Disabled TEST watermark guard (kept for reference).
+    // A visible TEST marker is required
+    // if (!texts.some(t =>
+    //   /TEST\s*[-–—]\s*KHÔNG CÓ GIÁ TRỊ THANH TOÁN/i.test(t)
+    // )) {
+    //   result.push({
+    //     title,
+    //     status: "SKIPPED",
+    //     reason: "Missing visible TEST watermark"
+    //   });
+    //   continue;
+    // }
     // Read-only preview: inspect the open document without requiring a watermark.
     const ranges = [];
     for (const text of texts) {
