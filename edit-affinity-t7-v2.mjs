@@ -52,7 +52,28 @@ function planFor(doc) {
     while((m=targetRe.exec(text))!==null)
       targets.push({node:nodes[i],begin:m.index,end:m.index+m[0].length,old:m[0]});
   }
+
+  // Safety: the original payment explanation must not be altered in an unmarked invoice.
+  const watermarked=texts.some(t=>/TEST\s*[-–—]\s*KHÔNG CÓ GIÁ TRỊ THANH TOÁN/i.test(t));
+  if(!watermarked)throw new Error("TEST watermark required for this illustrative edit. Original invoice unchanged.");
   if(!dates.length) throw new Error("No campaign date ranges found.");
+  // The importer splits the original threshold explanation into two adjacent nodes.
+  // Only accept this precise structure; never infer from node indexes alone.
+  const oldPrefix=/^Hệ thống đang tiến hành lập hóa đơn vì bạn đã đạt đến ngưỡng thanh toán\s+[\d., \u00A0]+\s*(?:₫|VND)\s+của\s*$/i;
+  const splitHits=[];
+  for(let i=0;i<texts.length-1;i++){
+    if(oldPrefix.test(texts[i].trim()) && texts[i+1].trim()==="mình."){
+      splitHits.push({firstNode:nodes[i],secondNode:nodes[i+1],oldFirst:texts[i],oldSecond:texts[i+1]});
+    }
+  }
+  const d=new Date(Math.min(...dates));
+  const next="Chi tiêu cho Quảng cáo kể từ "+d.getUTCDate()+" tháng "+(d.getUTCMonth()+1)+", "+d.getUTCFullYear()+".";
+  if(splitHits.length===1 && targets.length===0){
+    const hit=splitHits[0];
+    return {title,dates:dates.length,target:{node:hit.firstNode,begin:0,end:hit.oldFirst.length,old:hit.oldFirst},
+      extra:{node:hit.secondNode,begin:0,end:hit.oldSecond.length,old:hit.oldSecond},newText:next,unchanged:false};
+  }
+
   if(targets.length!==1) {
     // Diagnostic only: never guess where to write when the target is missing or ambiguous.
     // Show only relevant text snippets rather than dumping the entire invoice.
@@ -96,8 +117,7 @@ function planFor(doc) {
     e.hints=hints.slice(0,22);
     throw e;
   }
-  const d=new Date(Math.min(...dates));
-  const next="Chi tiêu cho Quảng cáo kể từ "+d.getUTCDate()+" tháng "+(d.getUTCMonth()+1)+", "+d.getUTCFullYear()+".";
+
   const t=targets[0];
   if(rawText(t.node).slice(t.begin,t.end)!==t.old) throw new Error("Stale or ambiguous text selection.");
   return {title,dates:dates.length,target:t,newText:next,unchanged:t.old===next};
@@ -111,7 +131,7 @@ for(const doc of docs){
   try{
     const p=planFor(doc);
     plans.push({doc,p});
-    report.push({title:p.title,status:p.unchanged?"UNCHANGED":"READY",campaigns:p.dates,old:p.target.old,newText:p.newText});
+    report.push({title:p.title,status:p.unchanged?"UNCHANGED":"READY",campaigns:p.dates,old:p.target.old+(p.extra?" | "+p.extra.old:""),newText:p.newText});
   }catch(e){
     report.push({title:String(doc.title || doc.name || "(untitled)"),status:"ERROR",reason:String(e&&e.message||e),hints:e&&e.hints||[],structure:e&&e.structure||[]});
   }
@@ -122,12 +142,17 @@ if(COMMIT && !blocked){
     if(p.unchanged)continue;
     const r=report.find(x=>x.title===p.title&&x.status==="READY");
     try{
-      if(rawText(p.target.node).slice(p.target.begin,p.target.end)!==p.target.old)
-        throw new Error("Text changed since validation.");
-      const sel=Selection.create(doc,p.target.node);
-      sel.addSubSelectionForNode(p.target.node,TextSelection.create(new StoryRange(p.target.begin,p.target.end)));
-      doc.executeCommand(DocumentCommand.createSetText(sel,p.newText));
-      if(!rawText(p.target.node).includes(p.newText)) throw new Error("Post-commit validation failed.");
+      const patches=p.extra?[{...p.extra,newText:""}, {...p.target,newText:p.newText}]:[{...p.target,newText:p.newText}];
+      for(const q of patches){
+        if(rawText(q.node).slice(q.begin,q.end)!==q.old)throw new Error("Text changed since validation.");
+      }
+      for(const q of patches){
+        const sel=Selection.create(doc,q.node);
+        sel.addSubSelectionForNode(q.node,TextSelection.create(new StoryRange(q.begin,q.end)));
+        doc.executeCommand(DocumentCommand.createSetText(sel,q.newText));
+      }
+      if(!rawText(p.target.node).includes(p.newText))throw new Error("Post-commit validation failed for the new sentence.");
+      if(p.extra && rawText(p.extra.node).trim()!=="")throw new Error("Post-commit validation failed for the trailing node.");
       if(r)r.status="UPDATED";
     }catch(e){
       if(r){r.status="ERROR";r.reason=String(e&&e.message||e);}
