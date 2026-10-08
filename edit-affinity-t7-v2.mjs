@@ -86,8 +86,8 @@ function planFor(doc) {
       for(let i=0;i<Math.min(texts.length,27);i++){
         const snippet=String(texts[i])
           .replace(/\b\d{9,}\b/g,"[ID]")
-          .replace(/\d[\d., \\u00A0]*\\s*(?:₫|VND)/gi,"[AMOUNT]")
-          .replace(/[\\r\\n\\u2028\\u2029]+/g," | ")
+          .replace(/\d[\d., \u00A0]*\s*(?:₫|VND)/gi,"[AMOUNT]")
+          .replace(/[\r\n\u2028\u2029]+/g," | ")
           .slice(0,130);
         structure.push({node:i,text:snippet});
       }
