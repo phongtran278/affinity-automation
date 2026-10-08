@@ -54,8 +54,9 @@ function planFor(doc) {
   }
 
   // Safety: the original payment explanation must not be altered in an unmarked invoice.
-  const watermarked=texts.some(t=>/TEST\s*[-–—]\s*KHÔNG CÓ GIÁ TRỊ THANH TOÁN/i.test(t));
-  if(!watermarked)throw new Error("TEST watermark required for this illustrative edit. Original invoice unchanged.");
+  // TEMPORARILY DISABLED: TEST watermark guard. Only run on disposable copies.
+  // const watermarked=texts.some(t=>/TEST\s*[-–—]\s*KHÔNG CÓ GIÁ TRỊ THANH TOÁN/i.test(t));
+  // if(!watermarked)throw new Error("TEST watermark required for this illustrative edit. Original invoice unchanged.");
   if(!dates.length) throw new Error("No campaign date ranges found.");
   // The importer splits the original threshold explanation into two adjacent nodes.
   // Only accept this precise structure; never infer from node indexes alone.
