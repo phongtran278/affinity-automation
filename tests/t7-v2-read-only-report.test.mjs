@@ -31,3 +31,13 @@ test("T7 v2 compares complete split-node text and summarizes current open batch"
   assert.match(script, /AFTER \(PROPOSED\):/);
   assert.doesNotMatch(script, /executeCommand|createSetText/);
 });
+
+test("T7 v2 requires Y confirmation for exporting and never writes invoices", () => {
+  assert.match(script, /process\.env\.T7_V2_EXPORT === "1"/);
+  assert.match(script, /if \(EXPORT_REPORT\) fs\.writeFileSync\(base \+ "\.json"/);
+  assert.match(script, /if \(EXPORT_REPORT\) fs\.writeFileSync\(base \+ "\.csv"/);
+  assert.match(launcher, /choice \/C YN/);
+  assert.match(launcher, /set "T7_V2_EXPORT="/);
+  assert.match(launcher, /set "T7_V2_EXPORT=1"/);
+  assert.doesNotMatch(script, /createSetText|executeCommand/);
+});
