@@ -13,3 +13,12 @@ test("T7 v2 is read-only and does not require an invoice watermark", () => {
   assert.doesNotMatch(script, /DocumentCommand|createSetText|executeCommand|TextSelection|watermarked/);
   assert.doesNotMatch(launcher, /AFFINITY_T7_V2_COMMIT|Committing text changes/);
 });
+
+test("T7 v2 aggregates verified source IDs and tracks missing documents", () => {
+  assert.match(script, /t7-v2-42-progress\.json/);
+  assert.match(script, /t7-v2-42-progress\.csv/);
+  assert.match(script, /EXPECTED\.get\(Number\(row\.stt\)\)/);
+  assert.match(script, /row\.transactionId === expected\.transactionId/);
+  assert.match(script, /missing\.length === 0/);
+  assert.match(script, /Missing STT:/);
+});
