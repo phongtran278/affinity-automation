@@ -312,23 +312,35 @@ function buildPlan(doc,row,stt){
     if(!starts.length) throw new Error("Không tìm thấy campaign date để cập nhật mô tả quảng cáo.");
     const earliest=new Date(Math.min(...starts));
     const desired="Chi tiêu cho Quảng cáo kể từ "+earliest.getUTCDate()+" tháng "+(earliest.getUTCMonth()+1)+", "+earliest.getUTCFullYear()+".";
+    // Match the complete description, including an optional money tail and
+    // "của mình." that Affinity may split into another text node.
     const existingRe=/Chi\s+tiêu\s+cho\s+Quảng\s+cáo\s+kể\s+từ\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}\.|Hệ thống đang tiến hành lập hóa đơn vì bạn đã đạt đến ngưỡng thanh toán(?:[ \t\u00a0]+của(?:[ \t\u00a0]+mình\.)?)?/gi;
+    const tailRe=/^[ \t\u00a0]*(?:\d[\d., \u00a0]*[ \t\u00a0]*(?:₫|đ|VND)[ \t\u00a0]*)?(?:của[ \t\u00a0]*(?:mình\.)?)?/i;
     const hits=[];
     for(let i=0;i<texts.length;i++){
       existingRe.lastIndex=0;
       let m;
       while((m=existingRe.exec(texts[i]))){
-        let old=m[0],suffix=-1;
-        if(/\bcủa\s*$/i.test(old.trim()) && i+1<texts.length && /^\s*mình\.\s*$/i.test(texts[i+1])){
-          old=old.trim()+" "+texts[i+1].trim();
-          suffix=i+1;
+        let old=m[0],source=m[0],suffix=-1;
+        const rest=texts[i].slice(m.index+m[0].length);
+        const tail=rest.match(tailRe)?.[0]||"";
+        const hasMoney=/\d[\d., \u00a0]*[ \t\u00a0]*(?:₫|đ|VND)/i.test(tail);
+        const hasCua=/\bcủa/i.test(tail);
+        // Only remove a money suffix when it belongs to the description.
+        if(hasMoney && !/\bcủa/i.test(tail)){
+          throw new Error("Mô tả quảng cáo có tiền phía sau nhưng thiếu 'của'; cần kiểm tra text node.");
         }
-        hits.push({i,begin:m.index,end:m.index+m[0].length,old,source:m[0],suffix});
+        if(hasMoney||hasCua) source+=tail;
+        if(/\bcủa[ \t\u00a0]*$/i.test(source.trim()) && i+1<texts.length &&
+            /^[ \t\u00a0]*mình\.[ \t\u00a0]*$/i.test(texts[i+1])){
+          old=source+" "+texts[i+1].trim();
+          suffix=i+1;
+        }else old=source;
+        hits.push({i,begin:m.index,end:m.index+source.length,old,source,suffix});
       }
     }
     if(hits.length!==1) throw new Error("Mô tả quảng cáo phải có đúng 1 vị trí, tìm thấy "+hits.length);
     const hit=hits[0];
-    // Check both nodes during dry run before any in-memory change.
     if(hit.suffix>=0){
       addPlan(plan,nodes[hit.suffix],0,texts[hit.suffix].length,texts[hit.suffix],"","adSpendDescriptionSuffix");
     }
