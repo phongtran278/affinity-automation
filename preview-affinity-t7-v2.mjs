@@ -4,6 +4,9 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 import { CallToolResultSchema } from "@modelcontextprotocol/sdk/types.js";
 import { summarizeAdSpendPeriod } from "./modules/payment-summary/period-message.mjs";
+import { writePeriodLayoutPreview } from "./modules/payment-summary/layout-preview.mjs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const MARKER = "__PHONG_T7_V2_READONLY__";
 const script = String.raw`
@@ -64,6 +67,7 @@ async function main() {
   if (!line) throw new Error("Affinity did not return a preview report. " + output);
   const docs = JSON.parse(line.slice(line.indexOf(MARKER) + MARKER.length));
   let successful = 0, failed = 0;
+  const layoutItems = [];
   console.log("\nT7 V2 - READ ONLY PREVIEW (OPEN DOCUMENTS)");
   for (const doc of docs) {
     console.log("\nDocument: " + doc.title);
@@ -81,13 +85,17 @@ async function main() {
       console.log("PREVIEW: " + summary.label);
       console.log("Threshold message found in nodes: " + doc.thresholdHits);
       console.log(summary.notice);
+      layoutItems.push({title:doc.title,message:summary.label,startDate:summary.startDate,campaignCount:doc.ranges.length});
       successful++;
     } catch (e) {
       failed++; console.log("ERROR: " + e.message);
     }
   }
+  const repoDir = path.dirname(fileURLToPath(import.meta.url));
+  const htmlPath = writePeriodLayoutPreview(layoutItems,path.join(repoDir,"diagnostics"));
+  if (htmlPath) console.log("Layout mockup (TEST): " + htmlPath);
   console.log("\nPREVIEW OK: " + successful + " | ERRORS: " + failed);
-  console.log("READ ONLY: no text changes, edits, or saves.");
+  console.log("READ ONLY: no Affinity text changes, edits, or saves. Only a local HTML preview is written.");
   if (failed) process.exitCode=1;
 }
 main().catch(e=>{ console.error("PREVIEW ERROR:",e.message); process.exitCode=1; });
