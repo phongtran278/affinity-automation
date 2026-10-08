@@ -493,6 +493,13 @@ function buildPlan(doc,row,stt){
   for(let i=0;i<texts.length;i++){
     const t=firstMoneyAfterLabel(texts[i],/ngưỡng thanh toán/i);
     if(t){
+      // T7 V2 replaces the entire legacy invoice-threshold sentence.
+      // Do not also edit a money token inside the same replacement range.
+      const insideDescription=CONFIG.editPeriodDescription && plan.some(function(r){
+        return r.node===nodes[i] && r.type==="adSpendDescription" &&
+          t.begin>=r.begin && t.end<=r.end;
+      });
+      if(insideDescription) continue;
       addPlan(plan,nodes[i],t.begin,t.end,t.text,formatMoneyLike(t.text,row.subtotal),"paymentThreshold");
       thresholdHits++;
     }
