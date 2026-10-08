@@ -33,8 +33,8 @@ test("T7 v2 compares complete split-node text and summarizes current open batch"
 });
 
 test("T7 v2 keeps its standalone reconciliation report read-only", () => {
-  assert.match(script, /process\\.env\\.T7_V2_EXPORT === "1"/);
+  assert.match(script, /process\.env\.T7_V2_EXPORT === "1"/);
   assert.doesNotMatch(script, /createSetText|executeCommand/);
-  assert.match(launcher, /node run-t7-v2-workflow\\.mjs/);
+  assert.match(launcher, /node run-t7-v2-workflow\.mjs/);
   assert.doesNotMatch(launcher, /set "T7_V2_EXPORT=1"/);
 });
