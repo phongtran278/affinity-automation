@@ -79,6 +79,20 @@ function planFor(doc) {
         if(hints.length>=22)break;
       }
     }
+    // Inspect a bounded header/summary region for the first PDF only.
+    // Redact amounts and long numeric identifiers in diagnostics.
+    if(doc===docs[0]){
+      const structure=[];
+      for(let i=0;i<Math.min(texts.length,27);i++){
+        const snippet=String(texts[i])
+          .replace(/\b\d{9,}\b/g,"[ID]")
+          .replace(/\d[\d., \\u00A0]*\\s*(?:₫|VND)/gi,"[AMOUNT]")
+          .replace(/[\\r\\n\\u2028\\u2029]+/g," | ")
+          .slice(0,130);
+        structure.push({node:i,text:snippet});
+      }
+      e.structure=structure;
+    }
     e.hints=hints.slice(0,22);
     throw e;
   }
@@ -99,7 +113,7 @@ for(const doc of docs){
     plans.push({doc,p});
     report.push({title:p.title,status:p.unchanged?"UNCHANGED":"READY",campaigns:p.dates,old:p.target.old,newText:p.newText});
   }catch(e){
-    report.push({title:String(doc.title || doc.name || "(untitled)"),status:"ERROR",reason:String(e&&e.message||e),hints:e&&e.hints||[]});
+    report.push({title:String(doc.title || doc.name || "(untitled)"),status:"ERROR",reason:String(e&&e.message||e),hints:e&&e.hints||[],structure:e&&e.structure||[]});
   }
 }
 const blocked=report.some(r=>r.status==="ERROR");
@@ -143,6 +157,7 @@ async function main(){
     console.log("\n"+x.title+" ["+x.status+"]");
     if(x.reason)console.log("  ERROR: "+x.reason);
     if(x.hints?.length) { console.log("  Nearby text nodes (diagnostic, no edit):"); for(const h of x.hints)console.log("    node "+h.node+": "+h.text); }
+    if(x.structure?.length){ console.log("  FIRST DOCUMENT HEADER STRUCTURE (IDs/amounts redacted):"); for(const n of x.structure)console.log("    node "+n.node+": "+n.text); }
     if(x.old!==undefined){
       console.log("  Campaigns: "+x.campaigns);
       console.log("  Before: "+x.old);
