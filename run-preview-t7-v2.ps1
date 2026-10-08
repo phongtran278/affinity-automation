@@ -5,7 +5,7 @@ $OutputEncoding = [Console]::OutputEncoding
 Push-Location (Split-Path -Parent $MyInvocation.MyCommand.Path)
 try {
   & npm test
-  if ($LASTEXITCODE -ne 0) { throw "Tests failed — preview cancelled." }
+  if ($LASTEXITCODE -ne 0) { throw "Tests failed - preview cancelled." }
   & node .\preview-t7-v2.mjs
   if ($LASTEXITCODE -ne 0) { throw "Preview failed." }
 } finally { Pop-Location }
