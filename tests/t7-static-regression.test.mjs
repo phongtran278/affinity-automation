@@ -30,6 +30,7 @@ function canonicalCurrent(text,reference){
       "  let invoiceNumber=null;")
     .replace(/if\(i&&arr\[i-1\]\.end>r\.begin\)\{[\s\S]*?\n      \}/,
       'if(i&&arr[i-1].end>r.begin) throw new Error("overlapping ranges");')
+    .replace(/      \/\/ T7 V2 replaces the entire legacy invoice-threshold sentence\.[\s\S]*?      if\(insideDescription\) continue;\n/, "")
     .replace("const offset=CONFIG.profile.campaign.startOffsetDays.base+\n    ((stt-1)%CONFIG.profile.campaign.startOffsetDays.cycle);","const offset=3+((stt-1)%4);")
     .replace(/const NAME_BASE=CONFIG.profile.campaign.naming.base;[\s\S]*?const NAME_SEP=CONFIG.profile.campaign.naming.separator;/,campaignConstants[0])
     .replace('new RegExp(CONFIG.profile.invoiceNumber.documentPattern,"i")','/FBADS-179-\\d+/i')
