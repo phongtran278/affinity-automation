@@ -60,7 +60,7 @@ async function main() {
     const result = spawnSync(process.execPath, [script], {
       cwd: root,
       encoding: "utf8",
-      env: { ...process.env, AFFINITY_COMMIT: commit ? "1" : "0" },
+      env: { ...process.env, AFFINITY_COMMIT: commit ? "1" : "0", T7_V2_PERIOD_EDIT: "1" },
       maxBuffer: 16 * 1024 * 1024
     });
     const output = (result.stdout || "") + (result.stderr || "");
