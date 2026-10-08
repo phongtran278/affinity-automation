@@ -2,6 +2,15 @@
 setlocal
 cd /d "%~dp0"
 
+rem Preflight: fail clearly when Node.js is unavailable.
+where node >nul 2>&1
+if errorlevel 1 (
+  echo.
+  echo NODE.JS NOT FOUND. Install Node.js or add it to PATH.
+  pause
+  exit /b 1
+)
+
 echo [1/3] Updating source from GitHub...
 git pull --ff-only
 if errorlevel 1 (
