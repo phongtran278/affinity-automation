@@ -484,7 +484,11 @@ function buildPlan(doc,row,stt){
     impressionsUpdated,
     oldCampaignSum:campaigns.reduce((a,b)=>a+b.oldSpend,0),
     newCampaignSum,
-    invoiceNumber
+    invoiceNumber,
+    optionalFields:{
+      total:totalHit?"PRESENT":"OPTIONAL / NOT PRESENT",
+      paymentThreshold:thresholdHits===1?"PRESENT":"OPTIONAL / NOT PRESENT"
+    }
   };
 }
 function validatePlan(plan){
@@ -624,6 +628,7 @@ function postValidate(plan){
         validation:commitWarnings.length?"PASS_WITH_WARNING":"PASS",
         warnings:commitWarnings,
         invoiceNumber:built.invoiceNumber,
+        optionalFields:built.optionalFields,
         replacements:built.plan.map(function(r){
           return {type:r.type,old:r.oldText,new:r.newText,meta:r.meta||null};
         })
@@ -705,6 +710,10 @@ function postValidate(plan){
         printOne("Impressions","impressions");
 
         console.log("  campaigns: "+r.campaigns+" | ad groups: "+r.adGroups+" | impressions updated: "+r.impressionsUpdated);
+        if(r.optionalFields){
+          console.log("  Total: "+(r.optionalFields.total==="PRESENT"?"PASS":"OPTIONAL / NOT PRESENT"));
+          console.log("  Threshold: "+(r.optionalFields.paymentThreshold==="PRESENT"?"PASS":"OPTIONAL / NOT PRESENT"));
+        }
         console.log("  validation: "+r.validation);
         if(Array.isArray(r.warnings)&&r.warnings.length){
           for(const w of r.warnings){
