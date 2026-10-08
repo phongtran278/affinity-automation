@@ -13,10 +13,12 @@ const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),"..");
 const baseline="d862ab22f8ebc46d26c8042db8f622046da84e53";
 
 function embedded(text){
-  const start=text.indexOf("function toArray(c)");
-  const end=text.indexOf("\n`;",start);
+  // Windows CRLF and Unix LF must compare as the same source code.
+  const normalized=text.replace(/\r\n?/g,"\n");
+  const start=normalized.indexOf("function toArray(c)");
+  const end=normalized.indexOf("\n`;",start);
   assert.ok(start>=0 && end>start,"Embedded Affinity script not found");
-  return text.slice(start,end);
+  return normalized.slice(start,end);
 }
 function canonicalCurrent(text,reference){
   const campaignConstants=reference.match(/const NAME_BASE=[\s\S]*?const NAME_SEP=.*?;/);
