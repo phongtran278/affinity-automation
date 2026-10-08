@@ -6,6 +6,7 @@ import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 import { CallToolResultSchema } from "@modelcontextprotocol/sdk/types.js";
 
 const MARKER = "__PHONG_T7_V2_READ_ONLY_REPORT__";
+const EXPORT_REPORT = process.env.T7_V2_EXPORT === "1";
 const SOURCE = JSON.parse(fs.readFileSync(new URL("./data/prohomes-t7-2026.json", import.meta.url), "utf8"));
 const EXPECTED = new Map(SOURCE.items.map(x => [Number(x.stt), x]));
 const embedded = String.raw`
@@ -118,17 +119,17 @@ async function main() {
   const missing = [...EXPECTED.keys()].filter(n => !byStt.has(n)).sort((a,b)=>a-b);
   const complete = missing.length === 0;
   const aggregate = { mode: "READ_ONLY", expected: EXPECTED.size, collected: items.length, complete, missing, unknown, errors, items, updatedAt: new Date().toISOString(), note: "Separate reconciliation report. No source invoice modified." };
-  fs.writeFileSync(snapshotPath, JSON.stringify(aggregate, null, 2) + "\n", "utf8");
+  if (EXPORT_REPORT) fs.writeFileSync(snapshotPath, JSON.stringify(aggregate, null, 2) + "\n", "utf8");
   const aggregateHeaders = ["stt", "transactionId", "title", "status", "campaigns", "periodStart", "proposedDescription", "originalText", "comparison"];
-  fs.writeFileSync(path.join(dir,"t7-v2-42-progress.csv"), "\uFEFF" + aggregateHeaders.join(",") + "\r\n" + items.map(item => aggregateHeaders.map(k => csvCell(item[k])).join(",")).join("\r\n") + "\r\n", "utf8");
+  if (EXPORT_REPORT) fs.writeFileSync(path.join(dir,"t7-v2-42-progress.csv"), "\uFEFF" + aggregateHeaders.join(",") + "\r\n" + items.map(item => aggregateHeaders.map(k => csvCell(item[k])).join(",")).join("\r\n") + "\r\n", "utf8");
 
   fs.mkdirSync(dir, { recursive: true });
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
   const base = path.join(dir, "t7-v2-reconciliation-" + stamp);
   const report = { ...payload, generatedAt: new Date().toISOString(), source: "Open Affinity documents (read-only)", note: "Independent reconciliation report; original invoice files and document text remain unchanged." };
-  fs.writeFileSync(base + ".json", JSON.stringify(report, null, 2) + "\n", "utf8");
+  if (EXPORT_REPORT) fs.writeFileSync(base + ".json", JSON.stringify(report, null, 2) + "\n", "utf8");
   const headers = ["title", "status", "campaigns", "periodStart", "proposedDescription", "originalText", "comparison", "reason"];
-  fs.writeFileSync(base + ".csv", "\uFEFF" + headers.join(",") + "\r\n" + report.report.map(item => headers.map(k => csvCell(item[k])).join(",")).join("\r\n") + "\r\n", "utf8");
+  if (EXPORT_REPORT) fs.writeFileSync(base + ".csv", "\uFEFF" + headers.join(",") + "\r\n" + report.report.map(item => headers.map(k => csvCell(item[k])).join(",")).join("\r\n") + "\r\n", "utf8");
   const active = payload.report;
   const tally = { READY: 0, UNCHANGED: 0, REVIEW_REQUIRED: 0, ERROR: 0 };
   for (const item of active) {
@@ -144,8 +145,8 @@ async function main() {
   console.log("42-DOCUMENT PROGRESS: " + items.length + "/" + EXPECTED.size + " | " + (complete ? "COMPLETE" : "INCOMPLETE"));
   if (missing.length) console.log("Missing STT: " + missing.join(", "));
   if (unknown.length) console.log("Unmatched open documents: " + unknown.join(" | "));
-  console.log("Aggregate JSON: " + snapshotPath);
-  console.log("Aggregate CSV:  " + path.join(dir, "t7-v2-42-progress.csv"));
+  if (EXPORT_REPORT) console.log("Aggregate JSON: " + snapshotPath);
+  if (EXPORT_REPORT) console.log("Aggregate CSV:  " + path.join(dir, "t7-v2-42-progress.csv"));
   for (const item of report.report) {
     console.log("\n" + item.title + " [" + (item.status === "ERROR" ? "ERROR" : item.comparison === "PROPOSED" ? "READY" : item.comparison) + "]");
     if (item.status === "OK") {
@@ -155,7 +156,8 @@ async function main() {
   }
   console.log("\nCURRENT BATCH TOTAL: " + active.filter(x => x.title !== "(none)").length + " | READY: " + tally.READY + " | UNCHANGED: " + tally.UNCHANGED + " | REVIEW REQUIRED: " + tally.REVIEW_REQUIRED + " | ERROR: " + tally.ERROR);
   console.log("READ ONLY: No invoice text changed; watermark is not required.");
-  console.log("JSON: " + base + ".json\nCSV:  " + base + ".csv");
-  if (errors.length || payload.report.some(x => x.status === "ERROR")) process.exitCode = 1;
+  if (EXPORT_REPORT) console.log("JSON: " + base + ".json\nCSV:  " + base + ".csv");
+  else console.log("DRY RUN PASSED: no report exported; press Y in the launcher to export.");
+  if (errors.length || unknown.length || payload.report.some(x => x.status === "ERROR" || x.comparison === "REVIEW_REQUIRED")) process.exitCode = 1;
 }
 main().catch(e => { console.error("T7 V2 ERROR:", e.stack || String(e)); process.exitCode = 1; });
