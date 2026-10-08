@@ -50,7 +50,7 @@ for (const doc of docs) {
       const matches = t.match(threshold) || [];
       for (const hit of matches) {
         const suffix = String(texts[i + 1] || "").trim();
-        const complete = /\\bcủa\\s*$/i.test(hit.trim()) && /^mình\\.$/i.test(suffix)
+        const complete = /\bcủa\s*$/i.test(hit.trim()) && /^mình\.$/i.test(suffix)
           ? hit.trim() + " " + suffix : hit.trim();
         existing.push(complete);
       }
@@ -137,10 +137,10 @@ async function main() {
     else if (item.comparison === "REVIEW_REQUIRED") tally.REVIEW_REQUIRED++;
     else tally.READY++;
   }
-  console.log("\\nT7 V2 | CURRENT BATCH (READ-ONLY)");
+  console.log("\nT7 V2 | CURRENT BATCH (READ-ONLY)");
   console.log("OPEN DOCUMENTS: " + active.filter(x => x.title !== "(none)").length);
   console.log("READY: " + tally.READY + " | UNCHANGED: " + tally.UNCHANGED + " | REVIEW REQUIRED: " + tally.REVIEW_REQUIRED + " | ERROR: " + tally.ERROR);
-  console.log("\\nCUMULATIVE REPORT ONLY:");
+  console.log("\nCUMULATIVE REPORT ONLY:");
   console.log("42-DOCUMENT PROGRESS: " + items.length + "/" + EXPECTED.size + " | " + (complete ? "COMPLETE" : "INCOMPLETE"));
   if (missing.length) console.log("Missing STT: " + missing.join(", "));
   if (unknown.length) console.log("Unmatched open documents: " + unknown.join(" | "));
