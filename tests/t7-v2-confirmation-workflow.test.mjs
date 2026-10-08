@@ -86,3 +86,19 @@ test("description match never consumes subsequent payment values in merged PDF n
   const split = "Hệ thống đang tiến hành lập hóa đơn vì bạn đã đạt đến ngưỡng thanh toán của";
   assert.equal(split.match(pattern)?.[0], split);
 });
+
+test("period description consumes its trailing amount and split cua minh text", async () => {
+  const fs = await import("node:fs");
+  const { fileURLToPath } = await import("node:url");
+  const core = fs.readFileSync(fileURLToPath(new URL("../core/run-batch.mjs", import.meta.url)), "utf8");
+  const match = core.match(/const tailRe=(\/.*?\/i);/);
+  assert.ok(match);
+  const literal = match[1], index=literal.lastIndexOf("/");
+  const re = new RegExp(literal.slice(1,index),literal.slice(index+1));
+  const tail = " 19.545.455 đ của";
+  assert.equal(tail.match(re)?.[0],tail);
+  assert.match(core,/if\(hit\.suffix>=0\)/);
+  assert.match(core,/adSpendDescriptionSuffix/);
+  assert.match(core,/if\(hasMoney\|\|hasCua\) source\+=tail/);
+  assert.equal(" \nTổng phụ: 19.545.455 ₫".match(re)?.[0]," ");
+});
