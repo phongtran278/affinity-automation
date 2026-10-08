@@ -25,14 +25,30 @@ if errorlevel 1 (
   exit /b 1
 )
 echo.
-echo [4/4] Creating READ-ONLY reconciliation reports...
+echo [4/5] DRY RUN: preview current open documents...
+set "T7_V2_EXPORT="
 node edit-affinity-t7-v2.mjs
 if errorlevel 1 (
-  echo REPORT ERROR. Inspect the output above.
+  echo DRY RUN FAILED. No report exported.
   pause
   exit /b 1
 )
 echo.
-echo DONE. Find CSV and JSON in the reports folder.
-echo No Affinity document or original invoice was modified.
+choice /C YN /N /M "Dry run passed. Export read-only reconciliation reports? [Y/N]: "
+if errorlevel 2 (
+  echo Cancelled. No report exported and no invoice modified.
+  pause
+  exit /b 0
+)
+echo.
+echo [5/5] Exporting separate reconciliation reports...
+set "T7_V2_EXPORT=1"
+node edit-affinity-t7-v2.mjs
+if errorlevel 1 (
+  echo EXPORT FAILED. Check the output above.
+  pause
+  exit /b 1
+)
+echo.
+echo DONE. Reports saved. Original invoices were not modified.
 pause
