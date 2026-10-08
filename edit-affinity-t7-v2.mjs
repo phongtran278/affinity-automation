@@ -53,7 +53,20 @@ function planFor(doc) {
       targets.push({node:nodes[i],begin:m.index,end:m.index+m[0].length,old:m[0]});
   }
   if(!dates.length) throw new Error("No campaign date ranges found.");
-  if(targets.length!==1) throw new Error("Expected exactly 1 existing ad-spend-period sentence, found "+targets.length+". No changes made.");
+  if(targets.length!==1) {
+    // Diagnostic only: never guess where to write when the target is missing or ambiguous.
+    // Show only relevant text snippets rather than dumping the entire invoice.
+    const hints=[];
+    for(let i=0;i<texts.length;i++){
+      const text=String(texts[i]);
+      if(/chi\\s*tiêu|quảng\\s*cáo|ngưỡng\\s*thanh\\s*toán/i.test(text)){
+        hints.push({node:i,text:text.replace(/[\\r\\n\\u2028\\u2029]+/g," | ").slice(0,220)});
+      }
+    }
+    const e=new Error("Expected exactly 1 existing ad-spend-period sentence, found "+targets.length+". No changes made.");
+    e.hints=hints.slice(0,12);
+    throw e;
+  }
   const d=new Date(Math.min(...dates));
   const next="Chi tiêu cho Quảng cáo kể từ "+d.getUTCDate()+" tháng "+(d.getUTCMonth()+1)+", "+d.getUTCFullYear()+".";
   const t=targets[0];
@@ -71,7 +84,7 @@ for(const doc of docs){
     plans.push({doc,p});
     report.push({title:p.title,status:p.unchanged?"UNCHANGED":"READY",campaigns:p.dates,old:p.target.old,newText:p.newText});
   }catch(e){
-    report.push({title:String(doc.title || doc.name || "(untitled)"),status:"ERROR",reason:String(e&&e.message||e)});
+    report.push({title:String(doc.title || doc.name || "(untitled)"),status:"ERROR",reason:String(e&&e.message||e),hints:e&&e.hints||[]});
   }
 }
 const blocked=report.some(r=>r.status==="ERROR");
@@ -114,6 +127,7 @@ async function main(){
   for(const x of report.report){
     console.log("\n"+x.title+" ["+x.status+"]");
     if(x.reason)console.log("  ERROR: "+x.reason);
+    if(x.hints?.length) { console.log("  Nearby text nodes (diagnostic, no edit):"); for(const h of x.hints)console.log("    node "+h.node+": "+h.text); }
     if(x.old!==undefined){
       console.log("  Campaigns: "+x.campaigns);
       console.log("  Before: "+x.old);
