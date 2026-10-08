@@ -117,3 +117,18 @@ test("threshold money nested inside replaced description is skipped, standalone 
   assert.equal(covered(within),true);
   assert.equal(covered(outside),false);
 });
+
+test("V2 description uses minimum start date of the campaign ranges after editing", async () => {
+  const fs=await import("node:fs");
+  const {fileURLToPath}=await import("node:url");
+  const core=fs.readFileSync(fileURLToPath(new URL("../core/run-batch.mjs",import.meta.url)),"utf8");
+  assert.match(core,/const proposedRanges=starts\.map\(function\(\)\{return campaignRange\(row\.timestamp,stt\);\}\)/);
+  assert.match(core,/const earliest=new Date\(Math\.min\(\.\.\.finalStarts\)\)/);
+  assert.match(core,/const rangeText=campaignRange\(row\.timestamp,stt\)/);
+  // Same campaign-date formatting must drive both the replacement and the headline.
+  const range="Từ 00:00 11 tháng 7, 2026 đến 23:59 14 tháng 7, 2026";
+  const m=range.match(/^Từ\s+00:00\s+(\d{1,2})\s+tháng\s+(\d{1,2}),\s+(\d{4})/i);
+  assert.equal(m[1],"11");
+  assert.equal(m[2],"7");
+  assert.equal(m[3],"2026");
+});
