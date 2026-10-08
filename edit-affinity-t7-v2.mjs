@@ -41,8 +41,8 @@ for (const doc of docs) {
     const texts = asArray(doc.layers.all).filter(n => n && (n.isFrameTextNode || n.isArtTextNode)).map(rawText);
     const dates = [];
     const existing = [];
-    const oldSentence = /Chi\\s+tiêu\\s+cho\\s+Quảng\\s+cáo\\s+kể\\s+từ\\s+\\d{1,2}\\s+tháng\\s+\\d{1,2},\\s+\\d{4}\\./gi;
-    const threshold = /Hệ thống đang tiến hành lập hóa đơn vì bạn đã đạt đến ngưỡng thanh toán[^\\r\\n\\u2028\\u2029]*/gi;
+    const oldSentence = /Chi\s+tiêu\s+cho\s+Quảng\s+cáo\s+kể\s+từ\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}\./gi;
+    const threshold = /Hệ thống đang tiến hành lập hóa đơn vì bạn đã đạt đến ngưỡng thanh toán[^\r\n\u2028\u2029]*/gi;
     for (const t of texts) {
       oldSentence.lastIndex = 0; threshold.lastIndex = 0;
       existing.push(...(t.match(oldSentence) || []));
@@ -128,7 +128,7 @@ async function main() {
   console.log("Aggregate JSON: " + snapshotPath);
   console.log("Aggregate CSV:  " + path.join(dir, "t7-v2-42-progress.csv"));
   for (const item of report.report) {
-    console.log("\\n" + item.title + " [" + item.status + "] " + (item.comparison || ""));
+    console.log("\n" + item.title + " [" + item.status + "] " + (item.comparison || ""));
     if (item.status === "OK") {
       console.log("  BEFORE: " + (item.originalText ?? ("[Ambiguous or missing original; matches=" + item.originalMatches + "]")));
       console.log("  AFTER (PROPOSED): " + item.proposedDescription);
