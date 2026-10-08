@@ -1,5 +1,21 @@
 # affinity-automation
 
+## T7 V2: open PDFs -> DRY RUN -> confirm Y/N -> edit in Affinity
+
+Use `run-batch-t7-v2.bat` while on the `feature/t7-v2` branch.
+
+1. Open only the intended T7/2026 PDF documents in Affinity Designer; keep the Affinity Script Manager bridge running.
+2. Run `run-batch-t7-v2.bat`. The launcher pulls updates and runs automated tests.
+3. The workflow inspects **all open documents** with the existing T7 batch editor in **DRY RUN** mode, printing every BEFORE -> AFTER substitution without editing Affinity. It saves the text report under `reports/t7-v2-before-after-<timestamp>.txt` before asking for consent.
+4. Inspect the terminal output or the saved report. A batch with any errors, skipped documents, or zero valid documents is rejected; there is no Y/N prompt.
+5. Type **Y** to apply the validated T7 edit plan to the open Affinity documents in memory, or **N** to cancel without editing them.
+6. Check the results in Affinity. **Saving/exporting is a separate manual step**: this workflow does not overwrite source PDF files on disk.
+
+**Important:** This launcher uses the existing T7 batch engine and supports only the mapped T7 documents. Do not open unrelated files during this batch. An editing error can leave partial in-memory changes; inspect the documents before saving. The standalone `edit-affinity-t7-v2.mjs` remains a read-only period reconciliation utility, not the edit engine.
+
+---
+
+
 Automation toolkit for Affinity Designer workflows used in the ProHomes invoice project.
 
 The repo currently focuses on three practical jobs:
