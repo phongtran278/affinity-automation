@@ -558,7 +558,14 @@ function validatePlan(plan){
     for(let i=0;i<arr.length;i++){
       const r=arr[i];
       if(current.slice(r.begin,r.end)!==r.oldText) throw new Error("stale range: "+r.type);
-      if(i&&arr[i-1].end>r.begin) throw new Error("overlapping ranges");
+      if(i&&arr[i-1].end>r.begin){
+        const previous=arr[i-1];
+        const excerpt=function(x){return JSON.stringify(String(x).slice(0,140));};
+        throw new Error("overlapping ranges: "+previous.type+
+          " ["+previous.begin+","+previous.end+") "+excerpt(previous.oldText)+
+          " vs "+r.type+" ["+r.begin+","+r.end+") "+excerpt(r.oldText)+
+          " | nodeText="+excerpt(current));
+      }
     }
   }
 }
