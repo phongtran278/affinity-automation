@@ -50,3 +50,16 @@ test("mismatched commit count is rejected", async () => {
   const h=harness({commitOutput:"SUCCESS: 1 ERROR: 0 SKIPPED: 0"});
   assert.equal(await runWorkflow(h.args),1);
 });
+
+test("v2 opt-in updates ad-spend description in dry run and commit without changing baseline", async () => {
+  const fs = await import("node:fs");
+  const { fileURLToPath } = await import("node:url");
+  const workflow = fs.readFileSync(fileURLToPath(new URL("../run-t7-v2-workflow.mjs", import.meta.url)), "utf8");
+  const core = fs.readFileSync(fileURLToPath(new URL("../core/run-batch.mjs", import.meta.url)), "utf8");
+  assert.match(workflow, /T7_V2_PERIOD_EDIT: "1"/);
+  assert.match(core, /editPeriodDescription:process\.env\.T7_V2_PERIOD_EDIT==="1"/);
+  assert.match(core, /if\(CONFIG\.editPeriodDescription\)/);
+  assert.match(core, /Chi tiêu cho Quảng cáo kể từ/);
+  assert.match(core, /adSpendDescriptionSuffix/);
+  assert.match(core, /printOne\("Mô tả chi tiêu quảng cáo","adSpendDescription"\)/);
+});
