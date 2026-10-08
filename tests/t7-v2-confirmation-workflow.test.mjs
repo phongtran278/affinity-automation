@@ -102,3 +102,18 @@ test("period description consumes its trailing amount and split cua minh text", 
   assert.match(core,/if\(hasMoney\|\|hasCua\) source\+=tail/);
   assert.equal(" \nTổng phụ: 19.545.455 ₫".match(re)?.[0]," ");
 });
+
+test("threshold money nested inside replaced description is skipped, standalone threshold remains", async () => {
+  const fs=await import("node:fs");
+  const {fileURLToPath}=await import("node:url");
+  const core=fs.readFileSync(fileURLToPath(new URL("../core/run-batch.mjs",import.meta.url)),"utf8");
+  assert.match(core,/const insideDescription=CONFIG\.editPeriodDescription && plan\.some/);
+  assert.match(core,/t\.begin>=r\.begin && t\.end<=r\.end/);
+  assert.match(core,/if\(insideDescription\) continue/);
+  const description={node:"shared",type:"adSpendDescription",begin:0,end:88};
+  const within={begin:72,end:84};
+  const outside={begin:90,end:102};
+  const covered=t=>description.node==="shared"&&t.begin>=description.begin&&t.end<=description.end;
+  assert.equal(covered(within),true);
+  assert.equal(covered(outside),false);
+});
