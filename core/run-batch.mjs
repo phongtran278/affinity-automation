@@ -27,6 +27,7 @@ export async function runBatch(profile, source){
 
   const payload=JSON.stringify({
     dryRun:DRY_RUN,
+    editPeriodDescription:process.env.T7_V2_PERIOD_EDIT==="1",
     batch:source.batch,
     items:source.items,
     profile
@@ -290,6 +291,49 @@ function buildPlan(doc,row,stt){
   if(!nodes.length) throw new Error("Không có text node.");
   const texts=nodes.map(getRawText);
   const plan=[];
+
+  // Opt-in T7 V2: reconcile the existing ad-spend description against
+  // the earliest campaign start date. Legacy T7 runs remain unchanged.
+  if(CONFIG.editPeriodDescription){
+    const campaignDateRe=/Từ\s+00:00\s+(\d{1,2})\s+tháng\s+(\d{1,2}),\s+(\d{4})\s+đến\s+\d{1,2}:\d{2}\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}/gi;
+    const starts=[];
+    for(const t of texts){
+      campaignDateRe.lastIndex=0;
+      let m;
+      while((m=campaignDateRe.exec(t))){
+        const day=Number(m[1]),month=Number(m[2]),year=Number(m[3]);
+        const dt=Date.UTC(year,month-1,day);
+        const d=new Date(dt);
+        if(d.getUTCFullYear()!==year||d.getUTCMonth()!==month-1||d.getUTCDate()!==day)
+          throw new Error("Invalid campaign start date");
+        starts.push(dt);
+      }
+    }
+    if(!starts.length) throw new Error("Không tìm thấy campaign date để cập nhật mô tả quảng cáo.");
+    const earliest=new Date(Math.min(...starts));
+    const desired="Chi tiêu cho Quảng cáo kể từ "+earliest.getUTCDate()+" tháng "+(earliest.getUTCMonth()+1)+", "+earliest.getUTCFullYear()+".";
+    const existingRe=/Chi\s+tiêu\s+cho\s+Quảng\s+cáo\s+kể\s+từ\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}\.|Hệ thống đang tiến hành lập hóa đơn vì bạn đã đạt đến ngưỡng thanh toán[^\r\n\u2028\u2029]*/gi;
+    const hits=[];
+    for(let i=0;i<texts.length;i++){
+      existingRe.lastIndex=0;
+      let m;
+      while((m=existingRe.exec(texts[i]))){
+        let old=m[0],suffix=-1;
+        if(/\bcủa\s*$/i.test(old.trim()) && i+1<texts.length && /^\s*mình\.\s*$/i.test(texts[i+1])){
+          old=old.trim()+" "+texts[i+1].trim();
+          suffix=i+1;
+        }
+        hits.push({i,begin:m.index,end:m.index+m[0].length,old,source:m[0],suffix});
+      }
+    }
+    if(hits.length!==1) throw new Error("Mô tả quảng cáo phải có đúng 1 vị trí, tìm thấy "+hits.length);
+    const hit=hits[0];
+    // Check both nodes during dry run before any in-memory change.
+    if(hit.suffix>=0){
+      addPlan(plan,nodes[hit.suffix],0,texts[hit.suffix].length,texts[hit.suffix],"","adSpendDescriptionSuffix");
+    }
+    addPlan(plan,nodes[hit.i],hit.begin,hit.end,hit.source,desired,"adSpendDescription",{before:hit.old});
+  }
 
   let invoiceNumber=null;
   let invoiceNodeIndex=-1;
@@ -700,6 +744,9 @@ function postValidate(plan){
         printOne("VAT","vat");
         printOne("Tổng thanh toán","total");
         printOne("Ngưỡng thanh toán","paymentThreshold");
+
+        printOne("Mô tả chi tiêu quảng cáo","adSpendDescription");
+        printOne("Phần nối mô tả","adSpendDescriptionSuffix");
 
         printOne("Invoice #","invoiceNumber");
 
