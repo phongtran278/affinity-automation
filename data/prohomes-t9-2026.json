@@ -3,7 +3,8 @@
   "batch": "ProHomes TKQC 1 - 09/2026",
   "source": {
     "driveFolderId": "1drXD8JAHvkbYUwE1zd7trjvuJmAgnq5v",
-    "note": "Values transcribed directly from PDF contents; duplicate documents retain their literal PDF values. Verify against independent transaction records before use."
+    "spreadsheetFileId": "1PCjXFQNY11EQpBuXPgon7mlDdSs8vPZJ",
+    "note": "Input fields follow worksheet STT. Verified invoice numbers are retained only for matching source-PDF transactions. TEST-FBADS numbers are time-interpolated/extrapolated test identifiers, NOT issued Meta invoice numbers; never place them on payment documents."
   },
   "items": [
     {
@@ -17,48 +18,48 @@
     },
     {
       "stt": 71,
-      "transactionId": "28355111777507230-28394061776945567",
-      "timestamp": "2026-09-19 09:41:00",
-      "subtotal": 16170235,
-      "vat": 1617024,
-      "total": 17787259,
-      "invoiceNumber": "FBADS-179-106561408"
+      "transactionId": "28473383148587761-28659444615734030",
+      "timestamp": "2026-09-03 05:58:00",
+      "subtotal": 19818182,
+      "vat": 1981818,
+      "total": 21800000,
+      "invoiceNumber": "TEST-FBADS-179-106471331"
     },
     {
       "stt": 72,
-      "transactionId": "28382932074725203-28186476284370781",
-      "timestamp": "2026-09-08 09:53:00",
-      "subtotal": 6882363,
-      "vat": 688236,
-      "total": 7570599,
-      "invoiceNumber": "FBADS-179-106498757"
+      "transactionId": "28706095050171604-28494542841037133",
+      "timestamp": "2026-09-03 13:58:00",
+      "subtotal": 17272727,
+      "vat": 1727273,
+      "total": 19000000,
+      "invoiceNumber": "TEST-FBADS-179-106473107"
     },
     {
       "stt": 73,
-      "transactionId": "28120585280959883-28422865217398551",
-      "timestamp": "2026-09-12 20:52:00",
-      "subtotal": 20000000,
-      "vat": 2000000,
-      "total": 22000000,
-      "invoiceNumber": "FBADS-179-106524384"
+      "transactionId": "28694604211370896-28500967020444805",
+      "timestamp": "2026-09-03 22:58:00",
+      "subtotal": 19909091,
+      "vat": 1990909,
+      "total": 21900000,
+      "invoiceNumber": "TEST-FBADS-179-106475105"
     },
     {
       "stt": 74,
-      "transactionId": "28178002025218208-28178002105218200",
-      "timestamp": "2026-09-16 13:43:00",
-      "subtotal": 20000000,
-      "vat": 2000000,
-      "total": 22000000,
-      "invoiceNumber": "FBADS-179-106545348"
+      "transactionId": "28680623187587060-28706244407525549",
+      "timestamp": "2026-09-05 09:27:00",
+      "subtotal": 21909091,
+      "vat": 2190909,
+      "total": 24100000,
+      "invoiceNumber": "TEST-FBADS-179-106482761"
     },
     {
       "stt": 75,
-      "transactionId": "28606710675680674-28365456843139392",
-      "timestamp": "2026-09-22 23:26:00",
-      "subtotal": 20000000,
-      "vat": 2000000,
-      "total": 22000000,
-      "invoiceNumber": "FBADS-179-106580199"
+      "transactionId": "28689511084545097-28719283879533984",
+      "timestamp": "2026-09-05 19:27:00",
+      "subtotal": 20454545,
+      "vat": 2045455,
+      "total": 22500000,
+      "invoiceNumber": "TEST-FBADS-179-106484981"
     },
     {
       "stt": 76,
@@ -71,12 +72,12 @@
     },
     {
       "stt": 77,
-      "transactionId": "28356494947368916-28160126467005763",
-      "timestamp": "2026-09-06 12:23:00",
-      "subtotal": 16208827,
-      "vat": 1620883,
-      "total": 17829710,
-      "invoiceNumber": "FBADS-179-106488740"
+      "transactionId": "28175355695511750-28182099419637280",
+      "timestamp": "2026-09-07 16:48:00",
+      "subtotal": 18000000,
+      "vat": 1800000,
+      "total": 19800000,
+      "invoiceNumber": "TEST-FBADS-179-106494996"
     },
     {
       "stt": 78,
@@ -89,39 +90,39 @@
     },
     {
       "stt": 79,
-      "transactionId": "28684442991240771-28714228564928884",
-      "timestamp": "2026-09-30 09:48:00",
-      "subtotal": 6608647,
-      "vat": 660865,
-      "total": 7269512,
-      "invoiceNumber": "FBADS-179-106620577"
+      "transactionId": "28377822194632212-28178699891037729",
+      "timestamp": "2026-09-08 17:53:00",
+      "subtotal": 18363636,
+      "vat": 1836364,
+      "total": 20200000,
+      "invoiceNumber": "TEST-FBADS-179-106500673"
     },
     {
       "stt": 80,
-      "transactionId": "28697825809902493-28499815416370198",
-      "timestamp": "2026-09-29 06:22:00",
-      "subtotal": 15976962,
-      "vat": 1597696,
-      "total": 17574658,
-      "invoiceNumber": "FBADS-179-106613888"
+      "transactionId": "28174983547428663-28184651994929925",
+      "timestamp": "2026-09-09 15:59:00",
+      "subtotal": 20363636,
+      "vat": 2036364,
+      "total": 22400000,
+      "invoiceNumber": "TEST-FBADS-179-106505967"
     },
     {
       "stt": 81,
-      "transactionId": "28095286446823099-27961048223580257",
-      "timestamp": "2026-09-02 05:36:00",
-      "subtotal": 16208827,
-      "vat": 1620883,
-      "total": 17829710,
-      "invoiceNumber": "FBADS-179-106465921"
+      "transactionId": "28602387988192913-28369737407918489",
+      "timestamp": "2026-09-09 23:59:00",
+      "subtotal": 15636364,
+      "vat": 1563636,
+      "total": 17200000,
+      "invoiceNumber": "TEST-FBADS-179-106507884"
     },
     {
       "stt": 82,
-      "transactionId": "28468533729498365-28659477767070631",
-      "timestamp": "2026-09-26 09:09:00",
-      "subtotal": 20000000,
-      "vat": 2000000,
-      "total": 22000000,
-      "invoiceNumber": "FBADS-179-106599113"
+      "transactionId": "28609627758465108-28365635659044163",
+      "timestamp": "2026-09-11 07:53:00",
+      "subtotal": 18272727,
+      "vat": 1827273,
+      "total": 20100000,
+      "invoiceNumber": "TEST-FBADS-179-106515525"
     },
     {
       "stt": 83,
@@ -134,30 +135,30 @@
     },
     {
       "stt": 84,
-      "transactionId": "28178002025218208-28178002105218200",
-      "timestamp": "2026-09-16 13:43:00",
-      "subtotal": 20000000,
-      "vat": 2000000,
-      "total": 22000000,
-      "invoiceNumber": "FBADS-179-106545348"
+      "transactionId": "28696483910507209-28498846184851639",
+      "timestamp": "2026-09-13 18:02:00",
+      "subtotal": 18176377,
+      "vat": 1817638,
+      "total": 19994015,
+      "invoiceNumber": "TEST-FBADS-179-106529378"
     },
     {
       "stt": 85,
-      "transactionId": "28355111777507230-28394061776945567",
-      "timestamp": "2026-09-19 09:41:00",
-      "subtotal": 16170235,
-      "vat": 1617024,
-      "total": 17787259,
-      "invoiceNumber": "FBADS-179-106561408"
+      "transactionId": "28352812516636650-28394178004038525",
+      "timestamp": "2026-09-14 19:49:00",
+      "subtotal": 20703261,
+      "vat": 2070326,
+      "total": 22773587,
+      "invoiceNumber": "TEST-FBADS-179-106535462"
     },
     {
       "stt": 86,
-      "transactionId": "28697825809902493-28499815416370198",
-      "timestamp": "2026-09-29 06:22:00",
-      "subtotal": 15976962,
-      "vat": 1597696,
-      "total": 17574658,
-      "invoiceNumber": "FBADS-179-106613888"
+      "transactionId": "28121826534324662-28428364013030233",
+      "timestamp": "2026-09-15 12:26:00",
+      "subtotal": 15909091,
+      "vat": 1590909,
+      "total": 17500000,
+      "invoiceNumber": "TEST-FBADS-179-106539382"
     },
     {
       "stt": 87,
@@ -170,21 +171,21 @@
     },
     {
       "stt": 88,
-      "transactionId": "28095286446823099-27961048223580257",
-      "timestamp": "2026-09-02 05:36:00",
-      "subtotal": 16208827,
-      "vat": 1620883,
-      "total": 17829710,
-      "invoiceNumber": "FBADS-179-106465921"
+      "transactionId": "28688521220270581-28709906872288282",
+      "timestamp": "2026-09-18 06:51:00",
+      "subtotal": 23090909,
+      "vat": 2309091,
+      "total": 25400000,
+      "invoiceNumber": "TEST-FBADS-179-106555067"
     },
     {
       "stt": 89,
-      "transactionId": "28684442991240771-28714228564928884",
-      "timestamp": "2026-09-30 09:48:00",
-      "subtotal": 6608647,
-      "vat": 660865,
-      "total": 7269512,
-      "invoiceNumber": "FBADS-179-106620577"
+      "transactionId": "28691388913123753-28503702324844019",
+      "timestamp": "2026-09-19 00:41:00",
+      "subtotal": 19950323,
+      "vat": 1995032,
+      "total": 21945355,
+      "invoiceNumber": "TEST-FBADS-179-106559281"
     },
     {
       "stt": 90,
@@ -197,66 +198,66 @@
     },
     {
       "stt": 91,
-      "transactionId": "28468533729498365-28659477767070631",
-      "timestamp": "2026-09-26 09:09:00",
-      "subtotal": 20000000,
-      "vat": 2000000,
-      "total": 22000000,
-      "invoiceNumber": "FBADS-179-106599113"
+      "transactionId": "28700931157922819-28503806395012938",
+      "timestamp": "2026-09-19 18:16:00",
+      "subtotal": 16090909,
+      "vat": 1609091,
+      "total": 17700000,
+      "invoiceNumber": "TEST-FBADS-179-106563289"
     },
     {
       "stt": 92,
-      "transactionId": "28120585280959883-28422865217398551",
-      "timestamp": "2026-09-12 20:52:00",
-      "subtotal": 20000000,
-      "vat": 2000000,
-      "total": 22000000,
-      "invoiceNumber": "FBADS-179-106524384"
+      "transactionId": "28691454659976754-28506443015151773",
+      "timestamp": "2026-09-20 15:59:00",
+      "subtotal": 20840731,
+      "vat": 2084073,
+      "total": 22924804,
+      "invoiceNumber": "TEST-FBADS-179-106568048"
     },
     {
       "stt": 93,
-      "transactionId": "28382932074725203-28186476284370781",
-      "timestamp": "2026-09-08 09:53:00",
-      "subtotal": 6882363,
-      "vat": 688236,
-      "total": 7570599,
-      "invoiceNumber": "FBADS-179-106498757"
+      "transactionId": "28380646100480976-28191789351949741",
+      "timestamp": "2026-09-20 23:59:00",
+      "subtotal": 17454545,
+      "vat": 1745455,
+      "total": 19200000,
+      "invoiceNumber": "TEST-FBADS-179-106569801"
     },
     {
       "stt": 94,
-      "transactionId": "28606710675680674-28365456843139392",
-      "timestamp": "2026-09-22 23:26:00",
-      "subtotal": 20000000,
-      "vat": 2000000,
-      "total": 22000000,
-      "invoiceNumber": "FBADS-179-106580199"
+      "transactionId": "28603080242872010-28357450195672401",
+      "timestamp": "2026-09-21 04:08:00",
+      "subtotal": 19727273,
+      "vat": 1972727,
+      "total": 21700000,
+      "invoiceNumber": "TEST-FBADS-179-106570710"
     },
     {
       "stt": 95,
-      "transactionId": "28356494947368916-28160126467005763",
-      "timestamp": "2026-09-06 12:23:00",
-      "subtotal": 16208827,
-      "vat": 1620883,
-      "total": 17829710,
-      "invoiceNumber": "FBADS-179-106488740"
+      "transactionId": "28677137929801638-28717452188158069",
+      "timestamp": "2026-09-21 12:08:00",
+      "subtotal": 19090909,
+      "vat": 1909091,
+      "total": 21000000,
+      "invoiceNumber": "TEST-FBADS-179-106572463"
     },
     {
       "stt": 96,
-      "transactionId": "28120585280959883-28422865217398551",
-      "timestamp": "2026-09-12 20:52:00",
-      "subtotal": 20000000,
-      "vat": 2000000,
-      "total": 22000000,
-      "invoiceNumber": "FBADS-179-106524384"
+      "transactionId": "28347851380303574-28390061132965170",
+      "timestamp": "2026-09-21 20:08:00",
+      "subtotal": 19202316,
+      "vat": 1920232,
+      "total": 21122548,
+      "invoiceNumber": "TEST-FBADS-179-106574217"
     },
     {
       "stt": 97,
-      "transactionId": "28382932074725203-28186476284370781",
-      "timestamp": "2026-09-08 09:53:00",
-      "subtotal": 6882363,
-      "vat": 688236,
-      "total": 7570599,
-      "invoiceNumber": "FBADS-179-106498757"
+      "transactionId": "28181120445638285-28183408218588235",
+      "timestamp": "2026-09-22 13:26:00",
+      "subtotal": 20112948,
+      "vat": 2011295,
+      "total": 22124243,
+      "invoiceNumber": "TEST-FBADS-179-106578008"
     },
     {
       "stt": 98,
@@ -269,30 +270,30 @@
     },
     {
       "stt": 99,
-      "transactionId": "28178002025218208-28178002105218200",
-      "timestamp": "2026-09-16 13:43:00",
-      "subtotal": 20000000,
-      "vat": 2000000,
-      "total": 22000000,
-      "invoiceNumber": "FBADS-179-106545348"
+      "transactionId": "28607809145127610-28372563637662610",
+      "timestamp": "2026-09-23 15:59:00",
+      "subtotal": 18574889,
+      "vat": 1857489,
+      "total": 20432378,
+      "invoiceNumber": "TEST-FBADS-179-106584030"
     },
     {
       "stt": 100,
-      "transactionId": "28697825809902493-28499815416370198",
-      "timestamp": "2026-09-29 06:22:00",
-      "subtotal": 15976962,
-      "vat": 1597696,
-      "total": 17574658,
-      "invoiceNumber": "FBADS-179-106613888"
+      "transactionId": "28360834148922952-28395807897306720",
+      "timestamp": "2026-09-23 23:59:00",
+      "subtotal": 19363636,
+      "vat": 1936364,
+      "total": 21300000,
+      "invoiceNumber": "TEST-FBADS-179-106585881"
     },
     {
       "stt": 101,
-      "transactionId": "28356494947368916-28160126467005763",
-      "timestamp": "2026-09-06 12:23:00",
-      "subtotal": 16208827,
-      "vat": 1620883,
-      "total": 17829710,
-      "invoiceNumber": "FBADS-179-106488740"
+      "transactionId": "28694842639280244-28498771727415204",
+      "timestamp": "2026-09-24 14:05:00",
+      "subtotal": 15090909,
+      "vat": 1509091,
+      "total": 16600000,
+      "invoiceNumber": "TEST-FBADS-179-106589145"
     },
     {
       "stt": 102,
@@ -305,57 +306,57 @@
     },
     {
       "stt": 103,
-      "transactionId": "28468533729498365-28659477767070631",
-      "timestamp": "2026-09-26 09:09:00",
-      "subtotal": 20000000,
-      "vat": 2000000,
-      "total": 22000000,
-      "invoiceNumber": "FBADS-179-106599113"
+      "transactionId": "28459736819864888-28665995528297692",
+      "timestamp": "2026-09-27 03:39:00",
+      "subtotal": 21545455,
+      "vat": 2154545,
+      "total": 23700000,
+      "invoiceNumber": "TEST-FBADS-179-106603062"
     },
     {
       "stt": 104,
-      "transactionId": "28355111777507230-28394061776945567",
-      "timestamp": "2026-09-19 09:41:00",
-      "subtotal": 16170235,
-      "vat": 1617024,
-      "total": 17787259,
-      "invoiceNumber": "FBADS-179-106561408"
+      "transactionId": "28374749479868223-28180795366928385",
+      "timestamp": "2026-09-27 11:39:00",
+      "subtotal": 20836205,
+      "vat": 2083620,
+      "total": 22919825,
+      "invoiceNumber": "TEST-FBADS-179-106604770"
     },
     {
       "stt": 105,
-      "transactionId": "28606710675680674-28365456843139392",
-      "timestamp": "2026-09-22 23:26:00",
-      "subtotal": 20000000,
-      "vat": 2000000,
-      "total": 22000000,
-      "invoiceNumber": "FBADS-179-106580199"
+      "transactionId": "28704193096681863-28492808083487015",
+      "timestamp": "2026-09-27 19:39:00",
+      "subtotal": 21090909,
+      "vat": 2109091,
+      "total": 23200000,
+      "invoiceNumber": "TEST-FBADS-179-106606477"
     },
     {
       "stt": 106,
-      "transactionId": "28684442991240771-28714228564928884",
-      "timestamp": "2026-09-30 09:48:00",
-      "subtotal": 6608647,
-      "vat": 660865,
-      "total": 7269512,
-      "invoiceNumber": "FBADS-179-106620577"
+      "transactionId": "28382904932170360-28193262528594122",
+      "timestamp": "2026-09-28 00:00:00",
+      "subtotal": 15454545,
+      "vat": 1545455,
+      "total": 17000000,
+      "invoiceNumber": "TEST-FBADS-179-106607406"
     },
     {
       "stt": 107,
-      "transactionId": "28095286446823099-27961048223580257",
-      "timestamp": "2026-09-02 05:36:00",
-      "subtotal": 16208827,
-      "vat": 1620883,
-      "total": 17829710,
-      "invoiceNumber": "FBADS-179-106465921"
+      "transactionId": "28379411557637037-28178886534899597",
+      "timestamp": "2026-09-28 08:00:00",
+      "subtotal": 19636364,
+      "vat": 1963636,
+      "total": 21600000,
+      "invoiceNumber": "TEST-FBADS-179-106609114"
     },
     {
       "stt": 108,
-      "transactionId": "28697825809902493-28499815416370198",
-      "timestamp": "2026-09-29 06:22:00",
-      "subtotal": 15976962,
-      "vat": 1597696,
-      "total": 17574658,
-      "invoiceNumber": "FBADS-179-106613888"
+      "transactionId": "28697157825356763-28499732524454235",
+      "timestamp": "2026-09-28 16:00:00",
+      "subtotal": 15545455,
+      "vat": 1554545,
+      "total": 17100000,
+      "invoiceNumber": "TEST-FBADS-179-106610821"
     },
     {
       "stt": 109,
@@ -377,12 +378,12 @@
     },
     {
       "stt": 111,
-      "transactionId": "28468533729498365-28659477767070631",
-      "timestamp": "2026-09-26 09:09:00",
-      "subtotal": 20000000,
-      "vat": 2000000,
-      "total": 22000000,
-      "invoiceNumber": "FBADS-179-106599113"
+      "transactionId": "28349265009875735-28402242743847307",
+      "timestamp": "2026-09-30 18:06:00",
+      "subtotal": 21365270,
+      "vat": 2136527,
+      "total": 23501797,
+      "invoiceNumber": "TEST-FBADS-179-106622601"
     }
   ]
 }
