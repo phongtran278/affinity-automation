@@ -21,7 +21,7 @@ function textOf(node) {
   try { return node.story ? node.story.getText(0,-1) : ""; } catch (_) {}
   return "";
 }
-const dateRe = /Từ\\s+00:00\\s+\\d{1,2}\\s+tháng\\s+\\d{1,2},\\s+\\d{4}\\s+đến\\s+\\d{1,2}:\\d{2}\\s+\\d{1,2}\\s+tháng\\s+\\d{1,2},\\s+\\d{4}/gi;
+const dateRe = /Từ\s+00:00\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}\s+đến\s+\d{1,2}:\d{2}\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}/gi;
 const result = [];
 let docs = [];
 try { docs = arrayOf(Document.all); } catch (_) {}
@@ -33,7 +33,7 @@ for (const doc of docs) {
     const nodes = arrayOf(doc.layers.all).filter(n => n && (n.isFrameTextNode || n.isArtTextNode));
     const texts = nodes.map(textOf);
     // A visible TEST marker is required; no financial document is altered.
-    if (!texts.some(t => /TEST\\s*[-–—]\\s*KHÔNG CÓ GIÁ TRỊ THANH TOÁN/i.test(t))) {
+    if (!texts.some(t => /TEST\s*[-–—]\s*KHÔNG CÓ GIÁ TRỊ THANH TOÁN/i.test(t))) {
       result.push({ title, status:"SKIPPED", reason:"Missing visible TEST watermark" });
       continue;
     }
