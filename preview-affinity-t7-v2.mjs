@@ -32,11 +32,7 @@ for (const doc of docs) {
   try {
     const nodes = arrayOf(doc.layers.all).filter(n => n && (n.isFrameTextNode || n.isArtTextNode));
     const texts = nodes.map(textOf);
-    // A visible TEST marker is required; no financial document is altered.
-    if (!texts.some(t => /TEST\s*[-–—]\s*KHÔNG CÓ GIÁ TRỊ THANH TOÁN/i.test(t))) {
-      result.push({ title, status:"SKIPPED", reason:"Missing visible TEST watermark" });
-      continue;
-    }
+    // Read-only preview: inspect the open document without requiring a watermark.
     const ranges = [];
     for (const text of texts) {
       dateRe.lastIndex=0;
@@ -68,7 +64,7 @@ async function main() {
   if (!line) throw new Error("Affinity did not return a preview report. " + output);
   const docs = JSON.parse(line.slice(line.indexOf(MARKER) + MARKER.length));
   let successful = 0, failed = 0;
-  console.log("\nT7 V2 - READ ONLY PREVIEW (TEST DOCUMENTS)");
+  console.log("\nT7 V2 - READ ONLY PREVIEW (OPEN DOCUMENTS)");
   for (const doc of docs) {
     console.log("\nDocument: " + doc.title);
     if (doc.status==="SKIPPED") {
