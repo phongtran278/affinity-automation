@@ -6,12 +6,12 @@ import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 import { CallToolResultSchema } from "@modelcontextprotocol/sdk/types.js";
 
 const MARKER = "__PHONG_T7_V2_READ_ONLY_REPORT__";
-const embedded = String.raw\`
+const embedded = String.raw`
 "use strict";
 const { Document } = require("/document");
 const { StoryIoFormat } = require("affinity:story");
 const MARKER = "__PHONG_T7_V2_READ_ONLY_REPORT__";
-const dateRe = /Từ\\s+00:00\\s+(\\d{1,2})\\s+tháng\\s+(\\d{1,2}),\\s+(\\d{4})\\s+đến\\s+\\d{1,2}:\\d{2}\\s+\\d{1,2}\\s+tháng\\s+\\d{1,2},\\s+\\d{4}/gi;
+const dateRe = /Từ\s+00:00\s+(\d{1,2})\s+tháng\s+(\d{1,2}),\s+(\d{4})\s+đến\s+\d{1,2}:\d{2}\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}/gi;
 function asArray(x) {
   if (!x) return [];
   try { if (x.toArray) return x.toArray(); } catch (_) {}
@@ -55,7 +55,7 @@ for (const doc of docs) {
 }
 if (!docs.length) report.push({ title: "(none)", status: "ERROR", reason: "No open Affinity documents." });
 console.log(MARKER + JSON.stringify({ mode: "READ_ONLY", report }));
-\`;
+`;
 function extractText(result) {
   return (result?.content || []).filter(x => x?.type === "text").map(x => x.text).join("\n");
 }
