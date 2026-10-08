@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>T7 V2 — Kiểm tra bố cục mẫu độc lập</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f3f5f8;color:#172136;margin:30px;max-width:900px}
+h1{font-size:25px}.notice{border:2px solid #bd1b2e;color:#a50016;padding:12px;font-weight:bold;background:white}
+.controls{margin:20px 0;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+label{display:flex;gap:8px;align-items:center}
+.sample{box-sizing:border-box;border:1px dashed #9aa8bc;background:white;padding:12px;max-width:100%;overflow:visible}
+.sample p{margin:0;font-weight:normal}.meta{margin:12px 0;font-size:14px}
+.ok{color:#146c3a}.bad{color:#b00020}code{background:#e9eef5;padding:2px 5px}
+</style></head><body>
+<h1>T7 V2 — Bài thử bố cục độc lập</h1>
+<p class="notice">TEST — KHÔNG CÓ GIÁ TRỊ THANH TOÁN · MẪU GIẢ LẬP, KHÔNG PHẢI HÓA ĐƠN</p>
+<p>Thử thay 2 đoạn văn bản thành 1 câu, không sửa bất kỳ tệp PDF hay tài liệu Affinity nào. Để so sánh chính xác, nhập font, cỡ chữ và bề rộng khung đo được từ Affinity.</p>
+<div class="controls">
+<label>Độ rộng khung <input id="width" type="number" min="120" max="1200" value="480"> px</label>
+<label>Cỡ chữ <input id="size" type="number" min="6" max="48" value="14"> px</label>
+<label>Font <select id="font"><option>Arial</option><option>Roboto</option><option>Times New Roman</option><option>Helvetica</option></select></label>
+</div>
+<h2>Trước (hai đoạn)</h2>
+<div class="sample" id="before"><p>Hệ thống đang tiến hành lập hóa đơn vì bạn đã đạt đến ngưỡng thanh toán 1.000.000 ₫ của</p><p>mình.</p></div>
+<h2>Sau (một đoạn)</h2>
+<div class="sample" id="after"><p id="line">Chi tiêu cho Quảng cáo kể từ 27 tháng 6, 2026.</p></div>
+<p id="result" class="meta" aria-live="polite"></p>
+<p><strong>Giới hạn:</strong> Đây là kiểm tra xuống hàng trong trình duyệt, không xác nhận hành vi thay text, style run, hay kích thước khung trong Affinity. Kết quả cần kiểm tra lại trên tài liệu mẫu có dấu TEST trong Affinity trước khi xuất PDF.</p>
+<script>
+const width=document.getElementById('width'),size=document.getElementById('size'),font=document.getElementById('font');
+const before=document.getElementById('before'),after=document.getElementById('after'),line=document.getElementById('line'),result=document.getElementById('result');
+function draw(){
+ const w=Math.max(120,Math.min(1200,+width.value||480)),s=Math.max(6,Math.min(48,+size.value||14));
+ for(const el of [before,after]){el.style.width=w+'px';el.style.fontSize=s+'px';el.style.fontFamily=font.value;}
+ const wrap=line.getClientRects().length>1 || line.offsetHeight>parseFloat(getComputedStyle(line).lineHeight||s*1.2)*1.5;
+ // Compare text's required single-line width against content box; independent of browser wrapping behavior.
+ const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');ctx.font=getComputedStyle(line).font;
+ const available=after.clientWidth-24,required=ctx.measureText(line.textContent).width;
+ const ok=required<=available+.5;
+ result.className='meta '+(ok?'ok':'bad');
+ result.textContent=(ok?'ĐẠT trong bản mô phỏng: một hàng':'KHÔNG ĐẠT trong bản mô phỏng: cần thêm chiều rộng')+' · Cần khoảng '+Math.ceil(required+24)+'px, khung '+w+'px. (Không phải kết quả Affinity)';
+}
+[width,size,font].forEach(e=>e.addEventListener('input',draw));draw();
+</script></body></html>
