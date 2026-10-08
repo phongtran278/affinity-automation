@@ -63,3 +63,22 @@ test("v2 opt-in updates ad-spend description in dry run and commit without chang
   assert.match(core, /adSpendDescriptionSuffix/);
   assert.match(core, /printOne\("Mô tả chi tiêu quảng cáo","adSpendDescription"\)/);
 });
+
+test("description match never consumes subsequent payment values in merged PDF nodes", async () => {
+  const fs = await import("node:fs");
+  const { fileURLToPath } = await import("node:url");
+  const core = fs.readFileSync(fileURLToPath(new URL("../core/run-batch.mjs", import.meta.url)), "utf8");
+  const match = core.match(/const existingRe=(\/.*?\/gi);/);
+  assert.ok(match, "V2 description matcher not found");
+  // Compile only the embedded regex literal, not the Affinity script.
+  const expr = match[1];
+  const lastSlash = expr.lastIndexOf("/");
+  const pattern = new RegExp(expr.slice(1,lastSlash),expr.slice(lastSlash+1));
+  const node = "Hệ thống đang tiến hành lập hóa đơn vì bạn đã đạt đến ngưỡng thanh toán của mình.\\nNgưỡng thanh toán 4.000.000 ₫\\nTổng phụ: 4.000.000 ₫";
+  const found = node.match(pattern);
+  assert.equal(found?.length,1);
+  assert.equal(found[0],"Hệ thống đang tiến hành lập hóa đơn vì bạn đã đạt đến ngưỡng thanh toán của mình.");
+  assert.doesNotMatch(found[0], /4\.000\.000/);
+  const split = "Hệ thống đang tiến hành lập hóa đơn vì bạn đã đạt đến ngưỡng thanh toán của";
+  assert.equal(split.match(pattern)?.[0], split);
+});
