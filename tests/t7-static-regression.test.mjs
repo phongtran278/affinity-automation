@@ -24,6 +24,10 @@ function canonicalCurrent(text,reference){
   const campaignConstants=reference.match(/const NAME_BASE=[\s\S]*?const NAME_SEP=.*?;/);
   assert.ok(campaignConstants,"Baseline campaign naming constants missing");
   return text
+    // Exclude only the independently gated T7 V2 description extension;
+    // keep all previously pinned parser logic byte-for-byte protected.
+    .replace(/  \/\/ Opt-in T7 V2: reconcile the existing ad-spend description[\s\S]*?\n  let invoiceNumber=null;/,
+      "  let invoiceNumber=null;")
     .replace("const offset=CONFIG.profile.campaign.startOffsetDays.base+\n    ((stt-1)%CONFIG.profile.campaign.startOffsetDays.cycle);","const offset=3+((stt-1)%4);")
     .replace(/const NAME_BASE=CONFIG.profile.campaign.naming.base;[\s\S]*?const NAME_SEP=CONFIG.profile.campaign.naming.separator;/,campaignConstants[0])
     .replace('new RegExp(CONFIG.profile.invoiceNumber.documentPattern,"i")','/FBADS-179-\\d+/i')
