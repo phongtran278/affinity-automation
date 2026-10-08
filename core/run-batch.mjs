@@ -310,7 +310,20 @@ function buildPlan(doc,row,stt){
       }
     }
     if(!starts.length) throw new Error("Không tìm thấy campaign date để cập nhật mô tả quảng cáo.");
-    const earliest=new Date(Math.min(...starts));
+    // All campaign dates are rewritten below. Derive the description from
+    // the earliest START date of the resulting campaign ranges, not the
+    // original imported ranges or the invoice date.
+    const proposedRanges=starts.map(function(){return campaignRange(row.timestamp,stt);});
+    const finalStarts=proposedRanges.map(function(range){
+      const m=range.match(/^Từ\\s+00:00\\s+(\\d{1,2})\\s+tháng\\s+(\\d{1,2}),\\s+(\\d{4})/i);
+      if(!m) throw new Error("Không đọc được ngày bắt đầu chiến dịch sau sửa.");
+      const day=Number(m[1]),month=Number(m[2]),year=Number(m[3]);
+      const ms=Date.UTC(year,month-1,day),d=new Date(ms);
+      if(d.getUTCFullYear()!==year||d.getUTCMonth()!==month-1||d.getUTCDate()!==day)
+        throw new Error("Ngày bắt đầu chiến dịch sau sửa không hợp lệ.");
+      return ms;
+    });
+    const earliest=new Date(Math.min(...finalStarts));
     const desired="Chi tiêu cho Quảng cáo kể từ "+earliest.getUTCDate()+" tháng "+(earliest.getUTCMonth()+1)+", "+earliest.getUTCFullYear()+".";
     // Match the complete description, including an optional money tail and
     // "của mình." that Affinity may split into another text node.
