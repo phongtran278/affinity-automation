@@ -59,12 +59,27 @@ function planFor(doc) {
     const hints=[];
     for(let i=0;i<texts.length;i++){
       const text=String(texts[i]);
-      if(/chi\\s*tiêu|quảng\\s*cáo|ngưỡng\\s*thanh\\s*toán/i.test(text)){
-        hints.push({node:i,text:text.replace(/[\\r\\n\\u2028\\u2029]+/g," | ").slice(0,220)});
+      if(/chi\s*tiêu|quảng\s*cáo|ngưỡng\s*thanh\s*toán/i.test(text)){
+        hints.push({node:i,text:text.replace(/[\r\n\u2028\u2029]+/g," | ").slice(0,220)});
       }
     }
     const e=new Error("Expected exactly 1 existing ad-spend-period sentence, found "+targets.length+". No changes made.");
-    e.hints=hints.slice(0,12);
+    if(!hints.length){
+      const sample=new Set();
+      for(let i=0;i<Math.min(texts.length,10);i++)sample.add(i);
+      for(let i=0;i<texts.length;i++){
+        dateRe.lastIndex=0;
+        if(dateRe.test(texts[i])){
+          for(let j=Math.max(0,i-3);j<=Math.min(texts.length-1,i+2);j++)sample.add(j);
+          if(sample.size>=22)break;
+        }
+      }
+      for(const i of sample){
+        hints.push({node:i,text:String(texts[i]).replace(/[\r\n\u2028\u2029]+/g,' | ').slice(0,160)});
+        if(hints.length>=22)break;
+      }
+    }
+    e.hints=hints.slice(0,22);
     throw e;
   }
   const d=new Date(Math.min(...dates));
