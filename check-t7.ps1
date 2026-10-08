@@ -5,6 +5,9 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+# Keep Vietnamese output readable in Windows PowerShell 5.1 and PowerShell 7.
+[Console]::OutputEncoding = New-Object System.Text.UTF8Encoding($false)
+$OutputEncoding = [Console]::OutputEncoding
 $repoDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $previousCommit = [Environment]::GetEnvironmentVariable("AFFINITY_COMMIT", "Process")
 $exitCode = 0
