@@ -4,5 +4,8 @@
   "type": "module",
   "dependencies": {
     "@modelcontextprotocol/sdk": "latest"
+  },
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
   }
 }
