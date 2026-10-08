@@ -2,6 +2,11 @@ import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 import { CallToolResultSchema } from "@modelcontextprotocol/sdk/types.js";
 
+function getTextContent(result){
+  return (result?.content||[]).filter(x=>x&&x.type==="text").map(x=>x.text).join("\n");
+}
+function pad2(n){ return String(n).padStart(2,"0"); }
+
 export async function runBatch(profile, source){
   const DRY_RUN=process.env.AFFINITY_COMMIT==="1" ? false : true;
   const client=new Client({name:profile.clientName,version:"2.0.0"});
