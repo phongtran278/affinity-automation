@@ -22,3 +22,12 @@ test("T7 v2 aggregates verified source IDs and tracks missing documents", () => 
   assert.match(script, /missing\.length === 0/);
   assert.match(script, /Missing STT:/);
 });
+
+test("T7 v2 compares complete split-node text and summarizes current open batch", () => {
+  assert.match(script, /existing\.push\(complete\)/);
+  assert.match(script, /CURRENT BATCH \(READ-ONLY\)/);
+  assert.match(script, /CURRENT BATCH TOTAL:/);
+  assert.match(script, /BEFORE:/);
+  assert.match(script, /AFTER \(PROPOSED\):/);
+  assert.doesNotMatch(script, /executeCommand|createSetText/);
+});
