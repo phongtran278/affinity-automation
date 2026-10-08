@@ -6,6 +6,8 @@ import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 import { CallToolResultSchema } from "@modelcontextprotocol/sdk/types.js";
 
 const MARKER = "__PHONG_T7_V2_READ_ONLY_REPORT__";
+const SOURCE = JSON.parse(fs.readFileSync(new URL("./data/prohomes-t7-2026.json", import.meta.url), "utf8"));
+const EXPECTED = new Map(SOURCE.items.map(x => [Number(x.stt), x]));
 const embedded = String.raw`
 "use strict";
 const { Document } = require("/document");
@@ -78,15 +80,48 @@ async function main() {
   const payload = JSON.parse(line.slice(line.indexOf(MARKER) + MARKER.length));
   const dir = path.resolve("reports");
   fs.mkdirSync(dir, { recursive: true });
+  const snapshotPath = path.join(dir, "t7-v2-42-progress.json");
+  const previous = fs.existsSync(snapshotPath) ? JSON.parse(fs.readFileSync(snapshotPath, "utf8")) : { items: [] };
+  const byStt = new Map();
+  for (const row of previous.items || []) {
+    const expected = EXPECTED.get(Number(row.stt));
+    if (expected && row.transactionId === expected.transactionId && row.status === "OK") byStt.set(Number(row.stt), row);
+  }
+  const unknown = [];
+  const errors = [];
+  for (const row of payload.report) {
+    const hits = [...EXPECTED.values()].filter(x => row.title.includes(x.transactionId));
+    if (hits.length !== 1) {
+      unknown.push(row.title);
+      continue;
+    }
+    const item = hits[0];
+    if (row.status !== "OK") { errors.push({ stt: item.stt, title: row.title, reason: row.reason }); continue; }
+    byStt.set(item.stt, { stt: item.stt, transactionId: item.transactionId, title: row.title, status: "OK", campaigns: row.campaigns, periodStart: row.periodStart, proposedDescription: row.proposedDescription });
+  }
+  const items = [...byStt.values()].sort((a,b) => a.stt - b.stt);
+  const missing = [...EXPECTED.keys()].filter(n => !byStt.has(n)).sort((a,b)=>a-b);
+  const complete = missing.length === 0;
+  const aggregate = { mode: "READ_ONLY", expected: EXPECTED.size, collected: items.length, complete, missing, unknown, errors, items, updatedAt: new Date().toISOString(), note: "Separate reconciliation report. No source invoice modified." };
+  fs.writeFileSync(snapshotPath, JSON.stringify(aggregate, null, 2) + "\\n", "utf8");
+  const aggregateHeaders = ["stt", "transactionId", "title", "status", "campaigns", "periodStart", "proposedDescription"];
+  fs.writeFileSync(path.join(dir,"t7-v2-42-progress.csv"), "\\uFEFF" + aggregateHeaders.join(",") + "\\r\\n" + items.map(item => aggregateHeaders.map(k => csvCell(item[k])).join(",")).join("\\r\\n") + "\\r\\n", "utf8");
+
+  fs.mkdirSync(dir, { recursive: true });
   const stamp = new Date().toISOString().replace(/[:.]/g, "-");
   const base = path.join(dir, "t7-v2-reconciliation-" + stamp);
   const report = { ...payload, generatedAt: new Date().toISOString(), source: "Open Affinity documents (read-only)", note: "Independent reconciliation report; original invoice files and document text remain unchanged." };
   fs.writeFileSync(base + ".json", JSON.stringify(report, null, 2) + "\n", "utf8");
   const headers = ["title", "status", "campaigns", "periodStart", "proposedDescription", "reason"];
   fs.writeFileSync(base + ".csv", "\uFEFF" + headers.join(",") + "\r\n" + report.report.map(item => headers.map(k => csvCell(item[k])).join(",")).join("\r\n") + "\r\n", "utf8");
+  console.log("42-DOCUMENT PROGRESS: " + items.length + "/" + EXPECTED.size + " | " + (complete ? "COMPLETE" : "INCOMPLETE"));
+  if (missing.length) console.log("Missing STT: " + missing.join(", "));
+  if (unknown.length) console.log("Unmatched open documents: " + unknown.join(" | "));
+  console.log("Aggregate JSON: " + snapshotPath);
+  console.log("Aggregate CSV:  " + path.join(dir, "t7-v2-42-progress.csv"));
   for (const item of report.report) console.log(item.title + " [" + item.status + "] " + (item.proposedDescription || item.reason));
   console.log("READ ONLY: No invoice text changed; watermark is not required.");
   console.log("JSON: " + base + ".json\nCSV:  " + base + ".csv");
-  if (report.report.some(x => x.status === "ERROR")) process.exitCode = 1;
+  if (errors.length || !complete) process.exitCode = 2;
 }
 main().catch(e => { console.error("T7 V2 ERROR:", e.stack || String(e)); process.exitCode = 1; });
