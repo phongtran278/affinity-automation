@@ -79,6 +79,10 @@ test("description match never consumes subsequent payment values in merged PDF n
   assert.equal(found?.length,1);
   assert.equal(found[0],"Hệ thống đang tiến hành lập hóa đơn vì bạn đã đạt đến ngưỡng thanh toán của mình.");
   assert.doesNotMatch(found[0], /4\.000\.000/);
+  const prefix = "Hệ thống đang tiến hành lập hóa đơn vì bạn đã đạt đến ngưỡng thanh toán";
+  assert.equal(prefix.match(pattern)?.[0], prefix);
+  const withNewline = prefix + "\\nNgưỡng thanh toán 4.000.000 ₫";
+  assert.equal(withNewline.match(pattern)?.[0], prefix);
   const split = "Hệ thống đang tiến hành lập hóa đơn vì bạn đã đạt đến ngưỡng thanh toán của";
   assert.equal(split.match(pattern)?.[0], split);
 });
