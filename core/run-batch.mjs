@@ -1056,6 +1056,19 @@ function postValidate(plan){
         printOne("Tổng phụ","subtotal");
         printOne("VAT","vat");
         printOne("Thuế suất (%)","vatRate");
+        const rateChanges=byType.vatRate||[];
+        for(const change of rateChanges){
+          const blocked=Array.isArray(r.warnings)&&r.warnings.some(w=>
+            w.type==="vatRate" && w.oldText===change.old && w.newText===change.new
+          );
+          if(DRY_RUN){
+            console.log("  Dự kiến hiệu chỉnh thuế suất từ "+change.old+"% sang "+change.new+"%");
+          }else if(!blocked){
+            console.log("  Đã hiệu chỉnh thuế suất từ "+change.old+"% sang "+change.new+"%");
+          }else{
+            console.log("  Chưa hiệu chỉnh được thuế suất từ "+change.old+"% sang "+change.new+"%");
+          }
+        }
         if(r.vatRateComparison){
           const v=r.vatRateComparison;
           const fmt=function(x){return typeof x==="number"&&Number.isFinite(x)?(Math.round(x*100)/100)+"%":"N/A";};
