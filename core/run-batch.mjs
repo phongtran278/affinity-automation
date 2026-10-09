@@ -1019,8 +1019,7 @@ function postValidate(plan){
           const fmt=function(x){return typeof x==="number"&&Number.isFinite(x)?(Math.round(x*100)/100)+"%":"N/A";};
           console.log("  VAT Rate (tính từ số tiền): "+fmt(v.before)+"  ->  "+fmt(v.after));
           console.log("  Thuế suất ghi trên PDF gốc: "+(v.label||"không tìm thấy"));
-          console.log("  VAT Rate: chỉ đối chiếu, không chỉnh sửa nhãn thuế suất trên PDF");
-        }
+          }
         printOne("Tổng thanh toán","total");
         printOne("Ngưỡng thanh toán","paymentThreshold");
 
