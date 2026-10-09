@@ -67,10 +67,10 @@ Do not commit when DRY RUN reports an error.
 Expected summary before commit:
 
 ```text
-SUCCESS: N ERROR: 0
+SUCCESS: N PARTIAL: 0 ERROR: 0 SKIPPED: 0
 ```
 
-If `ERROR` is greater than zero, stop and inspect the error first.
+For DRY RUN, `PARTIAL` should remain 0. During COMMIT, any `PARTIAL / MANUAL_REQUIRED` document means the Affinity document still does not fully match the authoritative month JSON and the launcher must not report DONE.
 
 ### Related launchers
 
@@ -128,12 +128,13 @@ The authoritative per-row invoice number is stored in `data/prohomes-t7-2026.jso
 
 Treat T7 as a frozen baseline once it is working for production.
 
-For T8/T9:
+For T8/T9 and later months:
 
-- clone the T7 logic into new month-specific files;
-- create new month-specific JSON data;
-- create new month-specific launchers;
-- avoid changing T7 unless a regression or cross-machine compatibility issue is confirmed.
+- keep month-specific data and policy in `data/` and `profiles/`;
+- keep month-specific launchers/entrypoints thin;
+- use the shared `core/run-batch.mjs` engine for parser, validation, spread-aware editing, commit, and post-validation;
+- fix true cross-month Affinity compatibility issues in the shared core rather than copying patches month by month;
+- preserve month-specific profile behavior (for example T7 period-description policy) unless a regression is proven.
 
 Recommended naming:
 
@@ -309,3 +310,10 @@ export-pdf.bat when PDF output is needed
 ```
 
 Keep the original PDFs unchanged as the source of truth.
+
+
+## Spread-aware shared core
+
+T7, T8, T9 and later month entrypoints all call `core/run-batch.mjs`. Cross-page PDF text editing is handled generically: before editing a text node, the runner activates `node.spread` when it differs from `doc.currentSpread`. This applies equally to campaign fields, invoice numbers, and other imported PDF text on later pages.
+
+A COMMIT with unresolved required edits is reported as `PARTIAL / MANUAL_REQUIRED` and exits non-zero. It must not be treated as DONE even when the source data and dry-run validation are valid.
