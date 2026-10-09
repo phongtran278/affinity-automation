@@ -624,10 +624,15 @@ function validatePlan(plan){
   }
 }
 function commitPlan(doc,plan,stt){
-  // Generic guard for campaigns that land on another PDF page / uneditable text region.
-  // Once Affinity rejects one field of a campaign, classify that campaign as
-  // UNEDITABLE/CROSS-PAGE for this commit and manual-fallback the rest of it.
+  // Runtime editability guard. Imported PDF text can be readable/searchable
+  // but still reject replaceRange() in Affinity. Never hard-code a STT,
+  // campaign index, page number, or invoice value for this condition.
   const blockedCampaigns=new Set();
+  const blockedNodes=new Set();
+  const manualFallbackTypes=new Set([
+    "invoiceNumber",
+    "campaignName","campaignDate","campaignSpend","adGroupSpend","impressions"
+  ]);
   const orderedPlan=plan.slice().sort(function(a,b){
     if(a.type==="invoiceNumber"&&b.type!=="invoiceNumber") return 1;
     if(a.type!=="invoiceNumber"&&b.type==="invoiceNumber") return -1;
@@ -663,10 +668,30 @@ function commitPlan(doc,plan,stt){
           newText:r.newText,
           affinityMessage:"SKIPPED_AFTER_CAMPAIGN_COMMAND_FAILED",
           reason:
-            "CROSS_PAGE_FALLBACK at step "+step+
+            "UNEDITABLE_CAMPAIGN_FALLBACK at step "+step+
             " | "+r.type+meta+
             " | ["+r.oldText+"] -> ["+r.newText+"]"+
-            " | campaign already marked uneditable/cross-page"
+            " | campaign already marked uneditable (often cross-page)"
+        });
+        continue;
+      }
+
+      if(blockedNodes.has(node) && manualFallbackTypes.has(r.type)){
+        const meta=r.meta
+          ? " "+(r.meta.campaign?"C"+r.meta.campaign:"")+(r.meta.adGroup?"/G"+r.meta.adGroup:"")
+          : "";
+        warnings.push({
+          step:step,
+          type:r.type,
+          meta:meta,
+          oldText:r.oldText,
+          newText:r.newText,
+          affinityMessage:"SKIPPED_AFTER_NODE_COMMAND_FAILED",
+          reason:
+            "UNEDITABLE_NODE_FALLBACK at step "+step+
+            " | "+r.type+meta+
+            " | ["+r.oldText+"] -> ["+r.newText+"]"+
+            " | text node already marked uneditable"
         });
         continue;
       }
@@ -691,16 +716,19 @@ function commitPlan(doc,plan,stt){
             " | Affinity: "+(e&&e.message?e.message:String(e))
         };
 
-        if(campaignNo!==null && campaignField){
-          blockedCampaigns.add(campaignNo);
-          detail.reason=
-            "CROSS_PAGE / UNEDITABLE CAMPAIGN C"+campaignNo+
-            " | "+detail.reason;
-          warnings.push(detail);
-          continue;
-        }
+        if(manualFallbackTypes.has(r.type)){
+          blockedNodes.add(node);
 
-        if(r.type==="invoiceNumber"){
+          if(campaignNo!==null && campaignField){
+            blockedCampaigns.add(campaignNo);
+            detail.reason=
+              "UNEDITABLE CAMPAIGN C"+campaignNo+
+              " (often cross-page) | "+detail.reason;
+          }else{
+            detail.reason=
+              "UNEDITABLE TEXT NODE | "+detail.reason;
+          }
+
           warnings.push(detail);
           continue;
         }
