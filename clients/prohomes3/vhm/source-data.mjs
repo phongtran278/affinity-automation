@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { inspectVat } from "../../../core/vat-engine.mjs";
+import { checkAmounts } from "../../../core/amount-engine.mjs";
 
 function fail(msg){ throw new Error(msg); }
 
@@ -42,9 +42,9 @@ export function loadVhmSourceData(profile, repoDir){
         fail("Money không hợp lệ "+k+" tại STT "+x.stt);
       }
     }
-    const check=inspectVat(x);
+    const check=checkAmounts({base:x.subtotal,extra:x.vat,sum:x.total});
     if(check.status!=="PASS_ARITHMETIC")
-      fail("VAT validation STT "+x.stt+": "+check.reason);
+      fail("Amount validation STT "+x.stt+": "+check.reason);
     active.push(x);
   }
 
