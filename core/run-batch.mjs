@@ -624,10 +624,10 @@ function validatePlan(plan){
   }
 }
 function commitPlan(doc,plan,stt){
-  const manualCampaigns=
-    (CONFIG.profile.manualCommitFallback&&CONFIG.profile.manualCommitFallback.campaigns&&
-      CONFIG.profile.manualCommitFallback.campaigns[String(stt)]) || [];
-  const manualCampaignSet=new Set(manualCampaigns);
+  // Generic guard for campaigns that land on another PDF page / uneditable text region.
+  // Once Affinity rejects one field of a campaign, classify that campaign as
+  // UNEDITABLE/CROSS-PAGE for this commit and manual-fallback the rest of it.
+  const blockedCampaigns=new Set();
   const orderedPlan=plan.slice().sort(function(a,b){
     if(a.type==="invoiceNumber"&&b.type!=="invoiceNumber") return 1;
     if(a.type!=="invoiceNumber"&&b.type==="invoiceNumber") return -1;
@@ -647,6 +647,30 @@ function commitPlan(doc,plan,stt){
     arr.sort((a,b)=>b.begin-a.begin);
     for(const r of arr){
       step++;
+      const campaignNo=r.meta&&r.meta.campaign?r.meta.campaign:null;
+      const campaignField=
+        r.type==="campaignName" || r.type==="campaignDate" ||
+        r.type==="campaignSpend" || r.type==="adGroupSpend" ||
+        r.type==="impressions";
+
+      if(campaignNo!==null && campaignField && blockedCampaigns.has(campaignNo)){
+        const meta=" C"+campaignNo+(r.meta&&r.meta.adGroup?"/G"+r.meta.adGroup:"");
+        warnings.push({
+          step:step,
+          type:r.type,
+          meta:meta,
+          oldText:r.oldText,
+          newText:r.newText,
+          affinityMessage:"SKIPPED_AFTER_CAMPAIGN_COMMAND_FAILED",
+          reason:
+            "CROSS_PAGE_FALLBACK at step "+step+
+            " | "+r.type+meta+
+            " | ["+r.oldText+"] -> ["+r.newText+"]"+
+            " | campaign already marked uneditable/cross-page"
+        });
+        continue;
+      }
+
       try{
         replaceRange(doc,node,r.begin,r.end,r.newText);
       }catch(e){
@@ -667,17 +691,16 @@ function commitPlan(doc,plan,stt){
             " | Affinity: "+(e&&e.message?e.message:String(e))
         };
 
-        const campaignNo=r.meta&&r.meta.campaign?r.meta.campaign:null;
-        const isTargetedManualCampaign=campaignNo!==null&&manualCampaignSet.has(campaignNo);
-        const targetedCampaignType=
-          r.type==="campaignName" || r.type==="campaignDate" ||
-          r.type==="campaignSpend" || r.type==="adGroupSpend" ||
-          r.type==="impressions";
+        if(campaignNo!==null && campaignField){
+          blockedCampaigns.add(campaignNo);
+          detail.reason=
+            "CROSS_PAGE / UNEDITABLE CAMPAIGN C"+campaignNo+
+            " | "+detail.reason;
+          warnings.push(detail);
+          continue;
+        }
 
-        if(r.type==="invoiceNumber" ||
-           r.type==="campaignName" ||
-           r.type==="campaignDate" ||
-           (isTargetedManualCampaign && targetedCampaignType)){
+        if(r.type==="invoiceNumber"){
           warnings.push(detail);
           continue;
         }
