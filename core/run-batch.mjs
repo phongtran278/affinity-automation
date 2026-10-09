@@ -965,4 +965,11 @@ function postValidate(plan){
   if(report.error>0){
     throw new Error("Batch có "+report.error+" document lỗi. Xem chi tiết COMMAND_FAILED phía trên.");
   }
+
+  if(!DRY_RUN && (report.partial||0)>0){
+    throw new Error(
+      "COMMIT chưa hoàn tất: có "+report.partial+
+      " document PARTIAL / MANUAL_REQUIRED. Không được coi là DONE cho tới khi document khớp source JSON."
+    );
+  }
 }
