@@ -146,3 +146,12 @@ Affinity selections are spread-sensitive. Before editing any imported PDF text n
 This is required for campaigns, invoice numbers, and any other text that continues onto later PDF pages. Detection must be runtime-based through the node's spread; never hard-code page numbers, STTs, campaign indexes, or invoice values.
 
 The manual/uneditable fallback remains only for genuine command failures after the correct spread has been activated.
+
+
+## Cross-machine text alignment
+
+Imported PDF text can carry different paragraph-alignment metadata on different Affinity installations. Do not rely on the imported alignment for semantic campaign labels.
+
+During COMMIT, the shared core normalizes campaign-name and ad-group-name text nodes to left paragraph alignment after activating the node's spread. Date ranges, impressions, and monetary columns are not reformatted by this rule.
+
+This rule is semantic and cross-month. Never hard-code STTs, pages, or individual campaign names to repair alignment.
