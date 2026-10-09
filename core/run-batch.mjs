@@ -27,7 +27,7 @@ export async function runBatch(profile, source){
 
   const payload=JSON.stringify({
     dryRun:DRY_RUN,
-    editPeriodDescription:process.env.T7_V2_PERIOD_EDIT==="1",
+    editPeriodDescription:profile.periodDescription?.enabled===true,
     batch:source.batch,
     items:source.items,
     profile
@@ -292,8 +292,8 @@ function buildPlan(doc,row,stt){
   const texts=nodes.map(getRawText);
   const plan=[];
 
-  // Opt-in T7 V2: reconcile the existing ad-spend description against
-  // the earliest campaign start date. Legacy T7 runs remain unchanged.
+  // Profile-controlled: reconcile the existing ad-spend description against
+  // the earliest campaign start date. Profiles opt in explicitly.
   if(CONFIG.editPeriodDescription){
     const campaignDateRe=/Từ\s+00:00\s+(\d{1,2})\s+tháng\s+(\d{1,2}),\s+(\d{4})\s+đến\s+\d{1,2}:\d{2}\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}/gi;
     const starts=[];
@@ -506,8 +506,8 @@ function buildPlan(doc,row,stt){
   for(let i=0;i<texts.length;i++){
     const t=firstMoneyAfterLabel(texts[i],/ngưỡng thanh toán/i);
     if(t){
-      // T7 V2 replaces the entire legacy invoice-threshold sentence.
-      // Do not also edit a money token inside the same replacement range.
+      // When period-description replacement is enabled, it can replace the entire
+      // legacy invoice-threshold sentence. Do not also edit a money token inside it.
       const insideDescription=CONFIG.editPeriodDescription && plan.some(function(r){
         return r.node===nodes[i] && r.type==="adSpendDescription" &&
           t.begin>=r.begin && t.end<=r.end;
