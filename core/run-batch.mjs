@@ -334,7 +334,7 @@ function buildPlan(doc,row,stt){
       existingRe.lastIndex=0;
       let m;
       while((m=existingRe.exec(texts[i]))){
-        let old=m[0],source=m[0],suffix=-1;
+        let old=m[0],source=m[0],suffixes=[];
         const rest=texts[i].slice(m.index+m[0].length);
         const tail=rest.match(tailRe)?.[0]||"";
         const hasMoney=/\d[\d., \u00a0]*[ \t\u00a0]*(?:₫|đ|VND)/i.test(tail);
@@ -347,15 +347,49 @@ function buildPlan(doc,row,stt){
         if(/\bcủa[ \t\u00a0]*$/i.test(source.trim()) && i+1<texts.length &&
             /^[ \t\u00a0]*mình\.[ \t\u00a0]*$/i.test(texts[i+1])){
           old=source+" "+texts[i+1].trim();
-          suffix=i+1;
+          suffixes=[i+1];
         }else old=source;
-        hits.push({i,begin:m.index,end:m.index+source.length,old,source,suffix});
+        hits.push({i,begin:m.index,end:m.index+source.length,old,source,suffixes});
       }
     }
+
+    // Affinity can split the same description into multiple adjacent text nodes.
+    // Safe fallback: only accept a 2-3 node window when the ENTIRE joined text
+    // matches one of the known descriptions.
+    if(hits.length===0){
+      const fullDescriptionRe=/^(?:Chi\s+tiêu\s+cho\s+Quảng\s+cáo\s+kể\s+từ\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}\.|Khoản\s+thanh\s+toán\s+thủ\s+công\s+đã\s+được\s+yêu\s+cầu\s+trên\s+tài\s+khoản\s+này\.|Hệ thống đang tiến hành lập hóa đơn vì bạn đã đạt đến ngưỡng thanh toán(?:\s+\d[\d., \u00a0]*\s*(?:₫|đ|VND))?\s+của\s+mình\.)$/i;
+      for(let i=0;i<texts.length;i++){
+        for(let span=2;span<=3 && i+span<=texts.length;span++){
+          const parts=[];
+          for(let j=0;j<span;j++) parts.push(texts[i+j].trim());
+          const joined=parts.filter(Boolean).join(" ").replace(/\s+/g," ").trim();
+          if(!joined || !fullDescriptionRe.test(joined)) continue;
+
+          const first=texts[i];
+          const begin=first.search(/\S/);
+          const end=first.replace(/\s+$/,"").length;
+          if(begin<0 || end<=begin) continue;
+
+          const suffixes=[];
+          for(let j=1;j<span;j++){
+            if(texts[i+j].trim()) suffixes.push(i+j);
+          }
+          hits.push({
+            i,
+            begin,
+            end,
+            old:joined,
+            source:first.slice(begin,end),
+            suffixes
+          });
+        }
+      }
+    }
+
     if(hits.length!==1) throw new Error("Mô tả quảng cáo phải có đúng 1 vị trí, tìm thấy "+hits.length);
     const hit=hits[0];
-    if(hit.suffix>=0){
-      addPlan(plan,nodes[hit.suffix],0,texts[hit.suffix].length,texts[hit.suffix],"","adSpendDescriptionSuffix");
+    for(const suffix of hit.suffixes||[]){
+      addPlan(plan,nodes[suffix],0,texts[suffix].length,texts[suffix],"","adSpendDescriptionSuffix");
     }
     addPlan(plan,nodes[hit.i],hit.begin,hit.end,hit.source,desired,"adSpendDescription",{before:hit.old});
   }
