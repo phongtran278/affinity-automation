@@ -71,7 +71,6 @@ test("T7 stable business/parser functions match pinned baseline while shared-cor
     "paragraphNameRangeBefore",
     "findExactLabel",
     "allocation",
-    "campaignName",
     "parseCampaigns"
   ];
 
@@ -86,6 +85,16 @@ test("T7 stable business/parser functions match pinned baseline while shared-cor
   // Shared compatibility invariant introduced after the pinned baseline.
   assert.match(current,/createSetCurrentSpread\(spread\)/);
   assert.match(current,/spread=node\.spread\|\|null/);
+});
+
+test("T7 campaign naming uses complete semantic phrases and caps names at 31 characters",()=>{
+  const code=fs.readFileSync(path.join(root,"core/run-batch.mjs"),"utf8");
+  assert.equal(profile.campaign.naming.maxLength,31);
+  assert.equal(profile.campaign.naming.compactBase,"Vin Cần Giờ");
+  assert.equal(profile.campaign.naming.compactMonth,"T7/2026");
+  assert.match(code,/Array\.from\(original\)\.length<=maxLength/);
+  assert.match(code,/Never truncate a campaign name mid-word/);
+  assert.doesNotMatch(code,/\.slice\(0,maxLength\)/);
 });
 
 test("T7 profile keeps 42 invoices and optional payment fields",()=>{
