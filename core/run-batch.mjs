@@ -626,13 +626,14 @@ function buildPlan(doc,row,stt){
     throw new Error("Có nhãn Thuế suất nhưng chưa nhận diện được percent.");
   if(vatRateTargets.length){
     const t=vatRateTargets[0];
-    const rate=checkAmounts({base:row.subtotal,extra:row.vat,sum:row.total});
-    if(rate.status!=="PASS_ARITHMETIC") throw new Error("VAT rate invalid: "+rate.reason);
+    if(!(row.subtotal>0) || row.subtotal+row.vat!==row.total)
+      throw new Error("VAT rate: invalid source amounts");
+    const calculatedPercent=Math.round((100*row.vat/row.subtotal)*100)/100;
     const oldDecimal=(t.old.split(/[.,]/)[1]||"").length;
-    const neededDecimal=Number.isInteger(rate.percent)?0:(Number.isInteger(rate.percent*10)?1:2);
+    const neededDecimal=Number.isInteger(calculatedPercent)?0:(Number.isInteger(calculatedPercent*10)?1:2);
     const decimal=Math.min(2,Math.max(oldDecimal,neededDecimal));
     const separator=t.old.includes(",")?",":".";
-    const newRate=rate.percent.toFixed(decimal).replace(".",separator);
+    const newRate=calculatedPercent.toFixed(decimal).replace(".",separator);
     addPlan(plan,nodes[t.idx],t.begin,t.end,t.old,newRate,"vatRate");
     vatRateComparison.label=t.old+"%";
   }
