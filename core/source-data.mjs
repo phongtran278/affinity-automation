@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { inspectVat } from "./vat-engine.mjs";
 
 function fail(msg){ throw new Error(msg); }
 
@@ -33,9 +34,9 @@ export function loadSourceData(profile, repoDir){
         fail("Money không hợp lệ "+k+" tại STT "+x.stt);
       }
     }
-    if(x.subtotal+x.vat!==x.total){
-      fail("subtotal + VAT != total tại STT "+x.stt);
-    }
+    const check=inspectVat(x);
+    if(check.status!=="PASS_ARITHMETIC")
+      fail("VAT validation STT "+x.stt+": "+check.reason);
   }
 
   for(let i=profile.stt.min;i<=profile.stt.max;i++){
