@@ -855,6 +855,11 @@ function postValidate(plan){
       report.push({document:name,status:"SKIPPED",reason:"outside batch / no STT",identity:parsed.identity||[]});
       continue;
     }
+    const excludedStt=(CONFIG.profile.stt.excluded||[]);
+    if(excludedStt.indexOf(stt)>=0){
+      report.push({stt,document:name,status:"IGNORED",reason:"profile-excluded STT"});
+      continue;
+    }
     if(seen[stt]){
       error++;
       report.push({stt,status:"ERROR",reason:"duplicate STT",document:name});
