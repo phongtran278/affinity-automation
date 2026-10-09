@@ -22,8 +22,7 @@
       "total": 12700000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106470798",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 75,
@@ -35,8 +34,7 @@
       "total": 8157753,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106472633",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 76,
@@ -48,8 +46,7 @@
       "total": 12600000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106476771",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 77,
@@ -61,8 +58,7 @@
       "total": 8287903,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106478530",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 79,
@@ -74,8 +70,7 @@
       "total": 7300000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106481227",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 78,
@@ -87,8 +82,7 @@
       "total": 8587084,
       "dataType": "Thật",
       "invoiceNumber": "FBADS-542-106483083",
-      "sourceNote": "Đã thanh toán. FBADS-542-106483083. Visa ···· 1975.",
-      "invoiceNumberKind": "verified-anchor"
+      "sourceNote": "Đã thanh toán. FBADS-542-106483083. Visa ···· 1975."
     },
     {
       "stt": 80,
@@ -100,8 +94,7 @@
       "total": 7938771,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106485136",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 81,
@@ -113,8 +106,7 @@
       "total": 11800000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106487242",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 82,
@@ -126,8 +118,7 @@
       "total": 8400000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106490448",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 83,
@@ -139,8 +130,7 @@
       "total": 9000000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106492518",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 84,
@@ -152,8 +142,7 @@
       "total": 5900000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106497153",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 90,
@@ -165,8 +154,7 @@
       "total": 8587084,
       "dataType": "Thật",
       "invoiceNumber": "FBADS-542-106499296",
-      "sourceNote": "Đã thanh toán. FBADS-542-106499296. Visa ···· 1975.",
-      "invoiceNumberKind": "verified-anchor"
+      "sourceNote": "Đã thanh toán. FBADS-542-106499296. Visa ···· 1975."
     },
     {
       "stt": 85,
@@ -178,8 +166,7 @@
       "total": 7903873,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106503314",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 86,
@@ -191,8 +178,7 @@
       "total": 7700000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106505117",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 87,
@@ -204,8 +190,7 @@
       "total": 10400000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106505927",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 88,
@@ -217,8 +202,7 @@
       "total": 7800000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106507773",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 89,
@@ -230,8 +214,7 @@
       "total": 11600000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106512747",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 91,
@@ -243,8 +226,7 @@
       "total": 8300000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106514530",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 94,
@@ -256,8 +238,7 @@
       "total": 7532672,
       "dataType": "Thật",
       "invoiceNumber": "FBADS-542-106516206",
-      "sourceNote": "Đã thanh toán. FBADS-542-106516206. Visa ···· 1975.",
-      "invoiceNumberKind": "verified-anchor"
+      "sourceNote": "Đã thanh toán. FBADS-542-106516206. Visa ···· 1975."
     },
     {
       "stt": 92,
@@ -269,8 +250,7 @@
       "total": 9300000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106518141",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 93,
@@ -282,8 +262,7 @@
       "total": 6900000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106522624",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 95,
@@ -295,8 +274,7 @@
       "total": 8643582,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106524672",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 96,
@@ -308,8 +286,7 @@
       "total": 8081368,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106526676",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 97,
@@ -321,8 +298,7 @@
       "total": 7975832,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106549223",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 102,
@@ -334,8 +310,7 @@
       "total": 7814145,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106551344",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 98,
@@ -347,8 +322,7 @@
       "total": 10800000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106552869",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 99,
@@ -360,8 +334,7 @@
       "total": 8537546,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106554679",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 100,
@@ -373,8 +346,7 @@
       "total": 18252364,
       "dataType": "Thật",
       "invoiceNumber": "FBADS-542-106558834",
-      "sourceNote": "Đã thanh toán. FBADS-542-106558834. Visa ···· 1975.",
-      "invoiceNumberKind": "verified-anchor"
+      "sourceNote": "Đã thanh toán. FBADS-542-106558834. Visa ···· 1975."
     },
     {
       "stt": 101,
@@ -386,8 +358,7 @@
       "total": 12000000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106560807",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 103,
@@ -399,8 +370,7 @@
       "total": 11300000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106563184",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 105,
@@ -412,8 +382,7 @@
       "total": 10700000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106565254",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 104,
@@ -425,8 +394,7 @@
       "total": 7997946,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106570480",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 110,
@@ -438,8 +406,7 @@
       "total": 11700000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106583527",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 111,
@@ -451,8 +418,7 @@
       "total": 7400000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106585489",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 106,
@@ -464,8 +430,7 @@
       "total": 8223223,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106592158",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 107,
@@ -477,8 +442,7 @@
       "total": 12900000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106594179",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 108,
@@ -490,8 +454,7 @@
       "total": 8100000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106595863",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 109,
@@ -503,8 +466,7 @@
       "total": 7200000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106598047",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 112,
@@ -516,8 +478,7 @@
       "total": 14999629,
       "dataType": "Thật",
       "invoiceNumber": "FBADS-542-106602075",
-      "sourceNote": "Đã thanh toán. FBADS-542-106602075. Visa ···· 1975.",
-      "invoiceNumberKind": "verified-anchor"
+      "sourceNote": "Đã thanh toán. FBADS-542-106602075. Visa ···· 1975."
     },
     {
       "stt": 113,
@@ -529,8 +490,7 @@
       "total": 10300000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106603728",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 114,
@@ -542,8 +502,7 @@
       "total": 9900000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106605953",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 115,
@@ -555,8 +514,7 @@
       "total": 12200000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106608006",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 116,
@@ -568,8 +526,7 @@
       "total": 9400000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106610282",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 117,
@@ -581,8 +538,7 @@
       "total": 8700000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106612075",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     },
     {
       "stt": 118,
@@ -594,8 +550,7 @@
       "total": 8200000,
       "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106617425",
-      "sourceNote": null,
-      "invoiceNumberKind": "time-interpolated"
+      "sourceNote": null
     }
   ]
 }
