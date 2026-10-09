@@ -4,7 +4,7 @@
   "source": {
     "driveFolderId": "1m0Oi9qcw4mBDrjn826qBNlxL9hETW2Qb",
     "spreadsheetFileId": "1PCjXFQNY11EQpBuXPgon7mlDdSs8vPZJ",
-    "note": "Input fields follow worksheet STT. Verified invoice numbers are retained only for matching source-PDF transactions. TEST-FBADS numbers are time-interpolated/extrapolated test identifiers, NOT issued Meta invoice numbers; never place them on payment documents."
+    "note": "Input fields follow worksheet STT. Verified invoice numbers are retained only for matching source-PDF transactions. FBADS numbers are time-interpolated/extrapolated test identifiers, NOT issued Meta invoice numbers; never place them on payment documents."
   },
   "items": [
     {
@@ -23,7 +23,7 @@
       "subtotal": 18818182,
       "vat": 1881818,
       "total": 20700000,
-      "invoiceNumber": "TEST-FBADS-179-106314241"
+      "invoiceNumber": "FBADS-179-106314241"
     },
     {
       "stt": 45,
@@ -32,7 +32,7 @@
       "subtotal": 21559700,
       "vat": 2155970,
       "total": 23715670,
-      "invoiceNumber": "TEST-FBADS-179-106316755"
+      "invoiceNumber": "FBADS-179-106316755"
     },
     {
       "stt": 46,
@@ -50,7 +50,7 @@
       "subtotal": 21000000,
       "vat": 2100000,
       "total": 23100000,
-      "invoiceNumber": "TEST-FBADS-179-106327353"
+      "invoiceNumber": "FBADS-179-106327353"
     },
     {
       "stt": 48,
@@ -68,7 +68,7 @@
       "subtotal": 23799564,
       "vat": 2379956,
       "total": 26179520,
-      "invoiceNumber": "TEST-FBADS-179-106336805"
+      "invoiceNumber": "FBADS-179-106336805"
     },
     {
       "stt": 50,
@@ -77,7 +77,7 @@
       "subtotal": 21636364,
       "vat": 2163636,
       "total": 23800000,
-      "invoiceNumber": "TEST-FBADS-179-106338758"
+      "invoiceNumber": "FBADS-179-106338758"
     },
     {
       "stt": 51,
@@ -86,7 +86,7 @@
       "subtotal": 20181818,
       "vat": 2018182,
       "total": 22200000,
-      "invoiceNumber": "TEST-FBADS-179-106349134"
+      "invoiceNumber": "FBADS-179-106349134"
     },
     {
       "stt": 52,
@@ -113,7 +113,7 @@
       "subtotal": 14454545,
       "vat": 1445455,
       "total": 15900000,
-      "invoiceNumber": "TEST-FBADS-179-106369452"
+      "invoiceNumber": "FBADS-179-106369452"
     },
     {
       "stt": 55,
@@ -122,7 +122,7 @@
       "subtotal": 14909091,
       "vat": 1490909,
       "total": 16400000,
-      "invoiceNumber": "TEST-FBADS-179-106379674"
+      "invoiceNumber": "FBADS-179-106379674"
     },
     {
       "stt": 56,
@@ -140,7 +140,7 @@
       "subtotal": 21272727,
       "vat": 2127273,
       "total": 23400000,
-      "invoiceNumber": "TEST-FBADS-179-106387291"
+      "invoiceNumber": "FBADS-179-106387291"
     },
     {
       "stt": 58,
@@ -149,7 +149,7 @@
       "subtotal": 19000000,
       "vat": 1900000,
       "total": 20900000,
-      "invoiceNumber": "TEST-FBADS-179-106389098"
+      "invoiceNumber": "FBADS-179-106389098"
     },
     {
       "stt": 59,
@@ -167,7 +167,7 @@
       "subtotal": 20727273,
       "vat": 2072727,
       "total": 22800000,
-      "invoiceNumber": "TEST-FBADS-179-106402070"
+      "invoiceNumber": "FBADS-179-106402070"
     },
     {
       "stt": 61,
@@ -176,7 +176,7 @@
       "subtotal": 22181818,
       "vat": 2218182,
       "total": 24400000,
-      "invoiceNumber": "TEST-FBADS-179-106407383"
+      "invoiceNumber": "FBADS-179-106407383"
     },
     {
       "stt": 62,
@@ -194,7 +194,7 @@
       "subtotal": 24627561,
       "vat": 2462756,
       "total": 27090317,
-      "invoiceNumber": "TEST-FBADS-179-106424208"
+      "invoiceNumber": "FBADS-179-106424208"
     },
     {
       "stt": 64,
@@ -203,7 +203,7 @@
       "subtotal": 23964824,
       "vat": 2396482,
       "total": 26361306,
-      "invoiceNumber": "TEST-FBADS-179-106427126"
+      "invoiceNumber": "FBADS-179-106427126"
     },
     {
       "stt": 65,
@@ -221,7 +221,7 @@
       "subtotal": 21115145,
       "vat": 2111514,
       "total": 23226659,
-      "invoiceNumber": "TEST-FBADS-179-106432630"
+      "invoiceNumber": "FBADS-179-106432630"
     },
     {
       "stt": 67,
@@ -230,7 +230,7 @@
       "subtotal": 22363636,
       "vat": 2236364,
       "total": 24600000,
-      "invoiceNumber": "TEST-FBADS-179-106444394"
+      "invoiceNumber": "FBADS-179-106444394"
     },
     {
       "stt": 68,
@@ -248,7 +248,7 @@
       "subtotal": 21363636,
       "vat": 2136364,
       "total": 23500000,
-      "invoiceNumber": "TEST-FBADS-179-106447698"
+      "invoiceNumber": "FBADS-179-106447698"
     }
   ]
 }
