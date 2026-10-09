@@ -115,3 +115,12 @@ Launchers remain:
 `run-batch-tN.bat`
 
 The shared parser/core should not contain hard-coded T7/T8/T9 business rules unless they are true cross-month defaults.
+
+
+## Cross-page campaign guard
+
+Campaigns may continue onto a later PDF page. Parsing and validation must remain document-wide, not page-local.
+
+During COMMIT, if Affinity returns `COMMAND_FAILED` for any campaign field (name, date, campaign spend, ad-group spend, or impressions), the runner marks that campaign as `UNEDITABLE/CROSS-PAGE` for the current document. Remaining replacements for that campaign are not attempted; they are reported as explicit manual fallbacks. Other campaigns continue normally.
+
+This is runtime-detected and must not be hard-coded to a specific STT or campaign index. Monetary validation still runs before COMMIT, so cross-page fallback never bypasses campaign/ad-group sum checks.
