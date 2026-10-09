@@ -216,10 +216,46 @@ function campaignName(stt,idx){
   const aud=NAME_AUD[(stt*11+idx*5)%NAME_AUD.length];
   const sep=NAME_SEP[(stt+idx)%NAME_SEP.length];
   const mode=(stt+idx)%4;
-  if(mode===0) return base+sep+month;
-  if(mode===1) return base+sep+month+sep+aud;
-  if(mode===2) return base+" "+month+" "+aud;
-  return base+sep+aud+sep+month;
+
+  let original;
+  if(mode===0) original=base+sep+month;
+  else if(mode===1) original=base+sep+month+sep+aud;
+  else if(mode===2) original=base+" "+month+" "+aud;
+  else original=base+sep+aud+sep+month;
+
+  const naming=CONFIG.profile.campaign.naming||{};
+  const maxLength=Number(naming.maxLength||0);
+  if(!(maxLength>0) || Array.from(original).length<=maxLength) return original;
+
+  // Never truncate a campaign name mid-word. If the deterministic variant is
+  // too long, rebuild it from complete semantic phrases using profile-provided
+  // compact equivalents.
+  const compactBase=naming.compactBase||base;
+  const compactMonth=naming.compactMonth||month;
+  const hasAudience=mode!==0;
+  const candidates=hasAudience
+    ? [
+        [base,compactMonth,aud].join(" "),
+        [compactBase,compactMonth,aud].join(" "),
+        [compactBase,month,aud].join(" "),
+        [base,compactMonth].join(" "),
+        [compactBase,compactMonth].join(" ")
+      ]
+    : [
+        [base,compactMonth].join(" "),
+        [compactBase,compactMonth].join(" "),
+        [compactBase,month].join(" ")
+      ];
+
+  for(const candidate of candidates){
+    const clean=candidate.replace(/\s+/g," ").trim();
+    if(Array.from(clean).length<=maxLength) return clean;
+  }
+
+  throw new Error(
+    "Không tạo được campaign name <= "+maxLength+
+    " ký tự mà vẫn giữ nguyên cụm từ: "+original
+  );
 }
 function parseCampaigns(nodes,texts,existingSubtotal){
   const dateRe=/Từ\s+00:00\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}\s+đến\s+\d{1,2}:\d{2}\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}/i;
