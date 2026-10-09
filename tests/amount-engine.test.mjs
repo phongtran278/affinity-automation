@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { checkAmounts } from "../core/amount-engine.mjs";
+import { checkAmounts } from "../core/amout-engine.mjs";
 
 test("8% arithmetic passes",()=>{
   assert.deepEqual(checkAmounts({base:15000000,extra:1200000,sum:16200000}),
