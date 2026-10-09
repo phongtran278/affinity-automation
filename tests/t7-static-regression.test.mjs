@@ -85,6 +85,8 @@ test("T7 stable business/parser functions match pinned baseline while shared-cor
   // Shared compatibility invariant introduced after the pinned baseline.
   assert.match(current,/createSetCurrentSpread\(spread\)/);
   assert.match(current,/spread=node\.spread\|\|null/);
+  assert.match(current,/StoryDelta\.createAlignX\(ParagraphAlignXType\.Left\)/);
+  assert.match(current,/normalizeSemanticAlignment\(doc,built\.alignmentTargets\)/);
 });
 
 test("T7 campaign naming uses complete semantic phrases and caps names at 31 characters",()=>{
