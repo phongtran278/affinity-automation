@@ -6,10 +6,16 @@ import { createInterface } from "node:readline/promises";
 import { fileURLToPath } from "node:url";
 
 export function parseBatchSummary(output) {
-  const matches = [...String(output).matchAll(/SUCCESS:\s*(\d+)\s+ERROR:\s*(\d+)\s+SKIPPED:\s*(\d+)/g)];
-  if (!matches.length) throw new Error("No valid batch summary returned by Affinity.");
-  const [, success, error, skipped] = matches[matches.length - 1];
-  return { success: Number(success), error: Number(error), skipped: Number(skipped) };
+  const text=String(output);
+  const modern=[...text.matchAll(/SUCCESS:\s*(\d+)\s+PARTIAL:\s*(\d+)\s+ERROR:\s*(\d+)\s+SKIPPED:\s*(\d+)/g)];
+  if(modern.length){
+    const [,success,partial,error,skipped]=modern[modern.length-1];
+    return {success:Number(success),partial:Number(partial),error:Number(error),skipped:Number(skipped)};
+  }
+  const legacy=[...text.matchAll(/SUCCESS:\s*(\d+)\s+ERROR:\s*(\d+)\s+SKIPPED:\s*(\d+)/g)];
+  if(!legacy.length) throw new Error("No valid batch summary returned by Affinity.");
+  const [,success,error,skipped]=legacy[legacy.length-1];
+  return {success:Number(success),partial:0,error:Number(error),skipped:Number(skipped)};
 }
 
 export async function runWorkflow({ execute, confirm, saveReport, log = console.log }) {
@@ -26,9 +32,9 @@ export async function runWorkflow({ execute, confirm, saveReport, log = console.
   try { summary = parseBatchSummary(preview.output); }
   catch (error) { log(error.message); return 1; }
   // Do not silently leave open PDFs unprocessed.
-  if (summary.success === 0 || summary.error !== 0 || summary.skipped !== 0) {
+  if (summary.success === 0 || summary.partial !== 0 || summary.error !== 0 || summary.skipped !== 0) {
     log("ABORT: every open document must pass validation. " +
-      `SUCCESS=${summary.success} ERROR=${summary.error} SKIPPED=${summary.skipped}`);
+      `SUCCESS=${summary.success} PARTIAL=${summary.partial} ERROR=${summary.error} SKIPPED=${summary.skipped}`);
     return 1;
   }
   log("[2/3] Review the BEFORE / AFTER report before confirming.");
@@ -44,7 +50,7 @@ export async function runWorkflow({ execute, confirm, saveReport, log = console.
     return 1;
   }
   const applied = parseBatchSummary(commit.output);
-  if (applied.error || applied.skipped || applied.success !== summary.success) {
+  if (applied.partial || applied.error || applied.skipped || applied.success !== summary.success) {
     log("COMMIT RESULT DIFFERS FROM DRY RUN. Inspect the documents before saving.");
     return 1;
   }
@@ -60,7 +66,7 @@ async function main() {
     const result = spawnSync(process.execPath, [script], {
       cwd: root,
       encoding: "utf8",
-      env: { ...process.env, AFFINITY_COMMIT: commit ? "1" : "0", T7_V2_PERIOD_EDIT: "1" },
+      env: { ...process.env, AFFINITY_COMMIT: commit ? "1" : "0" },
       maxBuffer: 16 * 1024 * 1024
     });
     const output = (result.stdout || "") + (result.stderr || "");
