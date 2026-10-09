@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { checkAmounts } from "../../../core/amount-engine.mjs";
+import { checkAmounts } from "../../../core/amout-engine.mjs";
 
 function fail(msg){ throw new Error(msg); }
 
