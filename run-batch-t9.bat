@@ -37,7 +37,7 @@ set AFFINITY_COMMIT=1
 node batch-edit-prohomes-t9.mjs
 if errorlevel 1 (
   echo.
-  echo COMMIT FAILED. Check the error above.
+  echo COMMIT INCOMPLETE OR FAILED. Check PARTIAL / MANUAL_REQUIRED or the error above.
   pause
   exit /b 1
 )
