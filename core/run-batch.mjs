@@ -1,6 +1,7 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js";
 import { CallToolResultSchema } from "@modelcontextprotocol/sdk/types.js";
+import { checkAmounts } from "./amout-engine.mjs";
 
 function getTextContent(result){
   return (result?.content||[]).filter(x=>x&&x.type==="text").map(x=>x.text).join("\n");
@@ -956,6 +957,8 @@ function postValidate(plan){
   if(!line) throw new Error("Affinity không trả batch report.\n"+output);
 
   const report=JSON.parse(line.slice(line.indexOf(marker)+marker.length));
+  // Diagnostic-only: engine output is never used to mutate Affinity text.
+  const amountRowsByStt=new Map(source.items.map(x=>[x.stt,x]));
   console.log("\nBATCH "+String(profile.stt.min).padStart(2,"0")+"-"+String(profile.stt.max).padStart(2,"0")+" | "+report.mode);
   for(const r of report.report){
     const label=r.stt?("STT "+pad2(r.stt)):(r.document||"(unnamed document)");
@@ -965,6 +968,25 @@ function postValidate(plan){
     }
     if((r.status==="OK"||r.status==="PARTIAL")&&r.matchedBy){
       console.log("  matched by: "+r.matchedBy+" -> "+r.matchedValue);
+      if(DRY_RUN){
+        const row=amountRowsByStt.get(r.stt);
+        if(row){
+          const outcome=checkAmounts({
+            base:row.subtotal,extra:row.vat,sum:row.total
+          });
+          console.log("  --- AMOUNT ENGINE (SOURCE, READ ONLY) ---");
+          console.log("  Base (Tổng phụ): "+String(row.subtotal)+" VND");
+          console.log("  Extra (VAT): "+String(row.vat)+" VND");
+          console.log("  Sum (Tổng tiền): "+String(row.total)+" VND");
+          if(outcome.status==="PASS_ARITHMETIC"){
+            console.log("  Percent: "+outcome.percent.toFixed(2)+"%");
+          }else{
+            console.log("  Percent: N/A");
+            console.log("  Reason: "+outcome.reason);
+          }
+          console.log("  Status: "+outcome.status);
+        }
+      }
       if(Array.isArray(r.replacements)){
         const byType={};
         for(const x of r.replacements){
