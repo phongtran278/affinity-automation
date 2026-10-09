@@ -3,10 +3,11 @@ import assert from "node:assert/strict";
 import { parseBatchSummary, runWorkflow } from "../run-t7-v2-workflow.mjs";
 
 test("parses the last Affinity batch summary", () => {
-  assert.deepEqual(parseBatchSummary("SUCCESS: 1 ERROR: 0 SKIPPED: 0\nSUCCESS: 3 ERROR: 0 SKIPPED: 0"), {success:3,error:0,skipped:0});
+  assert.deepEqual(parseBatchSummary("SUCCESS: 1 ERROR: 0 SKIPPED: 0\nSUCCESS: 3 ERROR: 0 SKIPPED: 0"), {success:3,partial:0,error:0,skipped:0});
+  assert.deepEqual(parseBatchSummary("SUCCESS: 2 PARTIAL: 1 ERROR: 0 SKIPPED: 0"), {success:2,partial:1,error:0,skipped:0});
   assert.throws(() => parseBatchSummary("no report"), /No valid batch summary/);
 });
-function harness({ dryStatus=0, dryOutput="SUCCESS: 2 ERROR: 0 SKIPPED: 0", answer="Y", commitStatus=0, commitOutput="SUCCESS: 2 ERROR: 0 SKIPPED: 0" }={}) {
+function harness({ dryStatus=0, dryOutput="SUCCESS: 2 PARTIAL: 0 ERROR: 0 SKIPPED: 0", answer="Y", commitStatus=0, commitOutput="SUCCESS: 2 PARTIAL: 0 ERROR: 0 SKIPPED: 0" }={}) {
   const calls=[];
   return {
     calls,
@@ -47,21 +48,30 @@ test("failed dry run or failed commit returns error without further edits", asyn
   assert.deepEqual(b.calls,["dry-run","report","confirm","commit"]);
 });
 test("mismatched commit count is rejected", async () => {
-  const h=harness({commitOutput:"SUCCESS: 1 ERROR: 0 SKIPPED: 0"});
+  const h=harness({commitOutput:"SUCCESS: 1 PARTIAL: 0 ERROR: 0 SKIPPED: 0"});
   assert.equal(await runWorkflow(h.args),1);
 });
 
-test("v2 opt-in updates ad-spend description in dry run and commit without changing baseline", async () => {
+test("partial dry run or commit is rejected", async () => {
+  const dry=harness({dryOutput:"SUCCESS: 1 PARTIAL: 1 ERROR: 0 SKIPPED: 0"});
+  assert.equal(await runWorkflow(dry.args),1);
+  assert.deepEqual(dry.calls,["dry-run","report"]);
+
+  const commit=harness({commitOutput:"SUCCESS: 1 PARTIAL: 1 ERROR: 0 SKIPPED: 0"});
+  assert.equal(await runWorkflow(commit.args),1);
+});
+
+test("period-description behavior is profile-driven without an environment override", async () => {
   const fs = await import("node:fs");
   const { fileURLToPath } = await import("node:url");
   const workflow = fs.readFileSync(fileURLToPath(new URL("../run-t7-v2-workflow.mjs", import.meta.url)), "utf8");
   const core = fs.readFileSync(fileURLToPath(new URL("../core/run-batch.mjs", import.meta.url)), "utf8");
-  assert.match(workflow, /T7_V2_PERIOD_EDIT: "1"/);
-  assert.match(core, /editPeriodDescription:process\.env\.T7_V2_PERIOD_EDIT==="1"/);
+  const profile = fs.readFileSync(fileURLToPath(new URL("../profiles/prohomes-t7.mjs", import.meta.url)), "utf8");
+  assert.doesNotMatch(workflow, /T7_V2_PERIOD_EDIT/);
+  assert.match(core, /editPeriodDescription:profile\.periodDescription\?\.enabled===true/);
+  assert.match(profile, /periodDescription:\s*\{[\s\S]*?enabled:\s*false/);
   assert.match(core, /if\(CONFIG\.editPeriodDescription\)/);
-  assert.match(core, /Chi tiêu cho Quảng cáo kể từ/);
   assert.match(core, /adSpendDescriptionSuffix/);
-  assert.match(core, /printOne\("Mô tả chi tiêu quảng cáo","adSpendDescription"\)/);
 });
 
 test("description match never consumes subsequent payment values in merged PDF nodes", async () => {
@@ -97,7 +107,7 @@ test("period description consumes its trailing amount and split cua minh text", 
   const re = new RegExp(literal.slice(1,index),literal.slice(index+1));
   const tail = " 19.545.455 đ của";
   assert.equal(tail.match(re)?.[0],tail);
-  assert.match(core,/if\(hit\.suffix>=0\)/);
+  assert.match(core,/for\(const suffix of hit\.suffixes\|\|\[\]\)/);
   assert.match(core,/adSpendDescriptionSuffix/);
   assert.match(core,/if\(hasMoney\|\|hasCua\) source\+=tail/);
   assert.equal(" \nTổng phụ: 19.545.455 ₫".match(re)?.[0]," ");
