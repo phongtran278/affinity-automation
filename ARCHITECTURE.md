@@ -121,6 +121,8 @@ The shared parser/core should not contain hard-coded T7/T8/T9 business rules unl
 
 Campaigns may continue onto a later PDF page. Parsing and validation must remain document-wide, not page-local.
 
-During COMMIT, if Affinity returns `COMMAND_FAILED` for any campaign field (name, date, campaign spend, ad-group spend, or impressions), the runner marks that campaign as `UNEDITABLE/CROSS-PAGE` for the current document. Remaining replacements for that campaign are not attempted; they are reported as explicit manual fallbacks. Other campaigns continue normally.
+During COMMIT, imported PDF text may be readable/searchable but still reject `replaceRange()`. The runner treats that as a runtime editability condition, never as a value-specific exception.
 
-This is runtime-detected and must not be hard-coded to a specific STT or campaign index. Monetary validation still runs before COMMIT, so cross-page fallback never bypasses campaign/ad-group sum checks.
+If Affinity returns `COMMAND_FAILED` for any campaign field (name, date, campaign spend, ad-group spend, or impressions), that campaign is marked `UNEDITABLE` for the current document (a common cause is a campaign continuing onto another page). Remaining replacements for that campaign are not attempted; they are reported as explicit manual fallbacks. If an invoice-number text node rejects editing, that node is likewise reported as an `UNEDITABLE TEXT NODE` manual fallback.
+
+This must never be hard-coded to a specific STT, campaign index, page number, or invoice value. Monetary validation still runs before COMMIT, so the fallback cannot bypass campaign/ad-group sum checks.
