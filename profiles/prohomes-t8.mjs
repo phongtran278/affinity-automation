@@ -33,6 +33,11 @@ export default {
     commitFailure: "WARNING"
   },
 
+  periodDescription: {
+    enabled: true,
+    mode: "campaign-earliest-start"
+  },
+
   campaign: {
     startOffsetDays: {
       base: 3,
