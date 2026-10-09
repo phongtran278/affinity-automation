@@ -756,7 +756,7 @@ function postValidate(plan){
   CONFIG.items.forEach(function(x){rows[x.stt]=x;});
   const seen={};
   const report=[];
-  let success=0,error=0,skipped=0;
+  let success=0,partial=0,error=0,skipped=0;
 
   for(let i=0;i<docs.length;i++){
     const doc=docs[i];
@@ -807,14 +807,18 @@ function postValidate(plan){
         }));
       }
 
-      success++;
+      const isPartial=!CONFIG.dryRun && commitWarnings.length>0;
+      if(isPartial) partial++;
+      else success++;
+
       report.push({
         stt,document:name,matchedBy:parsed.source,matchedValue:parsed.value,
-        status:"OK",mode:CONFIG.dryRun?"DRY RUN":"COMMIT",
+        status:isPartial?"PARTIAL":"OK",
+        mode:CONFIG.dryRun?"DRY RUN":"COMMIT",
         campaigns:built.campaigns,
         adGroups:built.adGroups,
         impressionsUpdated:built.impressionsUpdated,
-        validation:commitWarnings.length?"PASS_WITH_WARNING":"PASS",
+        validation:isPartial?"MANUAL_REQUIRED":"PASS",
         warnings:commitWarnings,
         invoiceNumber:built.invoiceNumber,
         optionalFields:built.optionalFields,
@@ -830,7 +834,7 @@ function postValidate(plan){
 
   console.log(CONFIG.profile.marker+JSON.stringify({
     mode:CONFIG.dryRun?"DRY RUN":"COMMIT",
-    totalOpen:docs.length,success,error,skipped,report
+    totalOpen:docs.length,success,partial,error,skipped,report
   }));
 })();
 `;
@@ -858,7 +862,7 @@ function postValidate(plan){
     if(r.status==="SKIPPED"&&Array.isArray(r.identity)&&r.identity.length){
       console.log("  identity: "+r.identity.map(x=>x.label+"="+x.value).join(" | "));
     }
-    if(r.status==="OK"&&r.matchedBy){
+    if((r.status==="OK"||r.status==="PARTIAL")&&r.matchedBy){
       console.log("  matched by: "+r.matchedBy+" -> "+r.matchedValue);
       if(Array.isArray(r.replacements)){
         const byType={};
@@ -935,7 +939,10 @@ function postValidate(plan){
       }
     }
   }
-  console.log("\nSUCCESS: "+report.success+" ERROR: "+report.error+" SKIPPED: "+report.skipped);
+  console.log("\nSUCCESS: "+report.success+" PARTIAL: "+(report.partial||0)+" ERROR: "+report.error+" SKIPPED: "+report.skipped);
+  if((report.partial||0)>0){
+    console.log("MANUAL REQUIRED: "+report.partial+" document chưa khớp hoàn toàn source JSON.");
+  }
 
   if(DRY_RUN){
     console.log("\nDRY_RUN=true: không có text nào được thay.");
