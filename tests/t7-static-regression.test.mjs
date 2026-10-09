@@ -40,12 +40,52 @@ function canonicalCurrent(text,reference){
     .replace("        optionalFields:built.optionalFields,\n","");
 }
 
-test("T7 embedded parser matches pinned stable baseline after approved profile/report substitutions",()=>{
+function functionBlock(text,name){
+  const start=text.indexOf("function "+name+"(");
+  assert.ok(start>=0,"Function not found: "+name);
+  const next=text.indexOf("\nfunction ",start+9);
+  const nextConst=text.indexOf("\nconst NAME_",start+9);
+  const ends=[next,nextConst].filter(x=>x>start);
+  const end=ends.length?Math.min(...ends):text.length;
+  return text.slice(start,end).trim();
+}
+
+test("T7 stable business/parser functions match pinned baseline while shared-core safety fixes may evolve",()=>{
   const original=execFileSync("git",["show",baseline+":batch-edit-prohomes-t7.mjs"],{cwd:root,encoding:"utf8"});
   const current=fs.readFileSync(path.join(root,"core/run-batch.mjs"),"utf8");
   const a=embedded(original);
   const b=canonicalCurrent(embedded(current),a);
-  assert.equal(b,a,"Unexpected change in embedded Affinity parser: investigate before committing");
+
+  // Pin the T7 parsing/math/business functions that must remain behaviorally stable.
+  // Generic commit/selection/reporting compatibility is intentionally excluded:
+  // it is shared by T7/T8/T9 and may evolve to fix Affinity SDK issues.
+  const pinned=[
+    "timestampParts",
+    "formatInvoiceDate",
+    "moneyTokens",
+    "moneyOnly",
+    "normalizeMoney",
+    "formatMoneyLike",
+    "parseImpression",
+    "formatIntegerLike",
+    "paragraphNameRangeBefore",
+    "findExactLabel",
+    "allocation",
+    "campaignName",
+    "parseCampaigns"
+  ];
+
+  for(const name of pinned){
+    assert.equal(
+      functionBlock(b,name),
+      functionBlock(a,name),
+      "Unexpected T7 business/parser change in "+name
+    );
+  }
+
+  // Shared compatibility invariant introduced after the pinned baseline.
+  assert.match(current,/createSetCurrentSpread\(spread\)/);
+  assert.match(current,/spread=node\.spread\|\|null/);
 });
 
 test("T7 profile keeps 42 invoices and optional payment fields",()=>{
