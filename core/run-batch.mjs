@@ -623,7 +623,11 @@ function validatePlan(plan){
     }
   }
 }
-function commitPlan(doc,plan){
+function commitPlan(doc,plan,stt){
+  const manualCampaigns=
+    (CONFIG.profile.manualCommitFallback&&CONFIG.profile.manualCommitFallback.campaigns&&
+      CONFIG.profile.manualCommitFallback.campaigns[String(stt)]) || [];
+  const manualCampaignSet=new Set(manualCampaigns);
   const orderedPlan=plan.slice().sort(function(a,b){
     if(a.type==="invoiceNumber"&&b.type!=="invoiceNumber") return 1;
     if(a.type!=="invoiceNumber"&&b.type==="invoiceNumber") return -1;
@@ -663,7 +667,17 @@ function commitPlan(doc,plan){
             " | Affinity: "+(e&&e.message?e.message:String(e))
         };
 
-        if(r.type==="invoiceNumber" || r.type==="campaignName" || r.type==="campaignDate"){
+        const campaignNo=r.meta&&r.meta.campaign?r.meta.campaign:null;
+        const isTargetedManualCampaign=campaignNo!==null&&manualCampaignSet.has(campaignNo);
+        const targetedCampaignType=
+          r.type==="campaignName" || r.type==="campaignDate" ||
+          r.type==="campaignSpend" || r.type==="adGroupSpend" ||
+          r.type==="impressions";
+
+        if(r.type==="invoiceNumber" ||
+           r.type==="campaignName" ||
+           r.type==="campaignDate" ||
+           (isTargetedManualCampaign && targetedCampaignType)){
           warnings.push(detail);
           continue;
         }
@@ -720,7 +734,7 @@ function postValidate(plan){
 
       let commitWarnings=[];
       if(!CONFIG.dryRun){
-        const commitResult=commitPlan(doc,built.plan);
+        const commitResult=commitPlan(doc,built.plan,stt);
         commitWarnings=commitResult.warnings||[];
         if(!commitResult.ok){
           error++;
@@ -731,8 +745,15 @@ function postValidate(plan){
           });
           continue;
         }
-        const warningTypes=new Set(commitWarnings.map(function(w){return w.type;}));
-        postValidate(built.plan.filter(function(r){return !warningTypes.has(r.type);}));
+        const warningKeys=new Set(commitWarnings.map(function(w){
+          return w.type+"|"+w.oldText+"|"+w.newText+"|"+w.meta;
+        }));
+        postValidate(built.plan.filter(function(r){
+          const meta=r.meta
+            ? " "+(r.meta.campaign?"C"+r.meta.campaign:"")+(r.meta.adGroup?"/G"+r.meta.adGroup:"")
+            : "";
+          return !warningKeys.has(r.type+"|"+r.oldText+"|"+r.newText+"|"+meta);
+        }));
       }
 
       success++;
@@ -846,6 +867,15 @@ function postValidate(plan){
             }else if(w.type==="campaignDate"){
               console.log("  CAMPAIGN DATE WARNING: "+w.reason);
               console.log("  MANUAL FALLBACK: đổi campaign date thành "+w.newText);
+            }else if(w.type==="campaignSpend"){
+              console.log("  CAMPAIGN SPEND WARNING: "+w.reason);
+              console.log("  MANUAL FALLBACK: đổi campaign spend thành "+w.newText);
+            }else if(w.type==="adGroupSpend"){
+              console.log("  AD GROUP SPEND WARNING: "+w.reason);
+              console.log("  MANUAL FALLBACK: đổi ad group spend thành "+w.newText);
+            }else if(w.type==="impressions"){
+              console.log("  IMPRESSIONS WARNING: "+w.reason);
+              console.log("  MANUAL FALLBACK: đổi impressions thành "+w.newText);
             }else{
               console.log("  WARNING: "+w.reason);
             }
