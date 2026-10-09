@@ -3,14 +3,14 @@ setlocal
 cd /d "%~dp0"
 echo [1/3] Checking branch...
 for /f "delims=" %%B in ('git branch --show-current') do set "CURRENT_BRANCH=%%B"
-if /I not "%CURRENT_BRANCH%"=="feature/t7-v2" (
-  echo ERROR: Please switch to feature/t7-v2.
+if /I not "%CURRENT_BRANCH%"=="feature/multi-client" (
+  echo ERROR: Please switch to feature/multi-client.
   pause
   exit /b 1
 )
 echo.
 echo [2/3] Updating from GitHub...
-git pull --ff-only origin feature/t7-v2
+git pull --ff-only origin feature/multi-client
 if errorlevel 1 (
   echo GIT PULL FAILED.
   pause
