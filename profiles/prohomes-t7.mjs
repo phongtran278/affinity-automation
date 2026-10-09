@@ -34,7 +34,7 @@ export default {
   },
 
   periodDescription: {
-    enabled: false,
+    enabled: true,
     mode: "campaign-earliest-start"
   },
 
