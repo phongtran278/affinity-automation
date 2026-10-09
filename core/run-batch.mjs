@@ -663,7 +663,7 @@ function commitPlan(doc,plan){
             " | Affinity: "+(e&&e.message?e.message:String(e))
         };
 
-        if(r.type==="invoiceNumber"){
+        if(r.type==="invoiceNumber" || r.type==="campaignName"){
           warnings.push(detail);
           continue;
         }
@@ -837,8 +837,15 @@ function postValidate(plan){
         console.log("  validation: "+r.validation);
         if(Array.isArray(r.warnings)&&r.warnings.length){
           for(const w of r.warnings){
-            console.log("  INVOICE WARNING: "+w.reason);
-            console.log("  MANUAL FALLBACK: đổi Invoice # thành "+w.newText);
+            if(w.type==="invoiceNumber"){
+              console.log("  INVOICE WARNING: "+w.reason);
+              console.log("  MANUAL FALLBACK: đổi Invoice # thành "+w.newText);
+            }else if(w.type==="campaignName"){
+              console.log("  CAMPAIGN NAME WARNING: "+w.reason);
+              console.log("  MANUAL FALLBACK: đổi campaign name thành "+w.newText);
+            }else{
+              console.log("  WARNING: "+w.reason);
+            }
           }
         }
       }
