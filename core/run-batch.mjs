@@ -663,7 +663,7 @@ function commitPlan(doc,plan){
             " | Affinity: "+(e&&e.message?e.message:String(e))
         };
 
-        if(r.type==="invoiceNumber" || r.type==="campaignName"){
+        if(r.type==="invoiceNumber" || r.type==="campaignName" || r.type==="campaignDate"){
           warnings.push(detail);
           continue;
         }
@@ -843,6 +843,9 @@ function postValidate(plan){
             }else if(w.type==="campaignName"){
               console.log("  CAMPAIGN NAME WARNING: "+w.reason);
               console.log("  MANUAL FALLBACK: đổi campaign name thành "+w.newText);
+            }else if(w.type==="campaignDate"){
+              console.log("  CAMPAIGN DATE WARNING: "+w.reason);
+              console.log("  MANUAL FALLBACK: đổi campaign date thành "+w.newText);
             }else{
               console.log("  WARNING: "+w.reason);
             }
