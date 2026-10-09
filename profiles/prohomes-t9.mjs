@@ -63,6 +63,12 @@ export default {
     }
   },
 
+  manualCommitFallback: {
+    campaigns: {
+      "75": [8]
+    }
+  },
+
   compatibility: {
     mergedTextNodes: true,
     separatedTextNodes: true,
