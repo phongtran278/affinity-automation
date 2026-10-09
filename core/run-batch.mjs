@@ -598,6 +598,45 @@ function buildPlan(doc,row,stt){
     label:declaredRate
   };
 
+  // VAT-rate text can be merged into the VAT node or imported as separate
+  // label/value nodes. Match the labelled field, never an arbitrary "%" node.
+  const vatRateTargets=[];
+  const vatLabelRe=/Thuế\s*suất\s*:\s*([\d.,]+)(\s*)%/gi;
+  const vatStandaloneRe=/^\s*([\d.,]+)\s*%\s*$/;
+  const vatOnlyLabelRe=/^\s*Thuế\s*suất\s*:\s*$/i;
+  for(let i=0;i<texts.length;i++){
+    vatLabelRe.lastIndex=0;
+    let m;
+    while((m=vatLabelRe.exec(texts[i]))){
+      const relative=m[0].indexOf(m[1]);
+      const begin=m.index+relative;
+      vatRateTargets.push({idx:i,begin,end:begin+m[1].length,old:m[1]});
+    }
+    if(vatOnlyLabelRe.test(texts[i])){
+      const next=i+1;
+      const value=next<texts.length?texts[next].match(vatStandaloneRe):null;
+      if(!value) throw new Error("Thuế suất có label nhưng không tìm thấy giá trị % tại node "+i);
+      const begin=texts[next].indexOf(value[1]);
+      vatRateTargets.push({idx:next,begin,end:begin+value[1].length,old:value[1]});
+    }
+  }
+  if(vatRateTargets.length>1) throw new Error("Có nhiều hơn 1 field Thuế suất.");
+  // A labelled rate must be editable; don't claim success if its PDF layout is unsupported.
+  if(!vatRateTargets.length && texts.some(t=>/Thuế\s*suất\s*:/i.test(t)))
+    throw new Error("Có nhãn Thuế suất nhưng chưa nhận diện được percent.");
+  if(vatRateTargets.length){
+    const t=vatRateTargets[0];
+    const rate=checkAmounts({base:row.subtotal,extra:row.vat,sum:row.total});
+    if(rate.status!=="PASS_ARITHMETIC") throw new Error("VAT rate invalid: "+rate.reason);
+    const oldDecimal=(t.old.split(/[.,]/)[1]||"").length;
+    const neededDecimal=Number.isInteger(rate.percent)?0:(Number.isInteger(rate.percent*10)?1:2);
+    const decimal=Math.min(2,Math.max(oldDecimal,neededDecimal));
+    const separator=t.old.includes(",")?",":".";
+    const newRate=rate.percent.toFixed(decimal).replace(".",separator);
+    addPlan(plan,nodes[t.idx],t.begin,t.end,t.old,newRate,"vatRate");
+    vatRateComparison.label=t.old+"%";
+  }
+
   addPlan(plan,nodes[subtotalHit.idx],subtotalHit.tok.begin,subtotalHit.tok.end,subtotalHit.tok.text,formatMoneyLike(subtotalHit.tok.text,row.subtotal),"subtotal");
   addPlan(plan,nodes[vatHit.idx],vatHit.tok.begin,vatHit.tok.end,vatHit.tok.text,formatMoneyLike(vatHit.tok.text,row.vat),"vat");
   if(totalHit){
@@ -680,7 +719,8 @@ function buildPlan(doc,row,stt){
     invoiceNumber,
     optionalFields:{
       total:totalHit?"PRESENT":"OPTIONAL / NOT PRESENT",
-      paymentThreshold:thresholdHits===1?"PRESENT":"OPTIONAL / NOT PRESENT"
+      paymentThreshold:thresholdHits===1?"PRESENT":"OPTIONAL / NOT PRESENT",
+      vatRate:vatRateTargets.length===1?"PRESENT":"OPTIONAL / NOT PRESENT"
     }
   };
 }
@@ -1014,6 +1054,7 @@ function postValidate(plan){
         printOne("Đã thanh toán","paid");
         printOne("Tổng phụ","subtotal");
         printOne("VAT","vat");
+        printOne("Thuế suất (%)","vatRate");
         if(r.vatRateComparison){
           const v=r.vatRateComparison;
           const fmt=function(x){return typeof x==="number"&&Number.isFinite(x)?(Math.round(x*100)/100)+"%":"N/A";};
