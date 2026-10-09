@@ -59,7 +59,10 @@ export default {
         "Lead mới","Remarketing","Retarget","KH 35+","KH 40+","Mua ở",
         "Mua ở + đầu tư","Quan tâm BĐS","Update"
       ],
-      separator: [" - "," | "," / ","_"," ","  "]
+      separator: [" - "," | "," / ","_"," ","  "],
+      maxLength: 31,
+      compactBase: "Vin Cần Giờ",
+      compactMonth: "T9/2026"
     }
   },
 
