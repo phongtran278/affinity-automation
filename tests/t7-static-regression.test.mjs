@@ -129,6 +129,12 @@ test("T7 source validates expected count, identity and money arithmetic",()=>{
   }
 });
 
+test("document STT parser supports 3+ digit monthly sequence numbers and dry-run blocks skipped docs",()=>{
+  const code=fs.readFileSync(path.join(root,"core/run-batch.mjs"),"utf8");
+  assert.match(code,/base\.match\(\/\^\(\\d\+\)\\s\*-\\s\*\/\)/);
+  assert.match(code,/DRY_RUN && \(\(report\.skipped\|\|0\)>0 \|\| report\.success===0\)/);
+});
+
 test("T7 defaults to dry run and reports absent optional fields",()=>{
   const code=fs.readFileSync(path.join(root,"core/run-batch.mjs"),"utf8");
   assert.match(code,/process\.env\.AFFINITY_COMMIT==="1" \? false : true/);
