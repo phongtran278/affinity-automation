@@ -587,6 +587,15 @@ function buildPlan(doc,row,stt){
 
   const existingSubtotal=normalizeMoney(subtotalHit.tok.text);
   if(!(existingSubtotal>0)) throw new Error("Existing subtotal <= 0.");
+  const existingVat=normalizeMoney(vatHit.tok.text);
+  const vatLabelText=texts[vatHit.idx];
+  const declaredRateMatch=vatLabelText.match(/Thuế suất\s*:\s*([\d.,]+)\s*%/i);
+  const declaredRate=declaredRateMatch?declaredRateMatch[1]+"%":null;
+  const vatRateComparison={
+    before:existingVat>=0?(100*existingVat/existingSubtotal):null,
+    after:row.subtotal>0?(100*row.vat/row.subtotal):null,
+    label:declaredRate
+  };
 
   addPlan(plan,nodes[subtotalHit.idx],subtotalHit.tok.begin,subtotalHit.tok.end,subtotalHit.tok.text,formatMoneyLike(subtotalHit.tok.text,row.subtotal),"subtotal");
   addPlan(plan,nodes[vatHit.idx],vatHit.tok.begin,vatHit.tok.end,vatHit.tok.text,formatMoneyLike(vatHit.tok.text,row.vat),"vat");
@@ -661,7 +670,7 @@ function buildPlan(doc,row,stt){
   }
 
   return {
-    plan,nodes,alignmentTargets,
+    plan,nodes,alignmentTargets,vatRateComparison,
     campaigns:campaigns.length,
     adGroups:adGroupCount,
     impressionsUpdated,
@@ -912,6 +921,7 @@ function postValidate(plan){
         validation:isPartial?"MANUAL_REQUIRED":"PASS",
         warnings:commitWarnings,
         invoiceNumber:built.invoiceNumber,
+        vatRateComparison:built.vatRateComparison,
         optionalFields:built.optionalFields,
         replacements:built.plan.map(function(r){
           return {type:r.type,old:r.oldText,new:r.newText,meta:r.meta||null};
@@ -982,6 +992,13 @@ function postValidate(plan){
         printOne("Đã thanh toán","paid");
         printOne("Tổng phụ","subtotal");
         printOne("VAT","vat");
+        if(r.vatRateComparison){
+          const v=r.vatRateComparison;
+          const fmt=function(x){return typeof x==="number"&&Number.isFinite(x)?(Math.round(x*100)/100)+"%":"N/A";};
+          console.log("  VAT Rate (tính từ số tiền): "+fmt(v.before)+"  ->  "+fmt(v.after));
+          console.log("  Thuế suất ghi trên PDF gốc: "+(v.label||"không tìm thấy"));
+          console.log("  VAT Rate: chỉ đối chiếu, không chỉnh sửa nhãn thuế suất trên PDF");
+        }
         printOne("Tổng thanh toán","total");
         printOne("Ngưỡng thanh toán","paymentThreshold");
 
