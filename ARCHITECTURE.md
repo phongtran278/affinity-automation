@@ -137,3 +137,12 @@ If parsing and numeric validation pass but one or more required replacements can
 `PARTIAL` is distinct from `ERROR`: it means the source data and plan are valid, but the document does not yet match the source of truth and requires manual edits. Post-validation may skip only the exact replacements that were explicitly recorded as unresolved; those unresolved replacements must keep the document in `PARTIAL` status.
 
 Summary counts must keep `SUCCESS`, `PARTIAL`, `ERROR`, and `SKIPPED` separate.
+
+
+## Spread-aware text editing
+
+Affinity selections are spread-sensitive. Before editing any imported PDF text node, the runner must compare `node.spread` with `doc.currentSpread`. If they differ, execute `DocumentCommand.createSetCurrentSpread(node.spread)` before creating the node/text selection.
+
+This is required for campaigns, invoice numbers, and any other text that continues onto later PDF pages. Detection must be runtime-based through the node's spread; never hard-code page numbers, STTs, campaign indexes, or invoice values.
+
+The manual/uneditable fallback remains only for genuine command failures after the correct spread has been activated.
