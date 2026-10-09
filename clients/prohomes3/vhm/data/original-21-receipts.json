@@ -1,1 +1,232 @@
-{"schemaVersion":1,"client":"ProHomes3","brand":"VHM","source":{"workbook":"FN - THÔNG TIN LÀM HÓA ĐƠN - VIN HÓC MÔN - ĐÃ SẮP XẾP NGÀY GIỜ (1).xlsx","sheet":"Dữ liệu gốc 21 chứng từ","note":"21 yellow source rows extracted exactly; no missing subtotal/VAT values were inferred."},"items":[{"sourceStt":1,"transactionId":"27776108412077871-27706549425700438","group":"ProHomes TKQC 3","timestamp":"2026-07-03 05:49:00","subtotal":7806440,"vat":780644,"total":8587084,"invoiceNumber":"FBADS-542-106164279","note":"Đã thanh toán. FBADS-542-106164279. Visa ···· 1975."},{"sourceStt":2,"transactionId":"27737732482582124-27696620323360010","group":"ProHomes TKQC 3","timestamp":"2026-07-07 06:31:00","subtotal":7806440,"vat":780644,"total":8587084,"invoiceNumber":"FBADS-542-106182158","note":"Đã thanh toán. FBADS-542-106182158. Visa ···· 1975."},{"sourceStt":3,"transactionId":"27772015582487147-27695320610156649","group":"ProHomes TKQC 3","timestamp":"2026-07-10 06:38:00","subtotal":6118650,"vat":611865,"total":6730515,"invoiceNumber":"FBADS-542-106195913","note":"Đã thanh toán. FBADS-542-106195913. Visa ···· 1975."},{"sourceStt":4,"transactionId":"27771253285896713-27735629539459089","group":"ProHomes TKQC 3","timestamp":"2026-07-13 21:38:59","subtotal":7806440,"vat":780644,"total":8587084,"invoiceNumber":"FBADS-542-106213025","note":"Đã thanh toán. FBADS-542-106213025. Visa ···· 1975."},{"sourceStt":5,"transactionId":"27814060031616038-27854856094203095","group":"ProHomes TKQC 3","timestamp":"2026-07-17 12:22:00","subtotal":7806440,"vat":780644,"total":8587084,"invoiceNumber":"FBADS-542-106231172","note":"Đã thanh toán. FBADS-542-106231172. Visa ···· 1975."},{"sourceStt":6,"transactionId":"27929344926754216-27871432969212078","group":"ProHomes TKQC 3","timestamp":"2026-07-24 22:10:00","subtotal":7806440,"vat":780644,"total":8587084,"invoiceNumber":"FBADS-542-106267026","note":"Đã thanh toán. FBADS-542-106267026. Visa ···· 1975."},{"sourceStt":7,"transactionId":"28032729683082401-28014355194919855","group":"ProHomes TKQC 3","timestamp":"2026-07-31 19:03:00","subtotal":7806440,"vat":780644,"total":8587084,"invoiceNumber":"FBADS-542-106303958","note":"Đã thanh toán. FBADS-542-106303958. Visa ···· 1975."},{"sourceStt":8,"transactionId":"28179825148372860-28170965669258810","group":"ProHomes TKQC 3","timestamp":"2026-08-05 08:45:00","subtotal":7806440,"vat":780644,"total":8587084,"invoiceNumber":"FBADS-542-106328155","note":"Đã thanh toán. FBADS-542-106328155. Visa ···· 1975."},{"sourceStt":9,"transactionId":"28152167961138572-28108555488833154","group":"ProHomes TKQC 3","timestamp":"2026-08-09 21:26:00","subtotal":7806440,"vat":624515,"total":8430955,"invoiceNumber":"FBADS-542-106353123","note":"Đã thanh toán. FBADS-542-106353123. Visa ···· 1975."},{"sourceStt":10,"transactionId":"28174543072234402-28113222868366416","group":"ProHomes TKQC 3","timestamp":"2026-08-10 06:25:00","subtotal":182099,"vat":14568,"total":196667,"invoiceNumber":"FBADS-542-106354660","note":"Đã thanh toán. FBADS-542-106354660. Visa ···· 1975."},{"sourceStt":11,"transactionId":"28334904966198210-28227851440236895","group":"ProHomes TKQC 3","timestamp":"2026-08-16 16:54:00","subtotal":7806440,"vat":780644,"total":8587084,"invoiceNumber":"FBADS-542-106391422","note":"Đã thanh toán. FBADS-542-106391422. Visa ···· 1975."},{"sourceStt":12,"transactionId":"28294978660190834-28254995774189126","group":"ProHomes TKQC 3","timestamp":"2026-08-20 10:15:00","subtotal":7806440,"vat":780644,"total":8587084,"invoiceNumber":"FBADS-542-106411235","note":"Đã thanh toán. FBADS-542-106411235. Visa ···· 1975."},{"sourceStt":13,"transactionId":"28401546462867395-28244515611903810","group":"ProHomes TKQC 3","timestamp":"2026-08-22 06:38:00","subtotal":null,"vat":null,"total":1478,"invoiceNumber":null,"note":"Đã thanh toán. Biên lai không ghi số hóa đơn. Tín dụng quảng cáo. PDF không ghi tổng phụ/VAT."},{"sourceStt":14,"transactionId":"28278220411866663-28444610485227657","group":"ProHomes TKQC 3","timestamp":"2026-08-24 21:26:00","subtotal":7806440,"vat":780644,"total":8587084,"invoiceNumber":"FBADS-542-106434777","note":"Đã thanh toán. FBADS-542-106434777. Visa ···· 1975."},{"sourceStt":15,"transactionId":"28430957649926267-28386751034346930","group":"ProHomes TKQC 3","timestamp":"2026-08-30 03:59:00","subtotal":7806440,"vat":780644,"total":8587084,"invoiceNumber":"FBADS-542-106460624","note":"Đã thanh toán. FBADS-542-106460624. Visa ···· 1975."},{"sourceStt":16,"transactionId":"28586819047673466-28455696784119023","group":"ProHomes TKQC 3","timestamp":"2026-09-03 15:16:00","subtotal":7806440,"vat":780644,"total":8587084,"invoiceNumber":"FBADS-542-106483083","note":"Đã thanh toán. FBADS-542-106483083. Visa ···· 1975."},{"sourceStt":17,"transactionId":"28498018906553475-28561044366917602","group":"ProHomes TKQC 3","timestamp":"2026-09-06 18:18:00","subtotal":7806440,"vat":780644,"total":8587084,"invoiceNumber":"FBADS-542-106499296","note":"Đã thanh toán. FBADS-542-106499296. Visa ···· 1975."},{"sourceStt":18,"transactionId":"28678101128545252-28517218761300159","group":"ProHomes TKQC 3","timestamp":"2026-09-10 06:53:00","subtotal":6847884,"vat":684788,"total":7532672,"invoiceNumber":"FBADS-542-106516206","note":"Đã thanh toán. FBADS-542-106516206. Visa ···· 1975."},{"sourceStt":19,"transactionId":"28679214515100581-28674281748927189","group":"ProHomes TKQC 3","timestamp":"2026-09-18 09:09:00","subtotal":16593058,"vat":1659306,"total":18252364,"invoiceNumber":"FBADS-542-106558834","note":"Đã thanh toán. FBADS-542-106558834. Visa ···· 1975."},{"sourceStt":20,"transactionId":"28924589200563116-28935335852821782","group":"ProHomes TKQC 3","timestamp":"2026-09-26 11:28:00","subtotal":13636026,"vat":1363603,"total":14999629,"invoiceNumber":"FBADS-542-106602075","note":"Đã thanh toán. FBADS-542-106602075. Visa ···· 1975."},{"sourceStt":21,"transactionId":"28912996511722384-28880512304970802","group":"ProHomes TKQC 3","timestamp":"2026-09-30 06:46:00","subtotal":null,"vat":null,"total":1,"invoiceNumber":"FBADS-542-106620823","note":"Đã thanh toán. FBADS-542-106620823. Số dư trả trước. PDF không ghi tổng phụ/VAT."}]}
+{
+  "schemaVersion": 1,
+  "client": "ProHomes3",
+  "brand": "VHM",
+  "source": {
+    "workbook": "FN - THÔNG TIN LÀM HÓA ĐƠN - VIN HÓC MÔN - ĐÃ SẮP XẾP NGÀY GIỜ (1).xlsx",
+    "sheet": "Dữ liệu gốc 20 chứng từ",
+    "note": "20 yellow source receipts retained after excluding transaction 28912996511722384-28880512304970802 by user request. No missing subtotal/VAT values were inferred."
+  },
+  "items": [
+    {
+      "sourceStt": 1,
+      "transactionId": "27776108412077871-27706549425700438",
+      "group": "ProHomes TKQC 3",
+      "timestamp": "2026-07-03 05:49:00",
+      "subtotal": 7806440,
+      "vat": 780644,
+      "total": 8587084,
+      "invoiceNumber": "FBADS-542-106164279",
+      "note": "Đã thanh toán. FBADS-542-106164279. Visa ···· 1975."
+    },
+    {
+      "sourceStt": 2,
+      "transactionId": "27737732482582124-27696620323360010",
+      "group": "ProHomes TKQC 3",
+      "timestamp": "2026-07-07 06:31:00",
+      "subtotal": 7806440,
+      "vat": 780644,
+      "total": 8587084,
+      "invoiceNumber": "FBADS-542-106182158",
+      "note": "Đã thanh toán. FBADS-542-106182158. Visa ···· 1975."
+    },
+    {
+      "sourceStt": 3,
+      "transactionId": "27772015582487147-27695320610156649",
+      "group": "ProHomes TKQC 3",
+      "timestamp": "2026-07-10 06:38:00",
+      "subtotal": 6118650,
+      "vat": 611865,
+      "total": 6730515,
+      "invoiceNumber": "FBADS-542-106195913",
+      "note": "Đã thanh toán. FBADS-542-106195913. Visa ···· 1975."
+    },
+    {
+      "sourceStt": 4,
+      "transactionId": "27771253285896713-27735629539459089",
+      "group": "ProHomes TKQC 3",
+      "timestamp": "2026-07-13 21:38:59",
+      "subtotal": 7806440,
+      "vat": 780644,
+      "total": 8587084,
+      "invoiceNumber": "FBADS-542-106213025",
+      "note": "Đã thanh toán. FBADS-542-106213025. Visa ···· 1975."
+    },
+    {
+      "sourceStt": 5,
+      "transactionId": "27814060031616038-27854856094203095",
+      "group": "ProHomes TKQC 3",
+      "timestamp": "2026-07-17 12:22:00",
+      "subtotal": 7806440,
+      "vat": 780644,
+      "total": 8587084,
+      "invoiceNumber": "FBADS-542-106231172",
+      "note": "Đã thanh toán. FBADS-542-106231172. Visa ···· 1975."
+    },
+    {
+      "sourceStt": 6,
+      "transactionId": "27929344926754216-27871432969212078",
+      "group": "ProHomes TKQC 3",
+      "timestamp": "2026-07-24 22:10:00",
+      "subtotal": 7806440,
+      "vat": 780644,
+      "total": 8587084,
+      "invoiceNumber": "FBADS-542-106267026",
+      "note": "Đã thanh toán. FBADS-542-106267026. Visa ···· 1975."
+    },
+    {
+      "sourceStt": 7,
+      "transactionId": "28032729683082401-28014355194919855",
+      "group": "ProHomes TKQC 3",
+      "timestamp": "2026-07-31 19:03:00",
+      "subtotal": 7806440,
+      "vat": 780644,
+      "total": 8587084,
+      "invoiceNumber": "FBADS-542-106303958",
+      "note": "Đã thanh toán. FBADS-542-106303958. Visa ···· 1975."
+    },
+    {
+      "sourceStt": 8,
+      "transactionId": "28179825148372860-28170965669258810",
+      "group": "ProHomes TKQC 3",
+      "timestamp": "2026-08-05 08:45:00",
+      "subtotal": 7806440,
+      "vat": 780644,
+      "total": 8587084,
+      "invoiceNumber": "FBADS-542-106328155",
+      "note": "Đã thanh toán. FBADS-542-106328155. Visa ···· 1975."
+    },
+    {
+      "sourceStt": 9,
+      "transactionId": "28152167961138572-28108555488833154",
+      "group": "ProHomes TKQC 3",
+      "timestamp": "2026-08-09 21:26:00",
+      "subtotal": 7806440,
+      "vat": 624515,
+      "total": 8430955,
+      "invoiceNumber": "FBADS-542-106353123",
+      "note": "Đã thanh toán. FBADS-542-106353123. Visa ···· 1975."
+    },
+    {
+      "sourceStt": 10,
+      "transactionId": "28174543072234402-28113222868366416",
+      "group": "ProHomes TKQC 3",
+      "timestamp": "2026-08-10 06:25:00",
+      "subtotal": 182099,
+      "vat": 14568,
+      "total": 196667,
+      "invoiceNumber": "FBADS-542-106354660",
+      "note": "Đã thanh toán. FBADS-542-106354660. Visa ···· 1975."
+    },
+    {
+      "sourceStt": 11,
+      "transactionId": "28334904966198210-28227851440236895",
+      "group": "ProHomes TKQC 3",
+      "timestamp": "2026-08-16 16:54:00",
+      "subtotal": 7806440,
+      "vat": 780644,
+      "total": 8587084,
+      "invoiceNumber": "FBADS-542-106391422",
+      "note": "Đã thanh toán. FBADS-542-106391422. Visa ···· 1975."
+    },
+    {
+      "sourceStt": 12,
+      "transactionId": "28294978660190834-28254995774189126",
+      "group": "ProHomes TKQC 3",
+      "timestamp": "2026-08-20 10:15:00",
+      "subtotal": 7806440,
+      "vat": 780644,
+      "total": 8587084,
+      "invoiceNumber": "FBADS-542-106411235",
+      "note": "Đã thanh toán. FBADS-542-106411235. Visa ···· 1975."
+    },
+    {
+      "sourceStt": 13,
+      "transactionId": "28401546462867395-28244515611903810",
+      "group": "ProHomes TKQC 3",
+      "timestamp": "2026-08-22 06:38:00",
+      "subtotal": null,
+      "vat": null,
+      "total": 1478,
+      "invoiceNumber": null,
+      "note": "Đã thanh toán. Biên lai không ghi số hóa đơn. Tín dụng quảng cáo. PDF không ghi tổng phụ/VAT."
+    },
+    {
+      "sourceStt": 14,
+      "transactionId": "28278220411866663-28444610485227657",
+      "group": "ProHomes TKQC 3",
+      "timestamp": "2026-08-24 21:26:00",
+      "subtotal": 7806440,
+      "vat": 780644,
+      "total": 8587084,
+      "invoiceNumber": "FBADS-542-106434777",
+      "note": "Đã thanh toán. FBADS-542-106434777. Visa ···· 1975."
+    },
+    {
+      "sourceStt": 15,
+      "transactionId": "28430957649926267-28386751034346930",
+      "group": "ProHomes TKQC 3",
+      "timestamp": "2026-08-30 03:59:00",
+      "subtotal": 7806440,
+      "vat": 780644,
+      "total": 8587084,
+      "invoiceNumber": "FBADS-542-106460624",
+      "note": "Đã thanh toán. FBADS-542-106460624. Visa ···· 1975."
+    },
+    {
+      "sourceStt": 16,
+      "transactionId": "28586819047673466-28455696784119023",
+      "group": "ProHomes TKQC 3",
+      "timestamp": "2026-09-03 15:16:00",
+      "subtotal": 7806440,
+      "vat": 780644,
+      "total": 8587084,
+      "invoiceNumber": "FBADS-542-106483083",
+      "note": "Đã thanh toán. FBADS-542-106483083. Visa ···· 1975."
+    },
+    {
+      "sourceStt": 17,
+      "transactionId": "28498018906553475-28561044366917602",
+      "group": "ProHomes TKQC 3",
+      "timestamp": "2026-09-06 18:18:00",
+      "subtotal": 7806440,
+      "vat": 780644,
+      "total": 8587084,
+      "invoiceNumber": "FBADS-542-106499296",
+      "note": "Đã thanh toán. FBADS-542-106499296. Visa ···· 1975."
+    },
+    {
+      "sourceStt": 18,
+      "transactionId": "28678101128545252-28517218761300159",
+      "group": "ProHomes TKQC 3",
+      "timestamp": "2026-09-10 06:53:00",
+      "subtotal": 6847884,
+      "vat": 684788,
+      "total": 7532672,
+      "invoiceNumber": "FBADS-542-106516206",
+      "note": "Đã thanh toán. FBADS-542-106516206. Visa ···· 1975."
+    },
+    {
+      "sourceStt": 19,
+      "transactionId": "28679214515100581-28674281748927189",
+      "group": "ProHomes TKQC 3",
+      "timestamp": "2026-09-18 09:09:00",
+      "subtotal": 16593058,
+      "vat": 1659306,
+      "total": 18252364,
+      "invoiceNumber": "FBADS-542-106558834",
+      "note": "Đã thanh toán. FBADS-542-106558834. Visa ···· 1975."
+    },
+    {
+      "sourceStt": 20,
+      "transactionId": "28924589200563116-28935335852821782",
+      "group": "ProHomes TKQC 3",
+      "timestamp": "2026-09-26 11:28:00",
+      "subtotal": 13636026,
+      "vat": 1363603,
+      "total": 14999629,
+      "invoiceNumber": "FBADS-542-106602075",
+      "note": "Đã thanh toán. FBADS-542-106602075. Visa ···· 1975."
+    }
+  ]
+}
