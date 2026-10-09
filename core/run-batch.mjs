@@ -38,6 +38,7 @@ export async function runBatch(profile, source){
 const { Document } = require("/document");
 const { Selection, TextSelection } = require("/selections");
 const { StoryRange, StoryIoFormat } = require("affinity:story");
+const { ParagraphAlignXType, StoryDelta } = require("/storydelta");
 const { DocumentCommand } = require("/commands");
 
 const CONFIG=${payload};
@@ -57,24 +58,32 @@ function getRawText(node){
   try{return node.story?node.story.getText(0,-1):"";}catch(_){}
   return "";
 }
-function replaceRange(doc,node,begin,end,newText){
-  // Affinity selections are spread-sensitive. A PDF can expose text nodes from
-  // every page through doc.layers.all, but editing a node on a non-current
-  // spread can return COMMAND_FAILED. Switch first, then build the selection.
+function ensureNodeSpread(doc,node){
   let spread=null;
   try{spread=node.spread||null;}catch(_){}
-  if(spread){
-    let same=false;
-    try{same=!!(doc.currentSpread&&doc.currentSpread.isSameNode(spread));}catch(_){}
-    if(!same){
-      doc.executeCommand(DocumentCommand.createSetCurrentSpread(spread));
-    }
-  }
-
+  if(!spread) return;
+  let same=false;
+  try{same=!!(doc.currentSpread&&doc.currentSpread.isSameNode(spread));}catch(_){}
+  if(!same) doc.executeCommand(DocumentCommand.createSetCurrentSpread(spread));
+}
+function replaceRange(doc,node,begin,end,newText){
+  // Affinity selections are spread-sensitive. Switch to the node's spread
+  // before creating the text selection.
+  ensureNodeSpread(doc,node);
   const sel=Selection.create(doc,node);
   const textSel=TextSelection.create(new StoryRange(begin,end));
   sel.addSubSelectionForNode(node,textSel);
   doc.executeCommand(DocumentCommand.createSetText(sel,newText));
+}
+function forceLeftAlignment(doc,node){
+  ensureNodeSpread(doc,node);
+  const sel=Selection.create(doc,node);
+  doc.executeCommand(
+    DocumentCommand.createFormatText(
+      sel,
+      StoryDelta.createAlignX(ParagraphAlignXType.Left)
+    )
+  );
 }
 function docIdentityCandidates(doc){
   const vals=[];
@@ -636,8 +645,23 @@ function buildPlan(doc,row,stt){
   }
   if(row.subtotal+row.vat!==row.total) throw new Error("subtotal + VAT != total");
 
+  // PDF import can preserve different paragraph alignment metadata on
+  // different machines. Normalize only semantic name fields; do not touch
+  // dates, impressions, or monetary columns.
+  const alignmentTargets=[];
+  const alignmentSeen=new Set();
+  const addAlignmentTarget=function(node,role){
+    if(!node || alignmentSeen.has(node)) return;
+    alignmentSeen.add(node);
+    alignmentTargets.push({node,role});
+  };
+  for(const camp of campaigns){
+    addAlignmentTarget(nodes[camp.nameIdx],"campaignName");
+    for(const g of camp.groups) addAlignmentTarget(nodes[g.nameIdx],"adGroupName");
+  }
+
   return {
-    plan,nodes,
+    plan,nodes,alignmentTargets,
     campaigns:campaigns.length,
     adGroups:adGroupCount,
     impressionsUpdated,
@@ -788,6 +812,18 @@ function commitPlan(doc,plan,stt){
   }
   return {ok:true,warnings:warnings};
 }
+function normalizeSemanticAlignment(doc,targets){
+  for(const target of targets||[]){
+    try{
+      forceLeftAlignment(doc,target.node);
+    }catch(e){
+      throw new Error(
+        "Alignment normalization failed for "+target.role+
+        ": "+(e&&e.message?e.message:String(e))
+      );
+    }
+  }
+}
 function postValidate(plan){
   for(const r of plan){
     const text=getRawText(r.node);
@@ -845,6 +881,7 @@ function postValidate(plan){
           });
           continue;
         }
+        normalizeSemanticAlignment(doc,built.alignmentTargets);
         const warningKeys=new Set(commitWarnings.map(function(w){
           return w.type+"|"+w.oldText+"|"+w.newText+"|"+w.meta;
         }));
