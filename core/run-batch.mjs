@@ -120,7 +120,7 @@ function parseStt(doc){
   for(const x of vals){
     const normalized=String(x.value).replace(/\\\\/g,"/");
     const base=normalized.split("/").pop()||normalized;
-    let m=base.match(/^(\d{1,2})\s*-\s*/);
+    let m=base.match(/^(\d+)\s*-\s*/);
     if(m) return {stt:Number(m[1]),source:x.label,value:x.value};
   }
   return {stt:null,source:null,value:null,identity:vals};
@@ -1037,6 +1037,14 @@ function postValidate(plan){
 
   if(report.error>0){
     throw new Error("Batch có "+report.error+" document lỗi. Xem chi tiết COMMAND_FAILED phía trên.");
+  }
+
+  if(DRY_RUN && ((report.skipped||0)>0 || report.success===0)){
+    throw new Error(
+      "DRY RUN chưa an toàn: SUCCESS="+report.success+
+      " SKIPPED="+(report.skipped||0)+
+      ". Không được hỏi COMMIT khi còn document bị bỏ qua hoặc không có document hợp lệ."
+    );
   }
 
   if(!DRY_RUN && (report.partial||0)>0){
