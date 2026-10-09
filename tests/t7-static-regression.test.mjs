@@ -122,7 +122,7 @@ test("T7 source validates expected count, identity and money arithmetic",()=>{
   try{
     check(valid.items.slice(1),/đúng 42 items/);
     check([valid.items[0],valid.items[0],...valid.items.slice(2)],/Duplicate STT/);
-    check(valid.items.map((x,i)=>i===0?{...x,total:x.total+1}:x),/subtotal \+ (?:VAT|vat) != total/);
+    check(valid.items.map((x,i)=>i===0?{...x,total:x.total+1}:x),/base \+ extra != sum/);
     check(valid.items.map((x,i)=>i===0?{...x,invoiceNumber:"INVALID"}:x),/invoiceNumber không hợp lệ/);
   } finally {
     fs.rmSync(temp,{recursive:true,force:true});
