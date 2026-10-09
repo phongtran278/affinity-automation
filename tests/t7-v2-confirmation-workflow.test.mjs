@@ -69,7 +69,7 @@ test("period-description behavior is profile-driven without an environment overr
   const profile = fs.readFileSync(fileURLToPath(new URL("../profiles/prohomes-t7.mjs", import.meta.url)), "utf8");
   assert.doesNotMatch(workflow, /T7_V2_PERIOD_EDIT/);
   assert.match(core, /editPeriodDescription:profile\.periodDescription\?\.enabled===true/);
-  assert.match(profile, /periodDescription:\s*\{[\s\S]*?enabled:\s*false/);
+  assert.match(profile, /periodDescription:\s*\{[\s\S]*?enabled:\s*true/);
   assert.match(core, /if\(CONFIG\.editPeriodDescription\)/);
   assert.match(core, /adSpendDescriptionSuffix/);
 });
