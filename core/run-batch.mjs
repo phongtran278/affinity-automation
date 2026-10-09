@@ -58,6 +58,19 @@ function getRawText(node){
   return "";
 }
 function replaceRange(doc,node,begin,end,newText){
+  // Affinity selections are spread-sensitive. A PDF can expose text nodes from
+  // every page through doc.layers.all, but editing a node on a non-current
+  // spread can return COMMAND_FAILED. Switch first, then build the selection.
+  let spread=null;
+  try{spread=node.spread||null;}catch(_){}
+  if(spread){
+    let same=false;
+    try{same=!!(doc.currentSpread&&doc.currentSpread.isSameNode(spread));}catch(_){}
+    if(!same){
+      doc.executeCommand(DocumentCommand.createSetCurrentSpread(spread));
+    }
+  }
+
   const sel=Selection.create(doc,node);
   const textSel=TextSelection.create(new StoryRange(begin,end));
   sel.addSubSelectionForNode(node,textSel);
