@@ -327,7 +327,7 @@ function buildPlan(doc,row,stt){
     const desired="Chi tiêu cho Quảng cáo kể từ "+earliest.getUTCDate()+" tháng "+(earliest.getUTCMonth()+1)+", "+earliest.getUTCFullYear()+".";
     // Match the complete description, including an optional money tail and
     // "của mình." that Affinity may split into another text node.
-    const existingRe=/Chi\s+tiêu\s+cho\s+Quảng\s+cáo\s+kể\s+từ\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}\.|Hệ thống đang tiến hành lập hóa đơn vì bạn đã đạt đến ngưỡng thanh toán(?:[ \t\u00a0]+của(?:[ \t\u00a0]+mình\.)?)?|Khoản\s+thanh\s+toán\s+thủ\s+công\s+đã\s+được\s+yêu\s+cầu\s+trên\s+tài\s+khoản\s+này\./gi;
+    const existingRe=/Chi\s+tiêu\s+cho\s+Quảng\s+cáo\s+kể\s+từ\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}\.|Hệ thống đang tiến hành lập hóa đơn vì bạn đã đạt đến ngưỡng thanh toán(?:[ \t\u00a0]+của(?:[ \t\u00a0]+mình\.)?)?|Khoản\s+thanh\s+toán\s+thủ\s+công\s+đã\s+được\s+(?:yêu\s+cầu|thực\s+hiện)\s+trên\s+tài\s+khoản\s+này\./gi;
     const tailRe=/^[ \t\u00a0]*(?:\d[\d., \u00a0]*[ \t\u00a0]*(?:₫|đ|VND)[ \t\u00a0]*)?(?:của[ \t\u00a0]*(?:mình\.)?)?/i;
     const hits=[];
     for(let i=0;i<texts.length;i++){
@@ -357,7 +357,7 @@ function buildPlan(doc,row,stt){
     // Safe fallback: only accept a 2-3 node window when the ENTIRE joined text
     // matches one of the known descriptions.
     if(hits.length===0){
-      const fullDescriptionRe=/^(?:Chi\s+tiêu\s+cho\s+Quảng\s+cáo\s+kể\s+từ\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}\.|Khoản\s+thanh\s+toán\s+thủ\s+công\s+đã\s+được\s+yêu\s+cầu\s+trên\s+tài\s+khoản\s+này\.|Hệ thống đang tiến hành lập hóa đơn vì bạn đã đạt đến ngưỡng thanh toán(?:\s+\d[\d., \u00a0]*\s*(?:₫|đ|VND))?\s+của\s+mình\.)$/i;
+      const fullDescriptionRe=/^(?:Chi\s+tiêu\s+cho\s+Quảng\s+cáo\s+kể\s+từ\s+\d{1,2}\s+tháng\s+\d{1,2},\s+\d{4}\.|Khoản\s+thanh\s+toán\s+thủ\s+công\s+đã\s+được\s+(?:yêu\s+cầu|thực\s+hiện)\s+trên\s+tài\s+khoản\s+này\.|Hệ thống đang tiến hành lập hóa đơn vì bạn đã đạt đến ngưỡng thanh toán(?:\s+\d[\d., \u00a0]*\s*(?:₫|đ|VND))?\s+của\s+mình\.)$/i;
       for(let i=0;i<texts.length;i++){
         for(let span=2;span<=3 && i+span<=texts.length;span++){
           const parts=[];
