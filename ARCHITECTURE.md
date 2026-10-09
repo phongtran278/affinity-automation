@@ -126,3 +126,14 @@ During COMMIT, imported PDF text may be readable/searchable but still reject `re
 If Affinity returns `COMMAND_FAILED` for any campaign field (name, date, campaign spend, ad-group spend, or impressions), that campaign is marked `UNEDITABLE` for the current document (a common cause is a campaign continuing onto another page). Remaining replacements for that campaign are not attempted; they are reported as explicit manual fallbacks. If an invoice-number text node rejects editing, that node is likewise reported as an `UNEDITABLE TEXT NODE` manual fallback.
 
 This must never be hard-coded to a specific STT, campaign index, page number, or invoice value. Monetary validation still runs before COMMIT, so the fallback cannot bypass campaign/ad-group sum checks.
+
+
+## Completion status semantics
+
+A document is `SUCCESS/PASS` only when every planned REQUIRED replacement has been committed and post-validated in the Affinity document.
+
+If parsing and numeric validation pass but one or more required replacements cannot be committed because Affinity rejects the imported PDF text node, the document is `PARTIAL / MANUAL_REQUIRED`, not `SUCCESS`. The runner must report every unresolved old -> new value explicitly.
+
+`PARTIAL` is distinct from `ERROR`: it means the source data and plan are valid, but the document does not yet match the source of truth and requires manual edits. Post-validation may skip only the exact replacements that were explicitly recorded as unresolved; those unresolved replacements must keep the document in `PARTIAL` status.
+
+Summary counts must keep `SUCCESS`, `PARTIAL`, `ERROR`, and `SKIPPED` separate.
