@@ -20,7 +20,6 @@
       "subtotal": 11545455,
       "vat": 1154545,
       "total": 12700000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106470798",
       "sourceNote": null
     },
@@ -32,7 +31,6 @@
       "subtotal": 7416139,
       "vat": 741614,
       "total": 8157753,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106472633",
       "sourceNote": null
     },
@@ -44,7 +42,6 @@
       "subtotal": 11454545,
       "vat": 1145455,
       "total": 12600000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106476771",
       "sourceNote": null
     },
@@ -56,7 +53,6 @@
       "subtotal": 7534457,
       "vat": 753446,
       "total": 8287903,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106478530",
       "sourceNote": null
     },
@@ -68,7 +64,6 @@
       "subtotal": 6636364,
       "vat": 663636,
       "total": 7300000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106481227",
       "sourceNote": null
     },
@@ -80,7 +75,6 @@
       "subtotal": 7806440,
       "vat": 780644,
       "total": 8587084,
-      "dataType": "Thật",
       "invoiceNumber": "FBADS-542-106483083",
       "sourceNote": "Đã thanh toán. FBADS-542-106483083. Visa ···· 1975."
     },
@@ -92,7 +86,6 @@
       "subtotal": 7217065,
       "vat": 721706,
       "total": 7938771,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106485136",
       "sourceNote": null
     },
@@ -104,7 +97,6 @@
       "subtotal": 10727273,
       "vat": 1072727,
       "total": 11800000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106487242",
       "sourceNote": null
     },
@@ -116,7 +108,6 @@
       "subtotal": 7636364,
       "vat": 763636,
       "total": 8400000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106490448",
       "sourceNote": null
     },
@@ -128,7 +119,6 @@
       "subtotal": 8181818,
       "vat": 818182,
       "total": 9000000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106492518",
       "sourceNote": null
     },
@@ -140,7 +130,6 @@
       "subtotal": 5363636,
       "vat": 536364,
       "total": 5900000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106497153",
       "sourceNote": null
     },
@@ -152,7 +141,6 @@
       "subtotal": 7806440,
       "vat": 780644,
       "total": 8587084,
-      "dataType": "Thật",
       "invoiceNumber": "FBADS-542-106499296",
       "sourceNote": "Đã thanh toán. FBADS-542-106499296. Visa ···· 1975."
     },
@@ -164,7 +152,6 @@
       "subtotal": 7185339,
       "vat": 718534,
       "total": 7903873,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106503314",
       "sourceNote": null
     },
@@ -176,7 +163,6 @@
       "subtotal": 7000000,
       "vat": 700000,
       "total": 7700000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106505117",
       "sourceNote": null
     },
@@ -188,7 +174,6 @@
       "subtotal": 9454545,
       "vat": 945455,
       "total": 10400000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106505927",
       "sourceNote": null
     },
@@ -200,7 +185,6 @@
       "subtotal": 7090909,
       "vat": 709091,
       "total": 7800000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106507773",
       "sourceNote": null
     },
@@ -212,7 +196,6 @@
       "subtotal": 10545455,
       "vat": 1054545,
       "total": 11600000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106512747",
       "sourceNote": null
     },
@@ -224,7 +207,6 @@
       "subtotal": 7545455,
       "vat": 754545,
       "total": 8300000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106514530",
       "sourceNote": null
     },
@@ -236,7 +218,6 @@
       "subtotal": 6847884,
       "vat": 684788,
       "total": 7532672,
-      "dataType": "Thật",
       "invoiceNumber": "FBADS-542-106516206",
       "sourceNote": "Đã thanh toán. FBADS-542-106516206. Visa ···· 1975."
     },
@@ -248,7 +229,6 @@
       "subtotal": 8454545,
       "vat": 845455,
       "total": 9300000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106518141",
       "sourceNote": null
     },
@@ -260,7 +240,6 @@
       "subtotal": 6272727,
       "vat": 627273,
       "total": 6900000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106522624",
       "sourceNote": null
     },
@@ -272,7 +251,6 @@
       "subtotal": 7857802,
       "vat": 785780,
       "total": 8643582,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106524672",
       "sourceNote": null
     },
@@ -284,7 +262,6 @@
       "subtotal": 7346698,
       "vat": 734670,
       "total": 8081368,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106526676",
       "sourceNote": null
     },
@@ -296,7 +273,6 @@
       "subtotal": 7250756,
       "vat": 725076,
       "total": 7975832,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106549223",
       "sourceNote": null
     },
@@ -308,7 +284,6 @@
       "subtotal": 7103768,
       "vat": 710377,
       "total": 7814145,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106551344",
       "sourceNote": null
     },
@@ -320,7 +295,6 @@
       "subtotal": 9818182,
       "vat": 981818,
       "total": 10800000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106552869",
       "sourceNote": null
     },
@@ -332,7 +306,6 @@
       "subtotal": 7761405,
       "vat": 776141,
       "total": 8537546,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106554679",
       "sourceNote": null
     },
@@ -344,7 +317,6 @@
       "subtotal": 16593058,
       "vat": 1659306,
       "total": 18252364,
-      "dataType": "Thật",
       "invoiceNumber": "FBADS-542-106558834",
       "sourceNote": "Đã thanh toán. FBADS-542-106558834. Visa ···· 1975."
     },
@@ -356,7 +328,6 @@
       "subtotal": 10909091,
       "vat": 1090909,
       "total": 12000000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106560807",
       "sourceNote": null
     },
@@ -368,7 +339,6 @@
       "subtotal": 10272727,
       "vat": 1027273,
       "total": 11300000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106563184",
       "sourceNote": null
     },
@@ -380,7 +350,6 @@
       "subtotal": 9727273,
       "vat": 972727,
       "total": 10700000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106565254",
       "sourceNote": null
     },
@@ -392,7 +361,6 @@
       "subtotal": 7270860,
       "vat": 727086,
       "total": 7997946,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106570480",
       "sourceNote": null
     },
@@ -404,7 +372,6 @@
       "subtotal": 10636364,
       "vat": 1063636,
       "total": 11700000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106583527",
       "sourceNote": null
     },
@@ -416,7 +383,6 @@
       "subtotal": 6727273,
       "vat": 672727,
       "total": 7400000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106585489",
       "sourceNote": null
     },
@@ -428,7 +394,6 @@
       "subtotal": 7475657,
       "vat": 747566,
       "total": 8223223,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106592158",
       "sourceNote": null
     },
@@ -440,7 +405,6 @@
       "subtotal": 11727273,
       "vat": 1172727,
       "total": 12900000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106594179",
       "sourceNote": null
     },
@@ -452,7 +416,6 @@
       "subtotal": 7363636,
       "vat": 736364,
       "total": 8100000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106595863",
       "sourceNote": null
     },
@@ -464,7 +427,6 @@
       "subtotal": 6545455,
       "vat": 654545,
       "total": 7200000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106598047",
       "sourceNote": null
     },
@@ -476,7 +438,6 @@
       "subtotal": 13636026,
       "vat": 1363603,
       "total": 14999629,
-      "dataType": "Thật",
       "invoiceNumber": "FBADS-542-106602075",
       "sourceNote": "Đã thanh toán. FBADS-542-106602075. Visa ···· 1975."
     },
@@ -488,7 +449,6 @@
       "subtotal": 9363636,
       "vat": 936364,
       "total": 10300000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106603728",
       "sourceNote": null
     },
@@ -500,7 +460,6 @@
       "subtotal": 9000000,
       "vat": 900000,
       "total": 9900000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106605953",
       "sourceNote": null
     },
@@ -512,7 +471,6 @@
       "subtotal": 11090909,
       "vat": 1109091,
       "total": 12200000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106608006",
       "sourceNote": null
     },
@@ -524,7 +482,6 @@
       "subtotal": 8545455,
       "vat": 854545,
       "total": 9400000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106610282",
       "sourceNote": null
     },
@@ -536,7 +493,6 @@
       "subtotal": 7909091,
       "vat": 790909,
       "total": 8700000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106612075",
       "sourceNote": null
     },
@@ -548,7 +504,6 @@
       "subtotal": 7454545,
       "vat": 745455,
       "total": 8200000,
-      "dataType": "Giả định",
       "invoiceNumber": "FBADS-542-106617425",
       "sourceNote": null
     }
