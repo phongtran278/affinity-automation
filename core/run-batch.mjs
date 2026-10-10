@@ -351,6 +351,7 @@ function buildPlan(doc,row,stt){
   const texts=nodes.map(getRawText);
   const plan=[];
 
+  let periodDescriptionStatus=CONFIG.editPeriodDescription?"OPTIONAL / NOT MATCHED":"DISABLED";
   // Profile-controlled: reconcile the existing ad-spend description against
   // the earliest campaign start date. Profiles opt in explicitly.
   if(CONFIG.editPeriodDescription){
@@ -445,12 +446,19 @@ function buildPlan(doc,row,stt){
       }
     }
 
-    if(hits.length!==1) throw new Error("Mô tả quảng cáo phải có đúng 1 vị trí, tìm thấy "+hits.length);
-    const hit=hits[0];
-    for(const suffix of hit.suffixes||[]){
-      addPlan(plan,nodes[suffix],0,texts[suffix].length,texts[suffix],"","adSpendDescriptionSuffix");
+    // An imported PDF may omit this paragraph or render it in an unrecognized
+    // variant. Do not guess which text to overwrite: leave the description
+    // untouched, report it as optional, and continue validating required fields.
+    // Multiple recognized positions remain an error (ambiguous replacement).
+    if(hits.length>1) throw new Error("Mô tả quảng cáo có nhiều vị trí ("+hits.length+"); cần kiểm tra.");
+    if(hits.length===1){
+      periodDescriptionStatus="PRESENT";
+      const hit=hits[0];
+      for(const suffix of hit.suffixes||[]){
+        addPlan(plan,nodes[suffix],0,texts[suffix].length,texts[suffix],"","adSpendDescriptionSuffix");
+      }
+      addPlan(plan,nodes[hit.i],hit.begin,hit.end,hit.source,desired,"adSpendDescription",{before:hit.old});
     }
-    addPlan(plan,nodes[hit.i],hit.begin,hit.end,hit.source,desired,"adSpendDescription",{before:hit.old});
   }
 
   let invoiceNumber=null;
@@ -719,6 +727,7 @@ function buildPlan(doc,row,stt){
     newCampaignSum,
     invoiceNumber,
     optionalFields:{
+      periodDescription:periodDescriptionStatus,
       total:totalHit?"PRESENT":"OPTIONAL / NOT PRESENT",
       paymentThreshold:thresholdHits===1?"PRESENT":"OPTIONAL / NOT PRESENT",
       vatRate:vatRateTargets.length===1?"PRESENT":"OPTIONAL / NOT PRESENT"
@@ -1091,6 +1100,7 @@ function postValidate(plan){
 
         console.log("  campaigns: "+r.campaigns+" | ad groups: "+r.adGroups+" | impressions updated: "+r.impressionsUpdated);
         if(r.optionalFields){
+          if(r.optionalFields.periodDescription!=="DISABLED") console.log("  Period description: "+r.optionalFields.periodDescription);
           console.log("  Total: "+(r.optionalFields.total==="PRESENT"?"PASS":"OPTIONAL / NOT PRESENT"));
           console.log("  Threshold: "+(r.optionalFields.paymentThreshold==="PRESENT"?"PASS":"OPTIONAL / NOT PRESENT"));
         }
