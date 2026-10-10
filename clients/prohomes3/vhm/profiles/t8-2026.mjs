@@ -7,7 +7,7 @@ export default {
   marker: "__PROHOMES3_VHM_T8__",
   serverUrl: "http://localhost:6767/sse",
   dataFile: "clients/prohomes3/vhm/data/t8-2026.json",
-  stt: { min:37, max:73, expectedCount:36, expectedSourceCount:37, excluded:[66] },
+  stt: { min:37, max:73, expectedCount:35, expectedSourceCount:37, excluded:[63,66] },
   fields: {
     transactionId: FIELD_STATE.REQUIRED,
     invoiceDate: FIELD_STATE.REQUIRED,
