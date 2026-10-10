@@ -37,7 +37,7 @@
       "sourceNote": null
     },
     {
-      "stt": 5,
+      "stt": 3,
       "transactionId": "27783555543722502-27699382126756865",
       "group": "ProHomes TKQC 3",
       "timestamp": "2026-07-02 22:39:00",
@@ -49,7 +49,7 @@
       "sourceNote": null
     },
     {
-      "stt": 3,
+      "stt": 4,
       "transactionId": "27776108412077871-27706549425700438",
       "group": "ProHomes TKQC 3",
       "timestamp": "2026-07-03 05:49:00",
@@ -61,7 +61,7 @@
       "sourceNote": "Đã thanh toán. FBADS-542-106164279. Visa ···· 1975."
     },
     {
-      "stt": 4,
+      "stt": 5,
       "transactionId": "27781057793934682-27700246793280065",
       "group": "ProHomes TKQC 3",
       "timestamp": "2026-07-03 15:36:00",
@@ -145,7 +145,7 @@
       "sourceNote": null
     },
     {
-      "stt": 13,
+      "stt": 12,
       "transactionId": "27737732482582124-27696620323360010",
       "group": "ProHomes TKQC 3",
       "timestamp": "2026-07-07 06:31:00",
@@ -157,7 +157,7 @@
       "sourceNote": "Đã thanh toán. FBADS-542-106182158. Visa ···· 1975."
     },
     {
-      "stt": 12,
+      "stt": 13,
       "transactionId": "27737379091268427-27700152991545566",
       "group": "ProHomes TKQC 3",
       "timestamp": "2026-07-07 15:30:00",
@@ -385,7 +385,7 @@
       "sourceNote": null
     },
     {
-      "stt": 34,
+      "stt": 32,
       "transactionId": "28040433365018391-28010054082797163",
       "group": "ProHomes TKQC 3",
       "timestamp": "2026-07-29 07:06:00",
@@ -397,7 +397,7 @@
       "sourceNote": null
     },
     {
-      "stt": 32,
+      "stt": 33,
       "transactionId": "28039781709784063-28014460759412851",
       "group": "ProHomes TKQC 3",
       "timestamp": "2026-07-30 02:59:00",
@@ -409,7 +409,7 @@
       "sourceNote": null
     },
     {
-      "stt": 33,
+      "stt": 34,
       "transactionId": "28036882426349314-28013249362998233",
       "group": "ProHomes TKQC 3",
       "timestamp": "2026-07-30 11:42:00",
