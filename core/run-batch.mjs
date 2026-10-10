@@ -394,7 +394,8 @@ function buildPlan(doc,row,stt){
       /Hệ\s+thống\s+đang\s+tiến\s+hành\s+lập\s+hóa\s+đơn\s+vì\s+bạn\s+đã\s+đạt\s+đến\s+ngưỡng\s+thanh\s+toán(?:\s+của\s+mình\.?)?/.source,
       /(?:Bạn\s+đã\s+đạt\s+(?:đến\s+)?ngưỡng\s+thanh\s+toán|Thanh\s+toán\s+do\s+đạt\s+ngưỡng\s+thanh\s+toán)\.?/.source,
       /Khoản\s+thanh\s+toán\s+thủ\s+công\s+đã\s+được\s+(?:yêu\s+cầu|thực\s+hiện)\s+trên\s+tài\s+khoản\s+này\.?/.source,
-      /(?:Bạn\s+đã\s+thực\s+hiện|Đã\s+thực\s+hiện)\s+(?:một\s+)?(?:khoản\s+)?thanh\s+toán\s+thủ\s+công\.?/.source
+      /(?:Bạn\s+đã\s+thực\s+hiện|Đã\s+thực\s+hiện)\s+(?:một\s+)?(?:khoản\s+)?thanh\s+toán\s+thủ\s+công\.?/.source,
+      /Bạn\s+đã\s+yêu\s+cầu\s+khoản\s+thanh\s+toán\s+thủ\s+công\s+này\.?/.source
     ];
     const existingRe=new RegExp(variants.join("|"),"gi");
     const tailRe=/^[ \t\u00a0]*(?:\d[\d., \u00a0]*[ \t\u00a0]*(?:₫|đ|VND)[ \t\u00a0]*)?(?:của[ \t\u00a0]*(?:mình\.)?)?/i;
